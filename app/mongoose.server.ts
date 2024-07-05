@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 //connecting to the database 
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/e-commerce");
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/pos");
 
 //creating a new instance of the database connection
 const db = mongoose.connection;

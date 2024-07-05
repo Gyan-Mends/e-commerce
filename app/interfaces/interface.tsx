@@ -1,9 +1,14 @@
 export interface RegistrationInterface {
-    _id: string;
-    name: string;
-    email: string;
-    password: string;
-    image: string;
+	_id:string,
+	firstName:string,
+    middleName:string,
+    lastName:string,
+    email:string,
+	password:string,
+    phone:number,
+	role:string,
+    admin:string,
+    image:string,
 }
 
 export interface CategoryInterface {

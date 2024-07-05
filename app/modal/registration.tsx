@@ -2,7 +2,15 @@ import { RegistrationInterface } from "~/interfaces/interface";
 import mongoose from "~/mongoose.server";
 
 const RegistrationSchema = new mongoose.Schema({
-    name : {
+    firstName : {
+      require: true,
+      type: String,
+    },
+    middleName : {
+      require: true,
+      type: String,
+    },
+    lastName : {
       require: true,
       type: String,
     },
@@ -11,6 +19,18 @@ const RegistrationSchema = new mongoose.Schema({
       type: String,
     },
     password: {
+      require: true,
+      type: String,
+    },
+    phone: {
+      require: true,
+      type: String,
+    },
+    role: {
+      require: true,
+      type: String,
+    },
+    admin: {
       require: true,
       type: String,
     },

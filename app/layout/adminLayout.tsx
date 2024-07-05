@@ -2,25 +2,20 @@ import { User } from "@nextui-org/react";
 import { Link } from "@remix-run/react";
 import { useTheme } from "next-themes";
 import { ReactNode, useState } from "react";
-import CategoryIcon from "~/components/icons/CategoryIcon";
 import CloseIcon from "~/components/icons/CloseIcon";
 import DashboardIcon from "~/components/icons/DashboardIcon";
-import EditionIcon from "~/components/icons/EditionIcon";
-import EventIcon from "~/components/icons/EventsIcon";
 import LogoutIcon from "~/components/icons/LogoutIcon";
 import MoonIcon from "~/components/icons/MoonIcon";
 import NavTogglerIcon from "~/components/icons/NavTogglerIcon";
-import ResultIcon from "~/components/icons/ResultIcon";
 import SunIcon from "~/components/icons/SunIcon";
-import UserIcon from "~/components/icons/UserIcon";
 import logo from "~/components/illustration/logo.png"
 
-interface AdminLayoutProps {
+interface UserLayoutProps {
     children: ReactNode;
     pageName: string;
 }
 
-const AdminLayout = ({ children, pageName }: AdminLayoutProps) => {
+const AdminLayout = ({ children, pageName }: UserLayoutProps) => {
     const { theme, setTheme } = useTheme();
     const [desktopNav, setDesktopNav] = useState(true);
     const [mobileNavOpen, setMobileNavOpen] = useState(false); // Hide mobile nav by default
@@ -42,7 +37,7 @@ const AdminLayout = ({ children, pageName }: AdminLayoutProps) => {
                     <div>
                         <img className="bg-white rounded-full h-10 w-10 " src={logo} alt="logo" />
                     </div>
-                    <div className="font-poppins text-3xl">VoteEase</div>
+                    <div className="font-poppins text-3xl">HelpDesk</div>
                 </div>
                 {/* profile */}
                 <div className=" mt-10">
@@ -57,41 +52,36 @@ const AdminLayout = ({ children, pageName }: AdminLayoutProps) => {
                 {/* Side Nav Content */}
                 <ul className="mt-10">
                     <Link className="" to="/admin">
-                        <li className="hover:bg-primary-400 text-lg font-poppins p-2 rounded-lg flex gap-2">
-                            <DashboardIcon className="h-6 w-6" />
+                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-poppins p-2 rounded-lg flex items-center gap-2">
+                            <DashboardIcon className="h-4 w-4" />
                             Dashboard
                         </li>
                     </Link>
-                    <Link className=" " to="/admin/events">
-                        <li className="hover:bg-primary-400 text-lg font-poppins p-2 rounded-lg flex gap-2">
-                            <EventIcon className="h-6 w-6" />
-                            Store
+                    <Link className="" to="/admin/users">
+                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-poppins p-2 rounded-lg flex items-center gap-2">
+                            <DashboardIcon className="h-4 w-4" />
+                            Users
                         </li>
                     </Link>
-                    <Link className=" " to="/admin/products">
-                        <li className="hover:bg-primary-400 text-lg font-poppins p-2 rounded-lg flex gap-2">
-                            <CategoryIcon className="h-6 w-6" />
-                            products
+                    <Link className="" to="/admin/departments">
+                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-poppins p-2 rounded-lg flex items-center gap-2">
+                            <DashboardIcon className="h-4 w-4" />
+                            Departments
                         </li>
                     </Link>
-                    <Link className=" " to="/admin/category">
-                        <li className="hover:bg-primary-400 text-lg font-poppins p-2 rounded-lg flex gap-2">
-                            <EditionIcon className="h-6 w-6" />
-                            Categories
+                    <Link className="" to="/admin/users">
+                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-poppins p-2 rounded-lg flex items-center gap-2">
+                            <DashboardIcon className="h-4 w-4" />
+                            Users
                         </li>
                     </Link>
-                    <Link className=" " to="/admin/contestants">
-                        <li className="hover:bg-primary-400 text-lg font-poppins p-2 rounded-lg flex gap-2">
-                            <UserIcon className="h-6 w-6" />
-                            Contestant
+                    <Link className="" to="/admin/forum">
+                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-poppins p-2 rounded-lg flex items-center gap-2">
+                            <DashboardIcon className="h-4 w-4" />
+                            Forum
                         </li>
                     </Link>
-                    <Link className=" " to="">
-                        <li className="hover:bg-primary-400 text-lg font-poppins p-2 rounded-lg flex gap-2">
-                            <ResultIcon className="h-6 w-6" />
-                            Results
-                        </li>
-                    </Link>
+
                 </ul>
             </div>
 
@@ -121,42 +111,19 @@ const AdminLayout = ({ children, pageName }: AdminLayoutProps) => {
                 </div>
                 {/* Side Nav Content */}
                 <ul className="mt-10">
-                    <Link className=" " to="/admin">
-                        <li className="hover:bg-primary-400 text-lg font-poppins p-2 rounded-lg flex gap-2">
-                            <DashboardIcon className="h-6 w-6" />
+                    <Link className="" to="/user">
+                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-poppins p-2 rounded-lg flex items-center gap-2">
+                            <DashboardIcon className="h-4 w-4" />
                             Dashboard
                         </li>
                     </Link>
-                    <Link className=" " to="admin/events/$">
-                        <li className="hover:bg-primary-400 text-lg font-poppins p-2 rounded-lg flex gap-2">
-                            <EventIcon className="h-6 w-6" />
-                            store
+                    <Link className="" to="/user/ticket">
+                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-poppins p-2 rounded-lg flex items-center gap-2">
+                            <DashboardIcon className="h-4 w-4" />
+                            Tickets
                         </li>
                     </Link>
-                    <Link className=" " to="/admin/products">
-                        <li className="hover:bg-primary-400 text-lg font-poppins p-2 rounded-lg flex gap-2">
-                            <CategoryIcon className="h-6 w-6" />
-                            Products
-                        </li>
-                    </Link>
-                    <Link className=" " to="/admin/category">
-                        <li className="hover:bg-primary-400 text-lg font-poppins p-2 rounded-lg flex gap-2">
-                            <EditionIcon className="h-6 w-6" />
-                            Categories
-                        </li>
-                    </Link>
-                    <Link className=" " to="/admin/contestants">
-                        <li className="hover:bg-primary-400 text-lg font-poppins p-2 rounded-lg flex gap-2">
-                            <UserIcon className="h-6 w-6" />
-                            Contestant
-                        </li>
-                    </Link>
-                    <Link className=" " to="">
-                        <li className="hover:bg-primary-400 text-lg font-poppins p-2 rounded-lg flex gap-2">
-                            <ResultIcon className="h-6 w-6" />
-                            Results
-                        </li>
-                    </Link>
+
                 </ul>
             </div>
 

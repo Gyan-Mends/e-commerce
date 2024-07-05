@@ -4,42 +4,6 @@ import { commitSession, getSession } from "~/session";
 import bcrypt from 'bcryptjs'; // Import bcrypt
 
 class LoginController {
-    async Registration(request: Request, name: string, email: string, password: string, base64Image: string) {
-        try {
-            const session = await getSession(request.headers.get("Cookie"));
-            const token = await session.get("email")
-
-            //checking if email does not exist
-            const emailCheck = await Registration.findOne({ email: email });
-
-            if (emailCheck) {
-                return json({ message: "email already exist", success: false }, { status: 300 })
-            }
-
-            //hashing the password
-            const hashedPassword = await bcrypt.hash(password, 10)
-
-            //saving the registration details
-            const registratiion = new Registration({
-                name,
-                email,
-                password: hashedPassword,
-                image: base64Image
-            })
-
-            const response = await registratiion.save()
-
-            if (response) {
-                return json({ message: "Registration Successful", success: true }, { status: 200 })
-            } else {
-                return json({ message: "Unable to register user", success: false }, { status: 404 })
-            }
-
-
-        } catch (error) {
-            return json({ message: "Somthing went wrong, Check your internet connection", success: false }, { status: 500 })
-        }
-    }
 
     async Login(request: Request, email: string, password: string) {
         try {

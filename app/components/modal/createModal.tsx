@@ -4,7 +4,6 @@ import { Modal, ModalContent, ModalHeader, ModalBody, useDisclosure, Button } fr
 interface CreateModalProps {
   children: (onClose: () => void) => ReactNode;
   modalTitle: string;
-  name:string;
   className?:string;
   isOpen: boolean,
   onOpenChange: () => void
