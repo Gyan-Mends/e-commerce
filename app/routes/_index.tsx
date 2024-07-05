@@ -1,4 +1,4 @@
-import { Button, Checkbox, Input } from "@nextui-org/react";
+import { Button, Checkbox, Input, Select, SelectItem } from "@nextui-org/react";
 import { ActionFunction } from "@remix-run/node";
 import { Form, Link, Links, useActionData } from "@remix-run/react";
 import { useTheme } from "next-themes"
@@ -7,7 +7,7 @@ import { Toaster } from "react-hot-toast";
 import { LockIcon } from "~/components/icons/LockIcon";
 import { MailIcon } from "~/components/icons/MailIcon";
 import { errorToast, successToast } from "~/components/toast";
-import login from "~/controllers/loginController";
+import login from "~/controllers/login";
 import illustration from "~/components/illustration/loginIllustration.png"
 import SunIcon from "~/components/icons/SunIcon";
 import MoonIcon from "~/components/icons/MoonIcon";
@@ -31,7 +31,7 @@ const Login = () => {
             <Toaster position="top-center" />
 
             <div>
-                <Button color="primary" className="m-2"  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+                <Button color="primary" className="m-2" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
                     {theme === "dark" ? (
                         <MoonIcon className="text-slate-950" />
 
@@ -42,7 +42,21 @@ const Login = () => {
                 <div className="h-full w-full flex flex-col items-center justify-center">
                     <p className="font-poppins text-5xl ">Login To </p>
                     <p className="font-poppins text-5xl  mt-2">Your Account </p>
-                    <Form method="post" className="mt-20">
+                    <Form method="post" className="mt-10">
+                        <Select
+                            label="Role"
+                            labelPlacement="outside"
+                            placeholder=" "
+                            isRequired
+                            name="role"
+                        >
+                            {[
+                                { key: "admin", value: "admin", display_name: "Admin" },
+                                { key: "attendant", value: "attendant", display_name: "Attendant" },
+                            ].map((role) => (
+                                <SelectItem key={role.key}>{role.display_name}</SelectItem>
+                            ))}
+                        </Select>
                         <Input
                             name="email"
                             label="Email"
@@ -53,7 +67,7 @@ const Login = () => {
                             placeholder="example@gmail.com"
                             classNames={{
                                 label: "font-poppins text-sm -mt-2",
-                                inputWrapper: "w-[90vw] lg:w-[30vw] text-sm font-poppins h-14 bg-opacity-70"
+                                inputWrapper: "w-[90vw] lg:w-[30vw] text-sm font-poppins h-14 mt-6 bg-opacity-70"
                             }}
                             startContent={
                                 <MailIcon className="w-6 h-6 text-gray-500" />
@@ -100,8 +114,9 @@ export const action: ActionFunction = async ({ request }) => {
     const formData = await request.formData();
     const email = formData.get("email") as string
     const password = formData.get("password") as string
+    const role = formData.get("role") as string
 
-    const signin = await login.Login(request, email, password)
+    const signin = await login.Login(request,role, email, password)
 
     return signin
 }

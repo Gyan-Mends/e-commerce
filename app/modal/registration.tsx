@@ -38,6 +38,8 @@ const RegistrationSchema = new mongoose.Schema({
       require: true,
       type: String,
     },
+},{
+  timestamps:true
 })
 
 let Registration : mongoose.Model<RegistrationInterface>
