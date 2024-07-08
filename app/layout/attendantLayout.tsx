@@ -15,7 +15,7 @@ interface UserLayoutProps {
     pageName: string;
 }
 
-const AdminLayout = ({ children, pageName }: UserLayoutProps) => {
+const AttendantLayout = ({ children, pageName }: UserLayoutProps) => {
     const { theme, setTheme } = useTheme();
     const [desktopNav, setDesktopNav] = useState(true);
     const [mobileNavOpen, setMobileNavOpen] = useState(false); // Hide mobile nav by default
@@ -51,78 +51,19 @@ const AdminLayout = ({ children, pageName }: UserLayoutProps) => {
                 </div>
                 {/* Side Nav Content */}
                 <ul className="mt-10">
-                    <Link className="" to="/admin">
+                    <Link className="" to="/attendant">
                         <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-poppins p-2 rounded-lg flex items-center gap-2">
                             <DashboardIcon className="h-4 w-4" />
                             Dashboard
                         </li>
                     </Link>
-                    <Link className="" to="/admin/users">
+                    <Link className="" to="/attendant/sales">
                         <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-poppins p-2 rounded-lg flex items-center gap-2">
                             <DashboardIcon className="h-4 w-4" />
-                            Users
+                            Sales Point
                         </li>
                     </Link>
-                    <Link className="" to="/admin/suppliers">
-                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-poppins p-2 rounded-lg flex items-center gap-2">
-                            <DashboardIcon className="h-4 w-4" />
-                            Suppliers
-                        </li>
-                    </Link>
-                    <Link className="" to="/admin/products">
-                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-poppins p-2 rounded-lg flex items-center gap-2">
-                            <DashboardIcon className="h-4 w-4" />
-                            Products
-                        </li>
-                    </Link>
-                    <Link className="" to="/admin/category">
-                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-poppins p-2 rounded-lg flex items-center gap-2">
-                            <DashboardIcon className="h-4 w-4" />
-                            Products Categories
-                        </li>
-                    </Link>
-
-                </ul>
-            </div>
-
-            {/* Mobile Side Navigation Bar */}
-            <div className={`h-full lg:hidden z-10  absolute md:hidden w-64 bg-primary bg-opacity-40  text-white backdrop-blur transition-transform duration-500 p-6 ${mobileNavOpen ? "transform-none" : "-translate-x-full"}`}>
-                {/* Side Nav Content */}
-                <button onClick={mobileNavToggle} className="block md:hidden ml-auto lg:hidden">
-                    <CloseIcon className="text-danger-300" />
-                </button>
-
-                {/* logo */}
-                <div className="flex items-center gap-2">
-                    <div>
-                        <img className="bg-white rounded-full h-10 w-10 " src={logo} alt="logo" />
-                    </div>
-                    <div className="font-poppins text-3xl">VoteEase</div>
-                </div>
-                {/* profile */}
-                <div className=" mt-10">
-                    <User
-                        name="Jane Doe"
-                        description="Product Designer"
-                        avatarProps={{
-                            src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
-                        }}
-                    ></User>
-                </div>
-                {/* Side Nav Content */}
-                <ul className="mt-10">
-                    <Link className="" to="/user">
-                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-poppins p-2 rounded-lg flex items-center gap-2">
-                            <DashboardIcon className="h-4 w-4" />
-                            Dashboard
-                        </li>
-                    </Link>
-                    <Link className="" to="/user/ticket">
-                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-poppins p-2 rounded-lg flex items-center gap-2">
-                            <DashboardIcon className="h-4 w-4" />
-                            Tickets
-                        </li>
-                    </Link>
+                   
 
                 </ul>
             </div>
@@ -170,4 +111,4 @@ const AdminLayout = ({ children, pageName }: UserLayoutProps) => {
     );
 };
 
-export default AdminLayout;
+export default AttendantLayout;

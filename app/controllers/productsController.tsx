@@ -71,7 +71,7 @@ class ProductsController {
             }
 
             //fetching categories
-            const categories = await Category.find({ seller: user?._id }); 
+            const categories = await Category.find(); 
             const product = await Product.find().populate("category");
             return { categories,user, product};
         } catch (error) { 

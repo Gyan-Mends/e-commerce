@@ -11,6 +11,7 @@ class UsersController {
             middleName,
             lastName,
             email,
+            admin,
             password,
             phone,
             role,
@@ -21,6 +22,7 @@ class UsersController {
             middleName: string,
             lastName: string,
             email: string,
+            admin:string,
             password: string,
             phone: string,
             role: string,
@@ -47,6 +49,7 @@ class UsersController {
                         middleName,
                         lastName,
                         email,
+                        admin,
                         password:hashedPassword,
                         phone,
                         role,
@@ -87,14 +90,106 @@ class UsersController {
         }
     }
 
+    async DeleteUser(
+        {
+            intent,
+            id,
+        }:{
+            intent:string,
+            id:string,
+        }
+    ){
+        if(intent === "delete"){
+            const deleteUser = await Registration.findByIdAndDelete(id);
+            if(deleteUser){
+                return json({
+                    message: "User delete successfully",
+                    success: true,
+                    status: 500,
+                })
+            }else{
+                return json({
+                    message: "Unable to delete user",
+                    success: false,
+                    status: 500
+                })
+            }
+        }
+    }
+
+    async UpdateUser(
+        {
+            firstName,
+            middleName,
+            lastName,
+            email,
+            admin,
+            phone,
+            id,
+            role,
+            intent,
+        }: {
+            firstName: string,
+            middleName: string,
+            lastName: string,
+            email: string,
+            admin:string,
+            phone: string,
+            role: string,
+            id:string,
+            intent:string,
+        }){
+            try {
+                if(intent === "update"){
+                        const updateUser = await Registration.findByIdAndUpdate(id,{
+                            firstName,
+                            middleName,
+                            lastName,
+                            email,
+                            phone,
+                            role
+                        })
+
+                        if(updateUser){
+                            return json({
+                                message: "User updated successfully",
+                                success: true,
+                                status: 500
+                            })
+                        }else{
+                            return json({
+                                message: "Unable to update this record",
+                                success: false,
+                                status: 500
+                            })
+                        }
+                    }else{
+                        return json({
+                            message: "Spelling of role must be Admin or Attendant",
+                            success: false,
+                            status: 500
+                        })
+                    }
+              
+                
+            } catch (error:any) {
+                return json({
+                    message: error.message,
+                    success: false,
+                    status: 500
+                })
+            }
+    }
+
     async FetchUsers({request}:{request:Request}){
         try {
             const session =await getSession(request.headers.get("Cookie"));
             const token = session.get("email"); 
             const user = await Registration.findOne({email:token});
+            const users = await Registration.find();
             
             
-            return {user}
+            return {user,users}
         } catch (error:any) {
             return json({
                 message: error.message,

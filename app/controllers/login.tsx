@@ -10,20 +10,20 @@ class LoginController {
             // checking if user exists
             const userCheck = await Registration.findOne({ email: email });
 
-            if (userCheck  && await bcrypt.compare(password, userCheck.password)) {
+            if (userCheck && await bcrypt.compare(password, userCheck.password)) {
                 const session = await getSession(request.headers.get("Cookie"));
                  session.set("email", email)
-                 
-                if (role === "admin") {
+
+                if (role === "Admin") {
                     // Redirect to a protected route or home page after successful login
                     return redirect("/admin", {
                         headers: {
                             "Set-Cookie": await commitSession(session),
                         },
                     });
-                } else if (userCheck.role === "attendant") {
+                } else if (role === "Attendant") {
                     // Redirect to a protected route or home page after successful login
-                    return redirect("/staff", {
+                    return redirect("/attendant", {
                         headers: {
                             "Set-Cookie": await commitSession(session),
                         },

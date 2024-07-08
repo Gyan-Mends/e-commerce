@@ -26,13 +26,13 @@ export default function CustomTable({ columns, children, rowsPerPage, onRowsPerP
     return (
         <div className="z-0">
             
-            <Table className="mt-6 text-poppins" aria-label="Example table with custom cells">
+            <Table className="mt-6 text-sm font-poppins " aria-label="Example table with custom cells">
                 <TableHeader columns={columns}>
                     {(column) => (
-                        <TableColumn key={column.key}>{column.label}</TableColumn>
+                        <TableColumn className="text-md" key={column.key}>{column.label}</TableColumn>
                     )}
                 </TableHeader>
-                <TableBody>
+                <TableBody className="bg-primary">
                     {currentData}
                 </TableBody>
             </Table>

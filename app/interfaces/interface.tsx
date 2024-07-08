@@ -5,10 +5,19 @@ export interface RegistrationInterface {
     lastName:string,
     email:string,
 	password:string,
-    phone:number,
+    phone:string,
 	role:string,
     admin:string,
     image:string,
+}
+export interface SuppliersInterface {
+	_id:string,
+	firstName:string,
+    middleName:string,
+    lastName:string,
+    email:string,
+    phone:string,
+    admin:string,
 }
 
 export interface CategoryInterface {
@@ -28,4 +37,11 @@ export interface ProductInterface {
     low_Stock: string,
     description:string
     seller: string
+}
+export interface CartInterface {
+    _id: string,
+    product:string,
+    attendant:string,
+    quantity:string,
+    price:string,
 }

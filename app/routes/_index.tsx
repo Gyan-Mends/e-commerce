@@ -51,8 +51,8 @@ const Login = () => {
                             name="role"
                         >
                             {[
-                                { key: "admin", value: "admin", display_name: "Admin" },
-                                { key: "attendant", value: "attendant", display_name: "Attendant" },
+                                { key: "Admin", value: "Admin", display_name: "Admin" },
+                                { key: "Attendant", value: "Attendant", display_name: "Attendant" },
                             ].map((role) => (
                                 <SelectItem key={role.key}>{role.display_name}</SelectItem>
                             ))}

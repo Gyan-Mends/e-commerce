@@ -74,7 +74,7 @@ const Products = () => {
                 <div>
                     <Button onClick={() => {
                         setCreateModalOpened(true)
-                    }} color="primary" className="h-14 font-poppins text-md">
+                    }} color="primary" variant="flat" className="h-14 font-poppins text-md">
                         <PlusIcon className="h-6 w-6" />Add Product
                     </Button>
 
@@ -95,26 +95,16 @@ const Products = () => {
                         <TableCell>{products.quantity}</TableCell>
                         <TableCell>{products.low_stock}</TableCell>
                         <TableCell className="relative flex items-center gap-4">
-                            <span className=" text-primary-400 cursor-pointer active:opacity-50">
-                                <button onClick={() => {
-                                    setViewModalOpened(true),
-                                        setSelectedProducts(products)
-                                }}>
-                                    View
-                                </button>
-                            </span>
-                            <span className=" text-default-400 cursor-pointer active:opacity-50" >
-                                <button onClick={() => {
+                                
+                                <Button color="success" variant="flat" onClick={() => {
                                     setEditmOdalOpened(true)
                                     setSelectedProducts(products)
                                 }}>
                                     Edit
-                                </button>                            </span>
-                            <span className=" text-danger-400 cursor-pointer active:opacity-50">
-                                <button>
+                                </Button>                            
+                                <Button color="danger" variant="flat">
                                     Delete
-                                </button>
-                            </span>
+                                </Button>
 
                         </TableCell>
                     </TableRow>

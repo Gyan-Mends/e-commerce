@@ -8,21 +8,16 @@ class CategoryController {
         try {
             // Update Logic
             if (intent === "update") {
-                //check if category exist
-                const categoryCheck = await Category.findOne({name:name});
-                if(categoryCheck){
-                    return json({message:"Can't update the category to this name, beacause category withe this name already exist",success:false}, {status:400})
-                }else{
-                    const updateCategory = await Category.findByIdAndUpdate(id, { name, description });
-                    if (updateCategory) {
-                        return json({ message: "Category updated successfully", success: true }, { status: 200 });
-                    } else {
-                        return json({ message: "Category not found", success: false }, { status: 404 });
-                    }
+
+                const updateCategory = await Category.findByIdAndUpdate(id, { name, description });
+                if (updateCategory) {
+                    return json({ message: "Category updated successfully", success: true }, { status: 200 });
+                } else {
+                    return json({ message: "Category not found", success: false }, { status: 404 });
                 }
-               
+
             }
-    
+
             // Delete Logic
             if (intent === "delete") {
                 const deleteCategory = await Category.findByIdAndDelete(id);
@@ -32,54 +27,54 @@ class CategoryController {
                     return json({ message: "Category not found", success: false }, { status: 404 });
                 }
             }
-    
+
             // Checking if category already exists
             const categoryExistCheck = await Category.findOne({ seller, name });
             if (categoryExistCheck) {
                 return json({ message: "Category already exists", success: false }, { status: 400 });
             }
-    
+
             // Saving data if category does not exist
             const category = new Category({
                 name,
                 description,
                 seller
             });
-    
+
             const response = await category.save();
             if (response) {
                 return json({ message: "Category created successfully", success: true }, { status: 200 });
             }
-    
+
         } catch (error: any) {
             return json({ message: error.message, success: false }, { status: 400 });
         }
     }
-    
-    
 
-   async  CategoryFetch(request: Request) {
+
+
+    async CategoryFetch(request: Request) {
         try {
-          // Checking if the user is logged in
-          const session = await getSession(request.headers.get("Cookie"));
-          const token = session.get("email");
-          
-          if (!token) {
-            return redirect("/login");
-          }
-            
-          // Getting the session id
-          const sessionId = await Registration.findOne({ email: token }).select("_id email");
+            // Checking if the user is logged in
+            const session = await getSession(request.headers.get("Cookie"));
+            const token = session.get("email");
 
-          const cats = await Category.find();
-          
-          return { sessionId,cats };
-      
+            if (!token) {
+                return redirect("/login");
+            }
+
+            // Getting the session id
+            const sessionId = await Registration.findOne({ email: token }).select("_id email");
+
+            const cats = await Category.find();
+
+            return { sessionId, cats };
+
         } catch (error) {
-          console.error("Error in CategoryFetch:", error);
-          throw error; // Re-throw the error to be caught by the caller
+            console.error("Error in CategoryFetch:", error);
+            throw error; // Re-throw the error to be caught by the caller
         }
-      }
+    }
 }
 
 const category = new CategoryController

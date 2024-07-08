@@ -84,7 +84,7 @@ const Category = () => {
                     />
                 </div>
                 <div>
-                    <Button onClick={() => {
+                    <Button variant="flat" onClick={() => {
                         setCreateModalOpened(true)
                     }} color="primary" className="h-14 font-poppins text-md">
                         <PlusIcon className="h-6 w-6" />Add Category
@@ -99,29 +99,20 @@ const Category = () => {
                             <TableCell>{categories.name}</TableCell>
                             <TableCell>{categories.description}</TableCell>
                             <TableCell className="relative flex items-center gap-4">
-                                <span className=" text-primary-400 cursor-pointer active:opacity-50">
-                                    <button onClick={() => {
-                                        setViewModalOpened(true)
-                                        setSelectedCategory(categories)
-                                    }}>
-                                        View
-                                    </button>
-                                </span>
-                                <span className=" text-default-400 cursor-pointer active:opacity-50" onClick={() => {
+                                
+                                <Button color="success" variant="flat" onClick={() => {
                                     setEditModalOpened(true)
                                     setSelectedCategory(categories)
 
                                 }}>
                                     Edit
-                                </span>
-                                <span className=" text-danger-400 cursor-pointer active:opacity-50">
-                                    <button onClick={() => {
+                                </Button >
+                                    <Button color="danger" variant="flat" onClick={() => {
                                         setSelectedCategory(categories)
                                         setConfirmModalOpened(true)
                                     }}>
                                         Delete
-                                    </button>
-                                </span>
+                                    </Button>
 
                             </TableCell>
                         </TableRow>

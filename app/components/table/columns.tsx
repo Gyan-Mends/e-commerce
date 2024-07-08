@@ -12,3 +12,16 @@ export const ProductColumns = [
     { key: "low_stock", label: "Low Stock" },
     {key:"action", label: "Action"}
 ]
+export const UserColumns = [
+    { key: "name", label: "Name" },
+    { key: "email", label: "Email" },
+    { key: "phone", label: "Phone" },
+    { key: "role", label: "Role" },
+    {key:"action", label: "Action"}
+]
+export const SuppliersColumns = [
+    { key: "name", label: "Name" },
+    { key: "email", label: "Email" },
+    { key: "phone", label: "Phone" },
+    {key:"action", label: "Action"}
+]
