@@ -1,5 +1,5 @@
 import { toTime } from "@internationalized/date";
-import { json } from "@remix-run/node"
+import { json, redirect } from "@remix-run/node"
 import Cart from "~/modal/cart"
 import Product from "~/modal/products";
 import Registration from "~/modal/registration";
@@ -23,43 +23,73 @@ class CartController {
     }) {
         try {
             if (intent === "addToCart") {
-                // Check if product has been added to cart already
-                const productCheck = await Cart.findOne({ product: product, attendant: attendant });
-                if (productCheck) {
-                   console.log("opps");
-                   return null
-                   
-                } else {
-                    // Add a new product to the cart
-                    const cart = new Cart({
-                        quantity,
-                        product,
-                        attendant,
-                        price
-                    });
-
-                    const addToCart = await cart.save();
-
-                    if (addToCart) {
-                        // Update the product quantity in the inventory
-                        const productInInventory = await Product.findById(product);
-                        if (productInInventory) {
-                            const newQuantity = productInInventory.quantity - Number(quantity);
-                            await Product.findByIdAndUpdate(product, { quantity: newQuantity });
-                        }
-
+                //Check if the product quantity is > the quantity added to cart
+                const productInInventory = await Product.findById(product);
+                if (Number(productInInventory?.quantity) > 0) {
+                    if (Number(quantity) > Number(productInInventory?.quantity)) {
                         return json({
-                            message: "Item added to cart",
-                            success: true
+                            message: "Quantity adding to to cart if more than quantity in store",
+                            success: false
                         });
+                    } else {
+                        // Check if product has been added to cart already
+                        const productCheck = await Cart.findOne({ product: product, attendant: attendant });
+                        const newQuantity = Number(productCheck?.quantity) + Number(quantity)
+                        const newPrice = Number(productCheck?.price) + Number(price)
+
+                        if (productCheck) {
+                            const updatedeCart = await Cart.findByIdAndUpdate(productCheck._id, {
+                                quantity: newQuantity,
+                                price: newPrice
+                            })
+                            if (updatedeCart) {
+                                // Update the product quantity in the inventory
+                                const productInInventory = await Product.findById(product);
+                                if (productInInventory) {
+                                    const newQuantity = productInInventory.quantity - Number(quantity);
+                                    await Product.findByIdAndUpdate(product, { quantity: newQuantity });
+                                }
+
+                                return json({
+                                    message: "Cart item updated",
+                                    success: true
+                                });
+                            }
+
+                        } else {
+                            // Add a new product to the cart
+                            const cart = new Cart({
+                                quantity,
+                                product,
+                                attendant,
+                                price
+                            });
+
+                            const addToCart = await cart.save();
+
+
+                            if (addToCart) {
+                                // Update the product quantity in the inventory
+                                const productInInventory = await Product.findById(product);
+                                if (productInInventory) {
+                                    const newQuantity = productInInventory.quantity - Number(quantity);
+                                    await Product.findByIdAndUpdate(product, { quantity: newQuantity });
+                                }
+
+                                return json({
+                                    message: "Item added to cart",
+                                    success: true
+                                });
+                            }
+                        }
                     }
+                } else {
+                    return json({
+                        message: "This item is not available in store",
+                        success: false
+                    });
                 }
-            } else {
-                return json({
-                    message: "Wrong intent",
-                    success: false,
-                    status: 500
-                });
+
             }
         } catch (error: any) {
             return json({
@@ -69,6 +99,7 @@ class CartController {
             });
         }
     }
+
 
     async DeleteItem(
         {
@@ -80,67 +111,43 @@ class CartController {
         }
     ) {
         if (intent === "delete") {
-            const deleteUser = await Cart.findByIdAndDelete(id);
-            if (deleteUser) {
-                return json({
-                    message: "Item delete successfully",
-                    success: true,
-                    status: 500,
-                })
+            const cartItem = await Cart.findById(id);
+            if (cartItem) {
+                const productId = cartItem.product;
+                const quantityToAddBack = Number(cartItem.quantity);
+
+                // Update the product quantity
+                const product = await Product.findById(productId);
+                if (product) {
+                    product.quantity += quantityToAddBack;
+                    await product.save();
+                }
+
+                // Delete the cart item
+                const deleteUser = await Cart.findByIdAndDelete(id);
+                if (deleteUser) {
+                    return json({
+                        message: "Item deleted successfully and product quantity updated",
+                        success: true,
+                        status: 200,
+                    });
+                } else {
+                    return json({
+                        message: "Unable to delete item from cart",
+                        success: false,
+                        status: 500
+                    });
+                }
             } else {
                 return json({
-                    message: "Unable to delete Item",
+                    message: "Cart item not found",
                     success: false,
-                    status: 500
-                })
+                    status: 404
+                });
             }
         }
+
     }
-    // async quantityDeduction(request: Request, quantity: string) {
-
-
-    //     if (user) {
-    //         if (cart) {
-    //             // Assuming the cart has a list of products, and each product has a reference to its details and a quantity
-    //             const cartProducts = await Product.find({ _id: cart.attendant });
-
-    //             if (cartProducts.length > 0) {
-    //                 // Assuming 'originalQuantity' is available for each product in cartProducts
-    //                 cartProducts.forEach(async (cartProduct) => {
-    //                     const product = await Product.findByIdAndUpdate(cartProduct._id, {
-    //                         quantity
-    //                     }); // Fetch the actual product details
-    //                     if (product) {
-    //                         const updatedQuantity = product.quantity - cartProduct.quantity;
-    //                         // Update the product quantity in the database
-    //                         await Product.updateOne({ quantity: updatedQuantity });
-    //                         console.log(`${updatedQuantity}`);
-    //                     }
-    //                 });
-    //             } else {
-    //                 return json({
-    //                     message: "No products found in the cart",
-    //                     success: false,
-    //                     status: 400
-    //                 });
-    //             }
-    //         } else {
-    //             return json({
-    //                 message: "User not found in cart",
-    //                 success: false,
-    //                 status: 400
-    //             });
-    //         }
-    //     } else {
-    //         return json({
-    //             message: "User not found",
-    //             success: false,
-    //             status: 400
-    //         });
-    //     }
-
-
-    // }
 
     async FetchCart(request: Request) {
         const session = await getSession(request.headers.get("Cookie"));

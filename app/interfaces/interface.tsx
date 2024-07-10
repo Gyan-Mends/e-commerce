@@ -1,3 +1,5 @@
+import { Schema } from "mongoose";
+
 export interface RegistrationInterface {
 	_id:string,
 	firstName:string,
@@ -44,4 +46,16 @@ export interface CartInterface {
     attendant:string,
     quantity:string,
     price:string,
+}
+export interface SalesInterface {
+  products: {
+    product: Schema.Types.ObjectId;
+    quantity: number;
+  }[];
+  attendant:Schema.Types.ObjectId;
+  totalAmount: string;
+  amountPaid: string;
+  balance: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

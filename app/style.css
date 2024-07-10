@@ -5,4 +5,22 @@
 @font-face {
     font-family: 'poppins';
     src: url('./components/fonts/Poppins-Regular.ttf') format('ttf');
-  } 
+  }
+  
+  /* Custom scrollbar styles */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 2px;
+  border-radius: 10px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #020617;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #020617;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #020617;
+}

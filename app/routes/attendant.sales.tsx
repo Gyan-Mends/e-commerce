@@ -12,6 +12,7 @@ import EditModal from "~/components/modal/EditModal"
 import { errorToast, successToast } from "~/components/toast"
 import cartController from "~/controllers/cart"
 import productsController from "~/controllers/productsController"
+import salesController from "~/controllers/sales"
 import { CartInterface, ProductInterface } from "~/interfaces/interface"
 import AttendantLayout from "~/layout/attendantLayout"
 
@@ -23,10 +24,24 @@ const Sales = () => {
     const [isConfirmModalOpened, setIsConfirmModalOpened] = useState(false)
     const [dataValue, setDataValue] = useState<ProductInterface>()
     const [cartDataValue, setCartDataValue] = useState<CartInterface>()
-
     const [quantity, setQuantity] = useState(1)
+    const [CartItemNewPrice, setCartItemNewPrice] = useState(0)
     const actionData = useActionData<any>()
     const submit = useSubmit()
+    const [totalCost] = useState(totalPrice); // Fixed total cost
+    const [amountPaid, setAmountPaid] = useState('');
+    const [balance, setBalance] = useState(0);
+    const [cartTotalPricePerItem] = useState()
+
+    const mm = carts.reduce((acc, cart) => {
+        return acc + Number(cart.price ) ; // Ensure quantity is treated as a number
+    }, 0);
+
+    const handleAmountPaidChange = (event: any) => {
+        const paid = parseFloat(event.target.value) || 0;
+        setAmountPaid(event.target.value);
+        setBalance(totalCost - paid);
+    };
 
     const handleSearchChange = (event: any) => {
         setSearchQuery(event.target.value);
@@ -68,6 +83,7 @@ const Sales = () => {
             <div className="lg:grid lg:grid-cols-3 gap-10 mt-6">
                 <div className="col-span-2  h-[85vh]" >
                     {/* search */}
+                    {/* search */}
                     <div>
                         <Input
                             placeholder="Search product..."
@@ -80,9 +96,10 @@ const Sales = () => {
                         />
                     </div>
 
-
                     {/* product items */}
-                    <div className="mt-4 lg:grid lg:grid-cols-4 gap-10 overflow-y-scroll h-[76vh] rounded-lg overflow-x-hidden" >
+                    {/* product items */}
+                    <div className="mt-4 lg:grid lg:grid-cols-4 gap-10 overflow-y-scroll scrollbar-thin pr-8
+                         h-[76vh] rounded-lg overflow-x-hidden" >
                         {filteredSuppliers.map((products: ProductInterface, index: number) => (
                             <div className="lg:w-[13vw] rounded-lg p-2 lg:h-[30vh] mt-4 bg-slate-800 " key={index} onClick={() => {
                                 setIsEditModalOpened(true)
@@ -99,58 +116,78 @@ const Sales = () => {
                             </div>
                         ))}
                     </div>
-
                 </div>
-                <div className="h-[85vh] flex flex-col justify-between">
-                    <div className=" h-[53vh] overflow-y-scroll">
-                        <Button></Button>
-                        {/* added items comes here */}
-                        {carts.map((cart: CartInterface, index: number) => (
-                            <div key={index} className="h-20 w-full bg-slate-800 mt-4 rounded-lg p-2 flex gap-10">
-                                <div className="h-16 w-20">
-                                    <img className="h-16 w-20 rounded-lg" src={cart?.product?.image} alt="" />
-                                    <input type="text" name="" value={cart?.product?.image} id="" />
-
-                                </div>
-                                <div className="flex flex-col justify-between w-full">
-                                    <div>
+                {/* Items added to cart */}
+                {/* Items added to cart */}
+                <Form method="post">
+                    <div className="h-[85vh] flex flex-col justify-between">
+                        <div className="h-[53vh] overflow-y-scroll scrollbar-thin ">
+                            {/* added items comes here */}
+                            {carts.map((cart: CartInterface, index: number) => (
+                                <div key={index} className="h-20 w-full bg-slate-800 mt-4 rounded-lg p-2 flex gap-10">
+                                    <div className="h-16 w-20">
+                                        <img className="h-16 w-20 rounded-lg" src={cart?.product?.image} alt="" />
+                                    </div>
+                                    <div className="flex flex-col justify-between w-full">
+                                        <div>
+                                            <div className="flex justify-between">
+                                                <p className="font-poppins text-lg">{cart?.product?.name}</p>
+                                                <button className="text-danger" type="button" onClick={() => {
+                                                    setIsConfirmModalOpened(true);
+                                                    setCartDataValue(cart)
+                                                }}><DeleteIcon /></button>
+                                            </div>
+                                        </div>
                                         <div className="flex justify-between">
-                                            <p className="font-poppins text-lg">{cart?.product?.name}</p>
-                                            <button className="text-danger" onClick={() => {
-                                                setIsConfirmModalOpened(true);
-                                                setCartDataValue(cart)
-                                            }}><DeleteIcon /></button>
-
+                                            <p className="font-poppins text-sm">
+                                                {cart?.quantity?.length === 1 ? `${cart.quantity} item` : `${cart.quantity} items`}
+                                            </p>
+                                            <p className="font-poppins text-md">Ghc {cart?.price}</p>
                                         </div>
                                     </div>
-                                    <div className="flex justify-between ">
-                                        <p className="font-poppins text-sm">{cart?.quantity?.length === 1 ? (<> {cart.quantity} item</>) : (<>{cart.quantity} items</>)}</p>
-                                        <p className="font-poppins text-md">Ghc {cart?.product?.price}</p>
-                                    </div>
+                                    <input name="quantity" type="hidden" value={cart.quantity} />
+                                    <input name="product" type="hidden" value={cart.product._id} />
+                                </div>
+                            ))}
+                        </div>
+                        <div className="bg-slate-900 h-60 flex flex-col justify-between rounded-xl px-10 py-4 text-white">
+                            <div>
+                                <div className="flex justify-between">
+                                    <p className="text-md font-poppins">Quantity</p>
+                                    <p className="text-md font-poppins"> {totalQuantity}</p>
+                                </div>
+                                <div className="flex justify-between mt-4">
+                                    <p className="text-md font-poppins">Total Amount</p>
+                                    <p className="text-md font-poppins">Ghc {totalPrice}</p>
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                    <div className="bg-slate-900 h-60 flex flex-col justify-between rounded-xl px-10 py-10 text-white">
-                        <div>
-                            <div className="flex justify-between">
-                                <p className="text-md font-poppins">Quantity</p>
-                                <p className="text-md font-poppins"> {totalQuantity}</p>
+                            <div className="flex gap-4">
+                                <Input
+                                    type="number"
+                                    id="amountPaid"
+                                    value={amountPaid}
+                                    onChange={handleAmountPaidChange}
+                                    name="amountPaid"
+                                />
+                                <Input
+                                    id="balance"
+                                    value={balance}
+                                    readOnly
+                                    name="balance"
+                                />
                             </div>
-                            <div className="flex justify-between mt-8">
-                                <p className="text-md font-poppins">Total</p>
-                                <p className="text-md font-poppins">Ghc {totalPrice}</p>
+                            <div className="flex items-center justify-center">
+                                <button className="w-80 h-14 text-xl font-poppins" color="primary" type="submit">
+                                    Checkout
+                                </button>
                             </div>
                         </div>
-                        <div className="flex items-center justify-center">
-                            <Button className=" w-80 h-14 text-xl font-poppins" color="primary" onClick={() => {
-                                setCartDataValue(carts)
-                            }}>
-                                Checkout
-                            </Button>
-                        </div>
+                        <input type="hidden" name="attendant" value={user._id} />
+                        <input type="hidden" name="intent" value="addCartToSales" />
+                        <input type="hidden" name="totalAmount" value={totalPrice} />
                     </div>
-                </div>
+                </Form>
+
             </div>
             <ConfirmModal isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
                 <div className="flex gap-4">
@@ -180,7 +217,7 @@ const Sales = () => {
                             <input type="hidden" name="quantity" value={quantity} />
                             <input type="hidden" name="attendant" value={user?._id} />
                             <input type="hidden" name="product" value={dataValue?._id} />
-                            <input type="hidden" name="price" value={dataValue?.price} />
+                            <input type="" name="price" value={dataValue?.price * quantity} />
                             <input type="hidden" name="intent" value="addToCart" />
                             <p className="text-4xl font-poppins">{dataValue?.name}</p>
                             <p className="text-2xl font-poppins mt-4">GHC {dataValue?.price}</p>
@@ -201,7 +238,10 @@ const Sales = () => {
                             </Button>
 
                         </div>
-                        <button className="mt-10 bg-primary rounded-xl flex items-center justify-center gap-2 bg-opacity-20 text-primary h-16 w-60 font-poppins text-xl">
+                        <button className="mt-10 bg-primary rounded-xl flex items-center justify-center gap-2 bg-opacity-20 text-primary h-16 w-60 font-poppins text-xl" onClick={() => {
+                            setCartItemNewPrice(quantity * dataValue?.price)
+                            setIsEditModalOpened(false)
+                        }}>
                             <CartIcon className="h-6 w-6" /> Add To Cart
                         </button>
                     </Form>
@@ -221,7 +261,9 @@ export const action: ActionFunction = async ({ request }) => {
     const price = formData.get("price") as string
     const intent = formData.get("intent") as string
     const id = formData.get("id") as string
-    console.log(quantity, product, attendant, intent);
+    const balance = formData.get("balance") as string
+    const amountPaid = formData.get("amountPaid") as string
+    const totalAmount = formData.get("totalAmount") as string
 
 
     switch (intent) {
@@ -236,8 +278,21 @@ export const action: ActionFunction = async ({ request }) => {
             })
             return cart
 
+        case "addCartToSales":
+            const addSales = await salesController.AddCartToSales({
+                intent,
+                request,
+                product,
+                attendant,
+                quantity,
+                totalAmount,
+                amountPaid,
+                balance,
+            })
+            return addSales
+
         case "delete":
-            const deleteItem = await cartController.DeleteItem({ id, intent });
+            const deleteItem = await cartController.DeleteItem({ id, intent,product,quantity });
             return deleteItem
         default:
             break;
@@ -248,6 +303,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     const { product, user } = await productsController.ProductFetch(request);
 
     const { carts, totalQuantity, totalPrice } = await cartController.FetchCart(request)
+
 
     return { product, user, carts, totalQuantity, totalPrice }
 }
