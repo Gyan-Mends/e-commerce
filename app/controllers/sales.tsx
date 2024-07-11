@@ -1,6 +1,8 @@
 import { json } from "@remix-run/node"
 import Cart from "~/modal/cart";
+import Registration from "~/modal/registration";
 import Sales from "~/modal/sales"
+import { getSession } from "~/session";
 
 class SalesContoller {
 
@@ -25,52 +27,71 @@ class SalesContoller {
   }) {
     if (intent === "addCartToSales") {
       try {
-          if (Number(balance) <= 0) {
-              // Assuming products is an array of objects with product and quantity
-              const productsArray = []; // Initialize an array to store product objects
-  
-              const cart = await Cart.find()
-  
-              for (const item of cart) {
-                  const { product: prod, quantity } = item; // Destructure product and quantity from item
-                  productsArray.push({ product: prod, quantity });
-              }
-  
-              console.log("Products array after loop:", productsArray); // Debugging: log the products array after loop
-  
-              const sales = new Sales({
-                  products: productsArray, // Assign the array of products
-                  attendant,
-                  totalAmount,
-                  amountPaid,
-                  balance,
-              });
-  
-              const addSales = await sales.save();
-              return addSales;
-          } else {
-              return json({
-                  message: "Full payment must be made",
-                  success: false,
-                  status: 400,
-              });
+        const session = await getSession(request.headers.get("Cookie"));
+        const token = session.get("email");
+        const user = await Registration.findOne({ email: token });
+        const carts = await Cart.find({ attendant: user?._id }).populate("product");
+        if (Number(balance) <= 0) {
+          // Assuming products is an array of objects with product and quantity
+          const productsArray = []; // Initialize an array to store product objects
+
+          const cart = await Cart.find()
+
+          for (const item of cart) {
+            const { product: prod, quantity } = item; // Destructure product and quantity from item
+            productsArray.push({ product: prod, quantity });
           }
-      } catch (error) {
-          return json({
-              message: error.message,
-              success: false,
-              status: 500,
+
+          console.log("Products array after loop:", productsArray); // Debugging: log the products array after loop
+
+          const sales = new Sales({
+            products: productsArray, // Assign the array of products
+            attendant,
+            totalAmount,
+            amountPaid,
+            balance,
           });
-      }
-  } else {
-      return json({
-          message: "Wrong intent",
+
+          const addSales = await sales.save();
+          if (addSales) {
+            const emptyCart = await Cart.deleteMany({ attendant: user })
+            if (emptyCart) {
+              return json({
+                message: "Sales made successfully",
+                success: true,
+                status: 400,
+              });
+            }
+          } else {
+            return json({
+              message: "Unable to make sales",
+              success: false,
+              status: 400,
+            });
+          }
+        } else {
+          return json({
+            message: "Full payment must be made",
+            success: false,
+            status: 400,
+          });
+        }
+      } catch (error: any) {
+        return json({
+          message: error.message,
           success: false,
           status: 500,
+        });
+      }
+    } else {
+      return json({
+        message: "Wrong intent",
+        success: false,
+        status: 500,
       });
-  }
-  
-  
+    }
+
+
 
   }
 
@@ -78,15 +99,15 @@ class SalesContoller {
 
   async salesFetch({
     request,
-    totalAmount,
-    amountPaid,
   }: {
     request: Request,
-    totalAmount: string,
-    amountPaid: string,
   }) {
-    const balance = Number(totalAmount) - Number(amountPaid)
-    return { balance }
+    const session = await getSession(request.headers.get("Cookie"));
+    const token = session.get("email");
+    const user = await Registration.findOne({ email: token })
+    const sales = await Sales.find({ attendant: user?._id }).populate("product").populate("attendant")
+
+    return { sales }
   }
 }
 

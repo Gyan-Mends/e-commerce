@@ -177,7 +177,7 @@ const Sales = () => {
                                 />
                             </div>
                             <div className="flex items-center justify-center">
-                                <button className="w-80 h-14 text-xl font-poppins" color="primary" type="submit">
+                                <button className="w-80 h-14 bg-primary rounded-xl flex items-center justify-center gap-2 bg-opacity-20 text-primary  font-poppins text-xl" color="primary" type="submit">
                                     Checkout
                                 </button>
                             </div>

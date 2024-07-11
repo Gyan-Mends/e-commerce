@@ -93,9 +93,8 @@ class CartController {
             }
         } catch (error: any) {
             return json({
-                message: "An error occurred",
+                error: error.message,
                 success: false,
-                error: error.message
             });
         }
     }

@@ -63,6 +63,18 @@ const AttendantLayout = ({ children, pageName }: UserLayoutProps) => {
                             Sales Point
                         </li>
                     </Link>
+                    <Link className="" to="/sales">
+                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-poppins p-2 rounded-lg flex items-center gap-2">
+                            <DashboardIcon className="h-4 w-4" />
+                            Sales 
+                        </li>
+                    </Link>
+                    <Link className="" to="/attendant/sales">
+                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-poppins p-2 rounded-lg flex items-center gap-2">
+                            <DashboardIcon className="h-4 w-4" />
+                            Refund
+                        </li>
+                    </Link>
                    
 
                 </ul>
