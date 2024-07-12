@@ -1,19 +1,13 @@
-import { Button, Checkbox, Input, Select, SelectItem } from "@nextui-org/react";
+import { Checkbox, Input, Select, SelectItem } from "@nextui-org/react";
 import { ActionFunction } from "@remix-run/node";
 import { Form, Link, Links, useActionData } from "@remix-run/react";
-import { useTheme } from "next-themes"
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
-import { LockIcon } from "~/components/icons/LockIcon";
-import { MailIcon } from "~/components/icons/MailIcon";
 import { errorToast, successToast } from "~/components/toast";
 import login from "~/controllers/login";
 import illustration from "~/components/illustration/loginIllustration.png"
-import SunIcon from "~/components/icons/SunIcon";
-import MoonIcon from "~/components/icons/MoonIcon";
 
 const Login = () => {
-    const { theme, setTheme } = useTheme();
     const actionData = useActionData<any>()
 
     useEffect(() => {
@@ -25,24 +19,15 @@ const Login = () => {
             }
         }
     }, [actionData])
-
+  
     return (
-        <div className={`lg:grid lg:grid-cols-2 h-[100vh] overflow-y-hidden ${theme === "dark" ? "bg-slate-950" : "bg-slate-gray-200"}`}>
+        <div className={`lg:grid lg:grid-cols-2 h-[100vh] bg-slate-950 overflow-y-hidden `}>
             <Toaster position="top-center" />
-
-            <div>
-                <Button color="primary" className="m-2" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-                    {theme === "dark" ? (
-                        <MoonIcon className="text-slate-950" />
-
-                    ) : (
-                        <SunIcon className="text-white" />
-                    )}
-                </Button>
-                <div className="h-full w-full flex flex-col items-center justify-center">
-                    <p className="font-poppins text-5xl ">Login To </p>
-                    <p className="font-poppins text-5xl  mt-2">Your Account </p>
-                    <Form method="post" className="mt-10">
+            <div className="h-[100vh] w-full flex items-center justify-center ">
+                <div className="bg-slate-900 p-6 rounded-2xl lg:w-[30vw] border border-white/5 relative">
+                    <p className="font-poppins text-4xl font-bold">Login To </p>
+                    <p className="font-poppins text-4xl font-bold mt-2">Your Account </p>
+                    <Form method="post" className="mt-16">
                         <Select
                             label="Role"
                             labelPlacement="outside"
@@ -61,17 +46,15 @@ const Login = () => {
                             name="email"
                             label="Email"
                             labelPlacement="outside"
+                            placeholder=" "
                             isRequired
                             isClearable
                             type="email"
-                            placeholder="example@gmail.com"
                             classNames={{
-                                label: "font-poppins text-sm -mt-2",
-                                inputWrapper: "w-[90vw] lg:w-[30vw] text-sm font-poppins h-14 mt-6 bg-opacity-70"
+                                label: "font-poppins text-sm",
+                                inputWrapper: "  text-sm font-poppins  mt-4 bg-opacity-70"
                             }}
-                            startContent={
-                                <MailIcon className="w-6 h-6 text-gray-500" />
-                            }
+
                         />
                         <Input
                             name="password"
@@ -81,23 +64,19 @@ const Login = () => {
                             isClearable
                             type="password"
                             className="mt-8"
-                            placeholder="*******************"
+                            placeholder=" "
                             classNames={{
-                                label: "font-poppins text-sm -mt-2",
-                                inputWrapper: "w-[90vw] lg:w-[30vw] text-sm mt-6 font-poppins h-14 bg-opacity-70"
+                                label: "font-poppins text-sm ",
+                                inputWrapper: " text-sm mt-4 font-poppins  bg-opacity-70"
                             }}
-                            startContent={
-                                <LockIcon className="w-6 h-6 text-gray-500" />
-                            }
+
                         />
 
-                        <div className="flex justify-between mt-4">
+                        <div className="flex justify-between mt-4 gap-4">
                             <Checkbox>Remember me</Checkbox>
-                            <Link to=""><p>Forgot password?</p></Link>
+                            <Link to=""><p className="text-primary">Forgot password?</p></Link>
                         </div>
-
-                        <button className="w-[90vw] bg-primary rounded-lg lg:w-[30vw] h-14 mt-10 text-xl font-poppins">Login</button>
-
+                        <button className=" bg-primary rounded-lg w-full h-10  mt-10 text-xl font-poppins">Login</button>
                     </Form>
                 </div>
             </div>
@@ -116,7 +95,7 @@ export const action: ActionFunction = async ({ request }) => {
     const password = formData.get("password") as string
     const role = formData.get("role") as string
 
-    const signin = await login.Login(request,role, email, password)
+    const signin = await login.Login(request, role, email, password)
 
     return signin
 }

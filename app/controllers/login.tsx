@@ -1,36 +1,30 @@
 import { json, redirect } from "@remix-run/node";
 import { commitSession, getSession } from "~/session";
-import bcrypt from 'bcryptjs'; // Import bcrypt
+import bcrypt from 'bcryptjs'; 
 import Registration from "~/modal/registration";
 
 class LoginController {
     async Login(request: Request, role: string, email: string, password: string) {
         try {
-            
             // checking if user exists
             const userCheck = await Registration.findOne({ email: email });
+            const session = await getSession(request.headers.get("Cookie"));
+            session.set("email", email)
 
-            if (userCheck && await bcrypt.compare(password, userCheck.password)) {
-                const session = await getSession(request.headers.get("Cookie"));
-                 session.set("email", email)
+            if (userCheck && await bcrypt.compare(password, userCheck.password) && role == "Admin") {
+                // Redirect to a protected route or home page after successful login
+                return redirect("/admin", {
+                    headers: {
+                        "Set-Cookie": await commitSession(session),
+                    },
+                });
 
-                if (role === "Admin") {
-                    // Redirect to a protected route or home page after successful login
-                    return redirect("/admin", {
-                        headers: {
-                            "Set-Cookie": await commitSession(session),
-                        },
-                    });
-                } else if (role === "Attendant") {
-                    // Redirect to a protected route or home page after successful login
-                    return redirect("/attendant", {
-                        headers: {
-                            "Set-Cookie": await commitSession(session),
-                        },
-                    });
-                } else {
-                    return json({ message: "Check the role selection well", success: false }, { status: 400 });
-                }
+            } else if (userCheck && await bcrypt.compare(password, userCheck.password) && role == "Attendant") {
+                return redirect("/attendant", {
+                    headers: {
+                        "Set-Cookie": await commitSession(session),
+                    },
+                });
             } else {
                 return json({ message: "Invalid email or password", success: false }, { status: 400 });
             }

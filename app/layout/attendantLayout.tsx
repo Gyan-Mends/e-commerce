@@ -84,7 +84,7 @@ const AttendantLayout = ({ children, pageName }: UserLayoutProps) => {
             {/* Page Content */}
             <div className={`p-4 transition-all duration-500 overflow-x-hidden z-1 ${desktopNav ? "lg:ml-64 md:ml-64" : ""}`}>
                 {/* Top Nav */}
-                <div className="h-16 rounded-2xl w-full bg-primary px-6 flex items-center justify-between">
+                <div className="h-14 rounded-2xl w-full bg-primary px-6 flex items-center justify-between">
                     {/* Overview */}
                     <div className="flex items-center gap-2 lg:gap-4">
                         {/* Mobile Nav Toggle */}

@@ -34,20 +34,20 @@ const Attendant = () => {
                             ))}
                         </div>
                     ) : (
-                        // Events && category overview
+                        // Sales && Refunds overview
                         <div className='lg:grid lg:grid-cols-2 gap-10'>
                             {/* events */}
-                            <div className="h-[100px] rounded-lg transition-all duration-200 bg-primary shadow-lg dark:bg-slate-800 flex items-center justify-between px-4">
+                            <div className="h-[85px] rounded-2xl transition-all duration-200 bg-primary shadow-lg dark:bg-slate-900 border border-white/5 flex items-center justify-between px-4">
                                 <div className='flex '>
                                     <div className='flex gap-4'>
                                         {/* Other content here */}
-                                        <div className='bg-white dark:bg-primary flex items-center justify-center h-[80px] w-[80px] rounded-xl shadow-md'>
-                                            <EventIcon className="h-10 w-10 dark:text-white text-primary" />
+                                        <div className='bg-white dark:bg-indigo-500 flex items-center justify-center p-2 rounded-xl shadow-md'>
+                                            <EventIcon className="h-8 w-8 dark:text-white text-primary" />
                                         </div>
                                         <div className='flex items-center text-white'>
                                             <span>
-                                                <p className='font-poppins text-lg'>23434K</p>
-                                                <p className='font-poppins text-lg'>Total Events</p>
+                                                <p className='font-poppins text-md'>23434K</p>
+                                                <p className='font-poppins text-sm'>Daily Sales</p>
                                             </span>
                                         </div>
                                     </div>
@@ -57,17 +57,17 @@ const Attendant = () => {
                                 </div>
                             </div>
                             {/* category */}
-                            <div className="h-[100px] mt-4 lg:mt-0 md:mt-0 rounded-lg transition-all duration-200 bg-white shadow-lg dark:bg-slate-800 flex items-center justify-between px-4">
+                            <div className="h-[85px] rounded-2xl transition-all duration-200 bg-primary shadow-lg dark:bg-slate-900 border border-white/5 flex items-center justify-between px-4">
                                 <div className='flex '>
                                     <div className='flex gap-4'>
                                         {/* Other content here */}
-                                        <div className='bg-primary-50 flex items-center justify-center dark:bg-slate-600 h-[80px] w-[80px] rounded-xl shadow-sm'>
-                                            <CategoryIcon className="h-10 w-10 text-primary" />
+                                        <div className='bg-white dark:bg-indigo-500 flex items-center justify-center p-2 rounded-xl shadow-md'>
+                                            <EventIcon className="h-8 w-8 dark:text-white text-primary" />
                                         </div>
-                                        <div className='flex items-center'>
+                                        <div className='flex items-center text-white'>
                                             <span>
-                                                <p className='font-poppins text-lg'>23434K</p>
-                                                <p className='font-poppins text-lg'>Categories</p>
+                                                <p className='font-poppins text-md'>23434K</p>
+                                                <p className='font-poppins text-sm'>Daily Sales</p>
                                             </span>
                                         </div>
                                     </div>
@@ -89,17 +89,17 @@ const Attendant = () => {
                     ) : (
                         <div className='lg:grid lg:grid-cols-2 mt-6 gap-10'>
                             {/* Contestants */}
-                            <div className="h-[100px] rounded-lg transition-all duration-200 bg-white shadow-lg dark:bg-slate-800 flex items-center justify-between px-4">
+                            <div className="h-[85px] rounded-2xl transition-all duration-200 bg-primary shadow-lg dark:bg-slate-900 border border-white/5 flex items-center justify-between px-4">
                                 <div className='flex '>
                                     <div className='flex gap-4'>
                                         {/* Other content here */}
-                                        <div className='bg-primary-50 flex items-center justify-center dark:bg-slate-600 h-[80px] w-[80px] rounded-xl shadow-sm'>
-                                            <UserIcon className="h-10 w-10 text-primary" />
+                                        <div className='bg-white dark:bg-indigo-500 flex items-center justify-center p-2 rounded-xl shadow-md'>
+                                            <EventIcon className="h-8 w-8 dark:text-white text-primary" />
                                         </div>
-                                        <div className='flex items-center'>
+                                        <div className='flex items-center text-white'>
                                             <span>
-                                                <p className='font-poppins text-lg'>23434K</p>
-                                                <p className='font-poppins text-lg'>Contestant</p>
+                                                <p className='font-poppins text-md'>23434K</p>
+                                                <p className='font-poppins text-sm'>Daily Sales</p>
                                             </span>
                                         </div>
                                     </div>
@@ -109,17 +109,17 @@ const Attendant = () => {
                                 </div>
                             </div>
                             {/* Edition */}
-                            <div className="h-[100px] mt-4 lg:mt-0 md:mt-0 rounded-lg transition-all duration-200 bg-white shadow-lg dark:bg-slate-800 flex items-center justify-between px-4">
+                            <div className="h-[85px] rounded-2xl transition-all duration-200 bg-primary shadow-lg dark:bg-slate-900 border border-white/5 flex items-center justify-between px-4">
                                 <div className='flex '>
                                     <div className='flex gap-4'>
                                         {/* Other content here */}
-                                        <div className='bg-primary-50 flex items-center justify-center dark:bg-slate-600 h-[80px] w-[80px] rounded-xl shadow-sm'>
-                                            <EditionIcon className="h-10 w-10 text-primary" />
+                                        <div className='bg-white dark:bg-indigo-500 flex items-center justify-center p-2 rounded-xl shadow-md'>
+                                            <EventIcon className="h-8 w-8 dark:text-white text-primary" />
                                         </div>
-                                        <div className='flex items-center'>
+                                        <div className='flex items-center text-white'>
                                             <span>
-                                                <p className='font-poppins text-lg'>23434K</p>
-                                                <p className='font-poppins text-lg'>Edition</p>
+                                                <p className='font-poppins text-md'>23434K</p>
+                                                <p className='font-poppins text-sm'>Daily Sales</p>
                                             </span>
                                         </div>
                                     </div>
@@ -140,9 +140,9 @@ const Attendant = () => {
                             ))}
                         </div>
                     ) : (
-                        <div className='mt-20 gap-10'>
+                        <div className='mt-10 gap-10'>
 
-                            <div className="h-[45vh] mt-4 lg:mt-0 md:mt-0 rounded-lg transition-all duration-200 bg-white shadow-lg dark:bg-slate-800 flex items-center justify-between px-4">
+                            <div className="h-[55vh] mt-4 lg:mt-0 md:mt-0 rounded-lg transition-all duration-200 bg-white shadow-lg dark:bg-slate-900 border border-white/5 flex items-center justify-between px-4">
 
                             </div>
                         </div>
@@ -158,7 +158,7 @@ const Attendant = () => {
                         ))}
                     </div>
                 ) : (
-                    <div className='bg-white h-[84vh] mt-20 lg:mt-0 md:mt-0 dark:bg-slate-800 shadow-lg  w-full rounded-xl'>
+                    <div className='bg-white h-[84vh] mt-20 lg:mt-0 md:mt-0 dark:bg-slate-900 border border-white/5 shadow-lg  w-full rounded-xl'>
                         {/* Additional content or components */}
                         hiusdfih
 

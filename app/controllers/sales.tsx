@@ -31,51 +31,60 @@ class SalesContoller {
         const token = session.get("email");
         const user = await Registration.findOne({ email: token });
         const carts = await Cart.find({ attendant: user?._id }).populate("product");
-        if (Number(balance) <= 0) {
-          // Assuming products is an array of objects with product and quantity
-          const productsArray = []; // Initialize an array to store product objects
-
-          const cart = await Cart.find()
-
-          for (const item of cart) {
-            const { product: prod, quantity } = item; // Destructure product and quantity from item
-            productsArray.push({ product: prod, quantity });
-          }
-
-          console.log("Products array after loop:", productsArray); // Debugging: log the products array after loop
-
-          const sales = new Sales({
-            products: productsArray, // Assign the array of products
-            attendant,
-            totalAmount,
-            amountPaid,
-            balance,
+        if(carts.length == 0){
+          return json({
+            message: "There is no item in your cart, can't proceed to checkout",
+            success: false,
+            status: 400,
           });
-
-          const addSales = await sales.save();
-          if (addSales) {
-            const emptyCart = await Cart.deleteMany({ attendant: user })
-            if (emptyCart) {
+        }else{
+          if (Number(balance) <= 0) {
+            // Assuming products is an array of objects with product and quantity
+            const productsArray = []; // Initialize an array to store product objects
+  
+            const cart = await Cart.find()
+  
+            for (const item of cart) {
+              const { product: prod, quantity } = item; // Destructure product and quantity from item
+              productsArray.push({ product: prod, quantity });
+            }
+  
+            console.log("Products array after loop:", productsArray); // Debugging: log the products array after loop
+  
+            const sales = new Sales({
+              products: productsArray, // Assign the array of products
+              attendant,
+              totalAmount,
+              amountPaid,
+              balance,
+            });
+  
+            const addSales = await sales.save();
+            if (addSales) {
+              const emptyCart = await Cart.deleteMany({ attendant: user })
+              if (emptyCart) {
+                return json({
+                  message: "Sales made successfully",
+                  success: true,
+                  status: 400,
+                });
+              }
+            } else {
               return json({
-                message: "Sales made successfully",
-                success: true,
+                message: "Unable to make sales",
+                success: false,
                 status: 400,
               });
             }
           } else {
             return json({
-              message: "Unable to make sales",
+              message: "Full payment must be made",
               success: false,
               status: 400,
             });
           }
-        } else {
-          return json({
-            message: "Full payment must be made",
-            success: false,
-            status: 400,
-          });
         }
+        
       } catch (error: any) {
         return json({
           message: error.message,
@@ -105,7 +114,7 @@ class SalesContoller {
     const session = await getSession(request.headers.get("Cookie"));
     const token = session.get("email");
     const user = await Registration.findOne({ email: token })
-    const sales = await Sales.find({ attendant: user?._id }).populate("product").populate("attendant")
+    const sales = await Sales.find({ attendant: user?._id })
 
     return { sales }
   }

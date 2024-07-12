@@ -16,13 +16,13 @@ const Sales = () => {
     const { sales } = useLoaderData<{ sales: SalesInterface[] }>()
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredSales, setFilteredSales] = useState(sales);
-    
+
     const handleRowsPerPageChange = (newRowsPerPage: number) => {
         setRowsPerPage(newRowsPerPage)
     }
 
 
-    const handleSearchChange = (event:any) => {
+    const handleSearchChange = (event: any) => {
         setSearchQuery(event.target.value);
     };
 
@@ -30,7 +30,7 @@ const Sales = () => {
         const filtered = sales.filter(sale => {
             const lowerCaseQuery = searchQuery.toLowerCase();
             return (
-                sale.totalAmount.toLowerCase().includes(lowerCaseQuery) 
+                sale.totalAmount.toLowerCase().includes(lowerCaseQuery)
             );
         });
         setFilteredSales(filtered);
@@ -60,12 +60,75 @@ const Sales = () => {
                 </div>
             </div>
             <CustomTable columns={SalesColumns} rowsPerPage={rowsPerPage} onRowsPerPageChange={handleRowsPerPageChange}>
-                {
-                    sales.map((sale:SalesInterface, index:number) => (
-                        
-                    ))
-                }
+                {filteredSales.map((sale: SalesInterface, index: number) => (
+                    <TableRow key={index}>
+                        <TableCell className="text-md">
+                            {sale.products.map((productDetail, idx) => (
+                                <div className="" key={idx}>
+                                    {/* Assuming you want to display the product name and quantity */}
+                                    <div> {productDetail.product}</div>
+                                </div>
+                            ))}
+                        </TableCell>
+                        <TableCell className="text-md">
+                            {sale.products.map((productDetail, idx) => (
+                                <div className="" key={idx}>
+                                    {/* Assuming you want to display the product name and quantity */}
+                                    <div>{productDetail.quantity}</div>
+                                </div>
+                            ))}
+                        </TableCell>
+                        <TableCell className="text-md">
+                             {sale.attendant}
+                        </TableCell>
+                        <TableCell className="text-md">
+                            GHC {sale.totalAmount}
+                        </TableCell>
+                        <TableCell className="text-md">
+                            GHC {sale.amountPaid}
+                        </TableCell>
+                        <TableCell className="text-md">
+                            GHC {sale.balance}
+                        </TableCell>
+                        <TableCell className="text-md">
+                            {sale.createdAt}
+                        </TableCell>
+                        <TableCell className="relative flex items-center gap-4">
+                            <Button
+                                color="success"
+                                variant="flat"
+                                onClick={() => {
+                                    setIsEditModalOpened(true);
+                                    setDataValue(sale);
+                                }}
+                            >
+                                Edit
+                            </Button>
+                            <Button
+                                color="success"
+                                variant="flat"
+                                onClick={() => {
+                                    setIsEditModalOpened(true);
+                                    setDataValue(sale);
+                                }}
+                            >
+                                Print
+                            </Button>
+                            <Button
+                                color="danger"
+                                variant="flat"
+                                onClick={() => {
+                                    setIsConfirmModalOpened(true);
+                                    setDataValue(sale);
+                                }}
+                            >
+                                Delete
+                            </Button>
+                        </TableCell>
+                    </TableRow>
+                ))}
             </CustomTable>
+
         </AttendantLayout>
     )
 }

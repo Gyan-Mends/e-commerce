@@ -48,10 +48,8 @@ export interface CartInterface {
     price:string,
 }
 export interface SalesInterface {
-  products: {
     product: Schema.Types.ObjectId;
     quantity: number;
-  }[];
   attendant:Schema.Types.ObjectId;
   totalAmount: string;
   amountPaid: string;
@@ -59,3 +57,4 @@ export interface SalesInterface {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
