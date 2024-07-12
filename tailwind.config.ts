@@ -4,7 +4,7 @@ const svgToDataUri = require("mini-svg-data-uri");
 const {
   default: flattenColorPalette,
 } = require("tailwindcss/lib/util/flattenColorPalette");
- 
+
 
 export default {
   content: [
@@ -27,37 +27,37 @@ export default {
   darkMode: "class",
   plugins: [nextui(),
     addVariablesForColors,
-    function ({ matchUtilities, theme }: any) {
-      matchUtilities(
-        {
-          "bg-dot-thick": (value: any) => ({
-            backgroundImage: `url("${svgToDataUri(
-              `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="16" height="16" fill="none"><circle fill="${value}" id="pattern-circle" cx="10" cy="10" r="2.5"></circle></svg>`
-            )}")`,
-          }),
-        },
-        { values: flattenColorPalette(theme("backgroundColor")), type: "color" }
-      );
-    },
+  function ({ matchUtilities, theme }: any) {
+    matchUtilities(
+      {
+        "bg-dot-thick": (value: any) => ({
+          backgroundImage: `url("${svgToDataUri(
+            `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="16" height="16" fill="none"><circle fill="${value}" id="pattern-circle" cx="10" cy="10" r="2.5"></circle></svg>`
+          )}")`,
+        }),
+      },
+      { values: flattenColorPalette(theme("backgroundColor")), type: "color" }
+    );
+  },
 
-    function ({ addUtilities }) {
-      addUtilities({
-        '.scrollbar-thin': {
-          '::-webkit-scrollbar': {
-            width: '8px',
-          },
-          '::-webkit-scrollbar-track': {
-            background: '#f1f1f1',
-          },
-          '::-webkit-scrollbar-thumb': {
-            background: '#888',
-          },
-          '::-webkit-scrollbar-thumb:hover': {
-            background: '#555',
-          },
+  function ({ addUtilities }) {
+    addUtilities({
+      '.scrollbar-thin': {
+        '::-webkit-scrollbar': {
+          width: '8px',
         },
-      });
-    },
+        '::-webkit-scrollbar-track': {
+          background: '#f1f1f1',
+        },
+        '::-webkit-scrollbar-thumb': {
+          background: '#888',
+        },
+        '::-webkit-scrollbar-thumb:hover': {
+          background: '#555',
+        },
+      },
+    });
+  },
   ],
 } satisfies Config;
 
@@ -68,7 +68,7 @@ function addVariablesForColors({ addBase, theme }: any) {
   let newVars = Object.fromEntries(
     Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
   );
- 
+
   addBase({
     ":root": newVars,
   });

@@ -37,7 +37,7 @@ const AttendantLayout = ({ children, pageName }: UserLayoutProps) => {
                     <div>
                         <img className="bg-white rounded-full h-10 w-10 " src={logo} alt="logo" />
                     </div>
-                    <div className="font-poppins text-3xl">HelpDesk</div>
+                    <div className="font-poppins text-3xl">Point of Sales</div>
                 </div>
                 {/* profile */}
                 <div className=" mt-10">
