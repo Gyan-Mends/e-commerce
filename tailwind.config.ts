@@ -14,7 +14,10 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        poppins: ['Poppins', 'sans-serif'],
+        nunito: ['"Nunito"', "sans-serif"],
+        montserrat: ['"Montserrat"', "sans-serif"],
+        poppins: ['"Poppins"', "sans-serif"],
+        sen: ['"Sen"', "sans-serif"],
       },
       boxShadow: {
         'custom-dark': 'inset -5px 5px 15px 5px rgba(59, 130, 246, 0.7)',

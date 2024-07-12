@@ -3,11 +3,13 @@ import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDis
 import { ReactNode } from "react";
 
 interface DeleteModalProps{
+  header:ReactNode,
+    content:ReactNode,
     isOpen: boolean,
     onOpenChange: () => void,
     children:ReactNode
 }
-export default function ConfirmModal({isOpen,onOpenChange,children}: DeleteModalProps) {
+export default function ConfirmModal({isOpen,onOpenChange,children,content,header}: DeleteModalProps) {
 
   return (
     <>
@@ -15,9 +17,9 @@ export default function ConfirmModal({isOpen,onOpenChange,children}: DeleteModal
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex items-center justify-center gap-1 font-poppins text-2xl text-danger">Confirm Delete</ModalHeader>
+              <ModalHeader className="flex items-center justify-center gap-1 font-poppins text-2xl text-danger">{header}</ModalHeader>
               <ModalBody className="flex items-center justify-center">
-                <p className="font-poppins">{}</p>
+                <p className="font-poppins">{content}</p>
               </ModalBody>
               <ModalFooter className="flex items-center justify-center">
                 {children}

@@ -194,7 +194,7 @@ const Sales = () => {
                 </div>
                 {/* Items added to cart */}
                 <Form method="post">
-                    <div className="h-[85vh] flex flex-col justify-between">
+                    <div className="h-[85vh] border border-white/5 rounded-xl shadow-lg flex flex-col justify-between">
                         <div className="h-[53vh] overflow-y-scroll scrollbar-thin">
                             {/* added items come here */}
                             {carts.map((cart: CartInterface, index: number) => (
@@ -294,7 +294,7 @@ const Sales = () => {
                     </div>
                 </Form>
             </div>
-            <ConfirmModal isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
+            <ConfirmModal header="Confirm Remove" content="Are you sure to remove item from cart? " isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
                 <div className="flex gap-4">
                     <Button color="primary" variant="flat" className="font-poppins text-md" onPress={handleConfirmModalClosed}>
                         No

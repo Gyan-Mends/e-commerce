@@ -1,25 +1,25 @@
 import { Schema } from "mongoose";
 
 export interface RegistrationInterface {
-	_id:string,
-	firstName:string,
-    middleName:string,
-    lastName:string,
-    email:string,
-	password:string,
-    phone:string,
-	role:string,
-    admin:string,
-    image:string,
+    _id: string,
+    firstName: string,
+    middleName: string,
+    lastName: string,
+    email: string,
+    password: string,
+    phone: string,
+    role: string,
+    admin: string,
+    image: string,
 }
 export interface SuppliersInterface {
-	_id:string,
-	firstName:string,
-    middleName:string,
-    lastName:string,
-    email:string,
-    phone:string,
-    admin:string,
+    _id: string,
+    firstName: string,
+    middleName: string,
+    lastName: string,
+    email: string,
+    phone: string,
+    admin: string,
 }
 
 export interface CategoryInterface {
@@ -30,31 +30,43 @@ export interface CategoryInterface {
 }
 
 export interface ProductInterface {
+    products:string
     _id: string,
     name: string,
-    price:number,
-    quantity:number,
+    price: number,
+    quantity: number,
     category: string,
-    image:string,
+    image: string,
     low_Stock: string,
-    description:string
+    description: string
     seller: string
 }
 export interface CartInterface {
     _id: string,
-    product:string,
-    attendant:string,
-    quantity:string,
-    price:string,
+    product: string,
+    attendant: string,
+    quantity: string,
+    price: string,
 }
 export interface SalesInterface {
-    product: Schema.Types.ObjectId;
+    _id:string
+    product: ProductInterface;
     quantity: number;
-  attendant:Schema.Types.ObjectId;
-  totalAmount: string;
-  amountPaid: string;
-  balance: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+    attendant: RegistrationInterface;
+    totalAmount: string;
+    amountPaid: string;
+    balance: string;
+    createdAt?: string | Date;
+    updatedAt?: string | Date;
 }
-
+export interface RefundInterface {
+    _id:string
+    product: ProductInterface;
+    quantity: number;
+    attendant: RegistrationInterface;
+    totalAmount: string;
+    amountPaid: string;
+    balance: string;
+    createdAt?: string | Date;
+    updatedAt?: string | Date;
+}

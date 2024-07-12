@@ -114,7 +114,7 @@ class SalesContoller {
     const session = await getSession(request.headers.get("Cookie"));
     const token = session.get("email");
     const user = await Registration.findOne({ email: token })
-    const sales = await Sales.find({ attendant: user?._id })
+    const sales = await Sales.find({ attendant: user?._id }).populate("products.product").populate("attendant").exec();
 
     return { sales }
   }
