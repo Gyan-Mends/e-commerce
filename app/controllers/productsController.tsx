@@ -185,7 +185,8 @@ class ProductsController {
             //fetching categories
             const categories = await Category.find();
             const product = await Product.find().populate("category");
-            return { categories, user, product };
+            const productsCount = await Product.countDocuments()
+            return { categories, user, product, productsCount };
         } catch (error) {
 
         }

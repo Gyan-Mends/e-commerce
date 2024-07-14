@@ -9,6 +9,8 @@ import LogoutIcon from "~/components/icons/LogoutIcon";
 import MoonIcon from "~/components/icons/MoonIcon";
 import NavTogglerIcon from "~/components/icons/NavTogglerIcon";
 import SunIcon from "~/components/icons/SunIcon";
+import SupplierIcon from "~/components/icons/SupplierIcon";
+import UsersGroup from "~/components/icons/UsersGroup";
 import logo from "~/components/illustration/logo.png"
 import ConfirmModal from "~/components/modal/confirmModal";
 import usersController from "~/controllers/Users";
@@ -65,13 +67,13 @@ const AdminLayout = ({ children, pageName }: UserLayoutProps) => {
                     </Link>
                     <Link className="" to="/admin/users">
                         <li className="hover:bg-primary-400 text-sm hover:bg-white hover:text-primary font-nunito p-1 rounded-lg flex items-center gap-2">
-                            <DashboardIcon className="text-sm" />
+                            <UsersGroup className="h-[20px] w-[20px]" />
                             Users
                         </li>
                     </Link>
                     <Link className="" to="/admin/suppliers">
                         <li className="hover:bg-primary-400 text-sm hover:bg-white hover:text-primary font-nunito p-1 rounded-lg flex items-center gap-2">
-                            <DashboardIcon className="text-sm" />
+                            <SupplierIcon className="h-[18px] w-[18px]" />
                             Suppliers
                         </li>
                     </Link>

@@ -199,9 +199,9 @@ class UsersController {
             const token = session.get("email");
             const user = await Registration.findOne({ email: token });
             const users = await Registration.find();
-
-
-            return { user, users }
+            const userCount = await  Registration.countDocuments()
+            
+            return { user, users,userCount }
         } catch (error: any) {
             return json({
                 message: error.message,

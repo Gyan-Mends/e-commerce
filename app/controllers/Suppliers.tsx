@@ -177,8 +177,9 @@ class SuppliersController {
             const user = await Registration.findOne({ email: token });
             const suppliers = await Suppliers.find();
 
-
-            return { user, suppliers }
+            const supplierCount = await  Suppliers.countDocuments()
+            
+            return { user, suppliers,supplierCount }
         } catch (error: any) {
             return json({
                 message: error.message,

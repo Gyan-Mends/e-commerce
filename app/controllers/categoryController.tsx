@@ -65,10 +65,10 @@ class CategoryController {
 
             // Getting the session id
             const sessionId = await Registration.findOne({ email: token }).select("_id email");
-
             const cats = await Category.find();
+            const categoryCount = await Category.countDocuments()
 
-            return { sessionId, cats };
+            return { sessionId, cats,categoryCount};
 
         } catch (error) {
             console.error("Error in CategoryFetch:", error);

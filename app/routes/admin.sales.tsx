@@ -12,6 +12,7 @@ import { errorToast, successToast } from "~/components/toast"
 import refundController from "~/controllers/refund"
 import salesController from "~/controllers/sales"
 import { SalesInterface } from "~/interfaces/interface"
+import AdminLayout from "~/layout/adminLayout"
 import AttendantLayout from "~/layout/attendantLayout"
 
 const Sales = () => {
@@ -51,7 +52,7 @@ const Sales = () => {
             <p className="font-nunito font-semibold">Products</p>
             ${dataValue.products.map((productDetail: SalesInterface, idx: number) => `
                 <div key=${idx}>
-                    <p>${productDetail.product?.name}</p>
+                    <p>${productDetail?.product?.name}</p>
                 </div>
             `).join('')}
         </div>
@@ -59,7 +60,7 @@ const Sales = () => {
             <p className="font-nunito font-semibold">Quantities</p>
             ${dataValue.products.map((productDetail: SalesInterface, idx: number) => `
                 <div key=${idx}>
-                    <p>${productDetail.quantity}</p>
+                    <p>${productDetail?.quantity}</p>
                 </div>
             `).join('')}
         </div>
@@ -89,7 +90,10 @@ const Sales = () => {
         const filtered = adminsales.filter(sale => {
             const lowerCaseQuery = searchQuery.toLowerCase();
             return (
-                sale._id.toLowerCase().includes(lowerCaseQuery)
+                sale._id.toLowerCase().includes(lowerCaseQuery)||
+                sale.attendant.lastName.toLowerCase().includes(lowerCaseQuery)||
+                sale.attendant.firstName.toLowerCase().includes(lowerCaseQuery)||
+                sale.attendant.middleName.toLowerCase().includes(lowerCaseQuery)
             );
         });
         setFilteredSales(filtered);
@@ -105,24 +109,25 @@ const Sales = () => {
     }, [actionData])
 
     return (
-        <AttendantLayout pageName="Sales Managemwent">
+        <AdminLayout pageName="Sales Managemwent">
             <div className="flex z-0 justify-between gap-2">
                 <Toaster position="top-center" />
                 <div>
                     <Input
+                        size="lg"
                         placeholder="Search product..."
                         startContent={<SearchIcon className="" />}
                         value={searchQuery}
                         onChange={handleSearchChange}
                         classNames={{
-                            inputWrapper: "h-14 lg:w-80",
+                            inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5",
                         }}
                     />
                 </div>
                 <div>
-                    <Button variant="flat" onClick={() => {
+                    <Button size="lg" variant="flat" onClick={() => {
                         // setIsCreateModalOpened(true)
-                    }} color="primary" className="h-14 font-nunito text-md">
+                    }} color="primary" className=" font-montserrat font-semibold">
                         <PlusIcon className="h-6 w-6" />Create User
                     </Button>
                 </div>
@@ -151,7 +156,7 @@ const Sales = () => {
                             ))}
                         </TableCell>
                         <TableCell className="">
-                            {sale.attendant?.firstName} {sale.attendant?.middleName} {sale.attendant?.lastName}
+                            {sale.attendant?.firstName} {sale?.attendant?.middleName} {sale.attendant?.lastName}
                         </TableCell>
                         <TableCell className="">
                             GHC {sale.totalAmount}
@@ -205,7 +210,7 @@ const Sales = () => {
                             </div>
                             <div className="font-nunito text-default-500 text-sm">
                                 <p>Attendant</p>
-                                <p>{dataValue?.attendant.firstName} {dataValue?.attendant.middleName} {dataValue?.attendant.lastName}</p>
+                                <p>{dataValue?.attendant.firstName} {dataValue?.attendant?.middleName} {dataValue?.attendant?.lastName}</p>
                             </div>
                         </div>
 
@@ -215,7 +220,7 @@ const Sales = () => {
                                 <p className="font-nunito font-semibold">Products</p>
                                 {dataValue.products.map((productDetail: SalesInterface, idx: number) => (
                                     <div key={idx}>
-                                        <p>{productDetail.product?.name}</p>
+                                        <p>{productDetail?.product?.name}</p>
                                     </div>
                                 ))}
                             </div>
@@ -223,7 +228,7 @@ const Sales = () => {
                                 <p className="font-nunito font-semibold">Quantities</p>
                                 {dataValue.products.map((productDetail: SalesInterface, idx: number) => (
                                     <div key={idx}>
-                                        <p>{productDetail.quantity}</p>
+                                        <p>{productDetail?.quantity}</p>
                                     </div>
                                 ))}
                             </div>
@@ -266,8 +271,8 @@ const Sales = () => {
                                     name="product"
                                 >
                                     {dataValue.products.map((productDetail: SalesInterface) => (
-                                        <SelectItem textValue={productDetail?.product.name} className="mt-4" key={productDetail.product?._id}>
-                                            {productDetail.product?.name}
+                                        <SelectItem textValue={productDetail?.product?.name} className="mt-4" key={productDetail.product?._id}>
+                                            {productDetail?.product?.name}
                                         </SelectItem>
                                     ))}
                                 </Select>
@@ -308,7 +313,7 @@ const Sales = () => {
                     </Form>
                 )}
             </EditModal>
-        </AttendantLayout>
+        </AdminLayout>
     )
 }
 
