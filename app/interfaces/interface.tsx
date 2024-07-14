@@ -33,11 +33,12 @@ export interface ProductInterface {
     products:string
     _id: string,
     name: string,
+    costPrice: string,
     price: number,
     quantity: number,
     category: string,
     image: string,
-    low_Stock: string,
+    low_stock: string,
     description: string
     seller: string
 }

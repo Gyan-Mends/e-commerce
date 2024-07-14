@@ -1,31 +1,50 @@
 import { Button, Input, Select, SelectItem, TableCell, TableRow, Textarea, User } from "@nextui-org/react"
-import { ActionFunction, LoaderFunction, json } from "@remix-run/node"
-import { Form, useActionData, useLoaderData } from "@remix-run/react"
+import { ActionFunction, LoaderFunction, json, redirect } from "@remix-run/node"
+import { Form, useActionData, useLoaderData, useSubmit } from "@remix-run/react"
 import { useEffect, useState } from "react"
 import { Toaster } from "react-hot-toast"
+import { DeleteIcon } from "~/components/icons/DeleteIcon"
+import { EditIcon } from "~/components/icons/EditIcon"
 import PlusIcon from "~/components/icons/PlusIcon"
 import { SearchIcon } from "~/components/icons/SearchIcon"
 import EditModal from "~/components/modal/EditModal"
+import ConfirmModal from "~/components/modal/confirmModal"
 import CreateModal from "~/components/modal/createModal"
 import ViewModal from "~/components/modal/viewModal"
 import { ProductColumns } from "~/components/table/columns"
 import CustomTable from "~/components/table/table"
 import { errorToast, successToast } from "~/components/toast"
+import usersController from "~/controllers/Users"
 import productsController from "~/controllers/productsController"
 import { CategoryInterface, ProductInterface } from "~/interfaces/interface"
 import AdminLayout from "~/layout/adminLayout"
+import { getSession } from "~/session"
 
 const Products = () => {
 
     const [createModalOpened, setCreateModalOpened] = useState(false)
     const { categories, user, product } = useLoaderData<{ categories: CategoryInterface[], user: { _id: string }, product: ProductInterface[] }>();
     const actionData = useActionData<any>()
-    const [base64Image, setBase64Image] = useState();
+    const [base64Image, setBase64Image] = useState<any>();
     const [rowsPerPage, setRowsPerPage] = useState(13)
     const [viewModalOpened, setViewModalOpened] = useState(false);
     const [editModalOpened, setEditmOdalOpened] = useState(false)
     const [selectedProducts, setSelectedProducts] = useState<ProductInterface>()
+    const [isConfirmedModalOpened, setIsConfirmedModalOpened] = useState(false)
+    const submit = useSubmit()
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filteredUsers, setFilteredUsers] = useState(product);
 
+    useEffect(() => {
+        const filtered = product.filter(products => {
+            const lowerCaseQuery = searchQuery.toLowerCase();
+            return (
+                products.name.toLowerCase().includes(lowerCaseQuery) ||
+                products.category.toLowerCase().includes(lowerCaseQuery)
+            );
+        });
+        setFilteredUsers(filtered);
+    }, [searchQuery, product]);
     useEffect(() => {
         if (actionData) {
             if (actionData.success) {
@@ -36,20 +55,23 @@ const Products = () => {
         }
     }, [actionData])
 
+    const handleSearchChange = (event: any) => {
+        setSearchQuery(event.target.value);
+    };
     const handleCloseCreateModal = () => {
         setCreateModalOpened(false)
     }
-
     const handleRowsPerPageChange = (newRowsPerPage: number) => {
         setRowsPerPage(newRowsPerPage)
     }
-
     const handleViewModalClosed = () => {
         setViewModalOpened(false)
     }
-
     const handleEditModalClose = () => {
         setEditmOdalOpened(false)
+    }
+    const handleConfirmModalClosed = () => {
+        setIsConfirmedModalOpened(false)
     }
 
 
@@ -61,20 +83,23 @@ const Products = () => {
             <div className="flex justify-between">
                 <div>
                     <Input
+                        size="lg"
                         placeholder="Search product..."
-                        className="font-poppins"
+                        className="font-nunito"
                         startContent={
                             <SearchIcon className="" />
                         }
+                        value={searchQuery}
+                        onChange={handleSearchChange}
                         classNames={{
-                            inputWrapper: "h-14 lg:w-80"
+                            inputWrapper: "dark:bg-slate-900 bg-white border border-white/5"
                         }}
                     />
                 </div>
                 <div>
                     <Button onClick={() => {
                         setCreateModalOpened(true)
-                    }} color="primary" variant="flat" className="h-14 font-poppins text-md">
+                    }} size="lg" color="primary" variant="flat" className=" font-montserrat font-semibold">
                         <PlusIcon className="h-6 w-6" />Add Product
                     </Button>
 
@@ -82,36 +107,44 @@ const Products = () => {
             </div>
 
             <CustomTable columns={ProductColumns} rowsPerPage={rowsPerPage} onRowsPerPageChange={handleRowsPerPageChange}>
-                {product.map((products: ProductInterface, index: number) => (
+                {filteredUsers.map((products: ProductInterface, index: number) => (
                     <TableRow key={index}>
                         <TableCell>
                             <User
                                 avatarProps={{ radius: "sm", src: products.image }}
-                                name={products.name}
+                                name={
+                                    <p className="font-nunito text-xs">
+                                        {products.name}
+                                    </p>
+                                }
                             />
                         </TableCell>
-                        <TableCell>{products.category?.name}</TableCell>
+                        <TableCell>{products?.category?.name}</TableCell>
+                        <TableCell>{products.costPrice}</TableCell>
                         <TableCell>{products.price}</TableCell>
                         <TableCell>{products.quantity}</TableCell>
                         <TableCell>{products.low_stock}</TableCell>
                         <TableCell className="relative flex items-center gap-4">
-                                
-                                <Button color="success" variant="flat" onClick={() => {
-                                    setEditmOdalOpened(true)
+
+                            <Button size="sm" color="success" variant="flat" onClick={() => {
+                                setEditmOdalOpened(true)
+                                setSelectedProducts(products)
+                            }}>
+                                <EditIcon /> Edit
+                            </Button>
+                            <Button size="sm" color="danger" variant="flat" onClick={() => {
+                                setIsConfirmedModalOpened(true),
                                     setSelectedProducts(products)
-                                }}>
-                                    Edit
-                                </Button>                            
-                                <Button color="danger" variant="flat">
-                                    Delete
-                                </Button>
+                            }}>
+                                <DeleteIcon />  Delete
+                            </Button>
 
                         </TableCell>
                     </TableRow>
                 ))}
             </CustomTable>
 
-            <CreateModal className="" modalTitle="Add new product" isOpen={createModalOpened} onOpenChange={handleCloseCreateModal} name="Add Product">
+            <CreateModal className="dark:bg-slate-950 bg-gray-200" modalTitle="Add new product" isOpen={createModalOpened} onOpenChange={handleCloseCreateModal} >
                 {(onClose) => (
                     <Form method="post">
                         <Input
@@ -123,26 +156,15 @@ const Products = () => {
                             isRequired
                             labelPlacement="outside"
                             classNames={{
-                                label: "font-poppins text-sm text-default-100"
+                                label: "font-nunito text-sm text-default-100",
+                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 "
                             }}
                         />
                         <div className="flex gap-10">
+
                             <Input
-                                label="Price(GHC)"
-                                name="price"
-                                placeholder=" "
-                                isClearable
-                                isRequired
-                                className="mt-4"
-                                labelPlacement="outside"
-                                classNames={{
-                                    label: "font-poppins text-sm text-default-100",
-                                    inputWrapper: "mt-4"
-                                }}
-                            />
-                            <Input
-                                label="Quantity"
-                                name="quantity"
+                                label="Cost Price(GHC)"
+                                name="costPrice"
                                 placeholder=" "
                                 type="number"
                                 isClearable
@@ -150,13 +172,26 @@ const Products = () => {
                                 className="mt-4"
                                 labelPlacement="outside"
                                 classNames={{
-                                    label: "font-poppins text-sm text-default-100",
-                                    inputWrapper: "mt-4"
+                                    label: "font-nunito text-sm text-default-100",
+                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
+                                }}
+                            />
+                            <Input
+                                label="Selling Price(GHC)"
+                                name="price"
+                                placeholder=" "
+                                isClearable
+                                isRequired
+                                className="mt-4"
+                                labelPlacement="outside"
+                                classNames={{
+                                    label: "font-nunito text-sm text-default-100",
+                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
                                 }}
                             />
                         </div>
 
-                        <div className="pt-4">
+                        <div className="">
                             <Select
                                 label="Category"
                                 labelPlacement="outside"
@@ -164,6 +199,10 @@ const Products = () => {
                                 isRequired
                                 className="mt-4"
                                 name="category"
+                                classNames={{
+                                    trigger: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4",
+                                    popoverContent: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 "
+                                }}
 
                             >
                                 {categories.map((cat: CategoryInterface) => (
@@ -176,26 +215,20 @@ const Products = () => {
                         </div>
 
                         <div className="flex gap-10">
-                            <div className="pt-2">
-                                <label className="font-poppins " htmlFor="">Image</label>
-                                <input
-                                    name="image"
-                                    required
-                                    placeholder=" "
-                                    className="font-poppins mt-2 rounded-lg h-10 w-44 bg-default-100"
-                                    type="file"
-                                    onChange={(event: any) => {
-                                        const file = event.target.files[0];
-                                        if (file) {
-                                            const reader = new FileReader()
-                                            reader.onloadend = () => {
-                                                setBase64Image(reader.result)
-                                            }
-                                            reader.readAsDataURL(file)
-                                        }
-                                    }}
-                                />
-                            </div>
+                            <Input
+                                label="Quantity"
+                                name="quantity"
+                                placeholder=" "
+                                type="number"
+                                isClearable
+                                isRequired
+                                className="mt-4"
+                                labelPlacement="outside"
+                                classNames={{
+                                    label: "font-nunito text-sm text-default-100",
+                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
+                                }}
+                            />
                             <Input
                                 label="Low Stock"
                                 name="lowstock"
@@ -206,8 +239,29 @@ const Products = () => {
                                 className="mt-4"
                                 labelPlacement="outside"
                                 classNames={{
-                                    label: "font-poppins text-sm text-default-100",
-                                    inputWrapper: "mt-4"
+                                    label: "font-nunito text-sm text-default-100",
+                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
+                                }}
+                            />
+                        </div>
+
+                        <div className="pt-2">
+                            <label className="font-nunito text-sm block" htmlFor="">Image</label>
+                            <input
+                                name="image"
+                                required
+                                placeholder=" "
+                                className="bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900  w-full h-10 rounded-lg"
+                                type="file"
+                                onChange={(event: any) => {
+                                    const file = event.target.files[0];
+                                    if (file) {
+                                        const reader = new FileReader()
+                                        reader.onloadend = () => {
+                                            setBase64Image(reader.result)
+                                        }
+                                        reader.readAsDataURL(file)
+                                    }
                                 }}
                             />
                         </div>
@@ -219,18 +273,21 @@ const Products = () => {
                             placeholder=" "
                             isRequired
                             name="description"
-                            className="mt-4 font-poppins text-sm"
+                            className="mt-4 font-nunito text-sm"
+                            classNames={{
+                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 "
+                            }}
                         />
-
-                        <input hidden name="userid" value={user._id} type="text" />
+                        <input name="intent" value="create" type="hidden" />
+                        <input hidden name="userid" value={user._id} />
                         <input hidden name="base64Image" value={base64Image} />
 
 
-                        <div className="flex justify-end gap-2 mt-10 font-poppins">
+                        <div className="flex justify-end gap-2 mt-10 font-nunito">
                             <Button color="danger" onPress={onClose}>
                                 Close
                             </Button>
-                            <button className="bg-primary-400 rounded-xl font-poppins px-4" >
+                            <button className="bg-primary-400 rounded-xl text-white font-nunito px-4" >
                                 Submit
                             </button>
                         </div>
@@ -244,15 +301,15 @@ const Products = () => {
                         <img className="h-60 rounded-lg" src={selectedProducts?.image} alt="" />
                     </div>
                     <div>
-                        <p className="font-poppins">{selectedProducts?.name}</p>
-                        <p className="font-poppins mt-2">{selectedProducts?.category.name}</p>
-                        <p className="font-poppins mt-2">GHC{selectedProducts?.price}</p>
-                        <p className="font-poppins mt-2">{selectedProducts?.quantity} {selectedProducts?.name}</p>
-                        <p className="font-poppins mt-2">{selectedProducts?.description} </p>
+                        <p className="font-nunito">{selectedProducts?.name}</p>
+                        <p className="font-nunito mt-2">{selectedProducts?.category.name}</p>
+                        <p className="font-nunito mt-2">GHC{selectedProducts?.price}</p>
+                        <p className="font-nunito mt-2">{selectedProducts?.quantity} {selectedProducts?.name}</p>
+                        <p className="font-nunito mt-2">{selectedProducts?.description} </p>
                     </div>
                 </div>
             </ViewModal>
-            <EditModal modalTitle="Edit Product detail" className="" onOpenChange={handleEditModalClose} isOpen={editModalOpened}>
+            <EditModal modalTitle="Edit Product detail" className="dark:bg-slate-950 bg-gray-200" onOpenChange={handleEditModalClose} isOpen={editModalOpened}>
                 {(onClose) => (
                     <Form method="post">
                         <Input
@@ -265,12 +322,29 @@ const Products = () => {
                             defaultValue={selectedProducts?.name}
                             labelPlacement="outside"
                             classNames={{
-                                label: "font-poppins text-sm text-default-100"
+                                label: "font-nunito text-sm text-default-100",
+                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
                             }}
                         />
                         <div className="flex gap-10">
+
                             <Input
-                                label="Price(GHC)"
+                                label="Cost Price(GHC)"
+                                name="costPrice"
+                                placeholder=" "
+                                type="number"
+                                isClearable
+                                isRequired
+                                className="mt-4"
+                                defaultValue={selectedProducts?.costPrice}
+                                labelPlacement="outside"
+                                classNames={{
+                                    label: "font-nunito text-sm text-default-100",
+                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
+                                }}
+                            />
+                            <Input
+                                label="Selling Price(GHC)"
                                 name="price"
                                 placeholder=" "
                                 isClearable
@@ -279,23 +353,8 @@ const Products = () => {
                                 className="mt-4"
                                 labelPlacement="outside"
                                 classNames={{
-                                    label: "font-poppins text-sm text-default-100",
-                                    inputWrapper: "mt-4"
-                                }}
-                            />
-                            <Input
-                                label="Quantity"
-                                name="quantity"
-                                placeholder=" "
-                                type="number"
-                                isClearable
-                                isRequired
-                                className="mt-4"
-                                defaultValue={selectedProducts?.quantity}
-                                labelPlacement="outside"
-                                classNames={{
-                                    label: "font-poppins text-sm text-default-100",
-                                    inputWrapper: "mt-4"
+                                    label: "font-nunito text-sm text-default-100",
+                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
                                 }}
                             />
                         </div>
@@ -308,11 +367,15 @@ const Products = () => {
                                 isRequired
                                 className="mt-4"
                                 name="category"
+                                classNames={{
+                                    trigger: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 ",
+                                    popoverContent: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 "
+                                }}
 
                             >
                                 {categories.map((cat: CategoryInterface) => (
-                                    <SelectItem textValue={selectedProducts?.category} className="mt-4" key={cat._id}>
-                                        {selectedProducts?.category}
+                                    <SelectItem textValue={selectedProducts?.category?.name} className="mt-4" key={cat._id}>
+                                        {selectedProducts?.category?.name}
                                     </SelectItem>
                                 ))}
 
@@ -320,27 +383,22 @@ const Products = () => {
                         </div>
 
                         <div className="flex gap-10">
-                            <div className="pt-2">
-                                <label className="font-poppins " htmlFor="">Image</label>
-                                <input
-                                    name="image"
-                                    required
-                                    placeholder=" "
-                                    className="font-poppins mt-2 rounded-lg h-10 w-44 bg-default-100"
-                                    type="file"
-
-                                    onChange={(event: any) => {
-                                        const file = event.target.files[0];
-                                        if (file) {
-                                            const reader = new FileReader()
-                                            reader.onloadend = () => {
-                                                setBase64Image(reader.result)
-                                            }
-                                            reader.readAsDataURL(file)
-                                        }
-                                    }}
-                                />
-                            </div>
+                            {/* image */}
+                            <Input
+                                label="Quantity"
+                                name="quantity"
+                                placeholder=" "
+                                type="number"
+                                isClearable
+                                isRequired
+                                className="mt-4"
+                                defaultValue={selectedProducts?.quantity}
+                                labelPlacement="outside"
+                                classNames={{
+                                    label: "font-nunito text-sm text-default-100",
+                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
+                                }}
+                            />
                             <Input
                                 label="Low Stock"
                                 name="lowstock"
@@ -352,8 +410,30 @@ const Products = () => {
                                 className="mt-4"
                                 labelPlacement="outside"
                                 classNames={{
-                                    label: "font-poppins text-sm text-default-100",
-                                    inputWrapper: "mt-4"
+                                    label: "font-nunito text-sm text-default-100",
+                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
+                                }}
+                            />
+                        </div>
+
+                        <div className="pt-2">
+                            <label className="font-nunito " htmlFor="">Image</label>
+                            <input
+                                name="image"
+                                required
+                                placeholder=" "
+                                className="bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900  w-full h-12 rounded-lg"
+                                type="file"
+
+                                onChange={(event: any) => {
+                                    const file = event.target.files[0];
+                                    if (file) {
+                                        const reader = new FileReader()
+                                        reader.onloadend = () => {
+                                            setBase64Image(reader.result)
+                                        }
+                                        reader.readAsDataURL(file)
+                                    }
                                 }}
                             />
                         </div>
@@ -365,25 +445,49 @@ const Products = () => {
                             placeholder=" "
                             isRequired
                             name="description"
-                            className="mt-4 font-poppins text-sm"
+                            className="mt-4 font-nunito text-sm"
                             defaultValue={selectedProducts?.description}
+                            classNames={{
+                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 "
+                            }}
                         />
-
+                        <input name="intent" value="updateProduct" type="hidden" />
                         <input hidden name="userid" value={user._id} type="text" />
                         <input hidden name="base64Image" value={base64Image} />
+                        <input name="id" value={selectedProducts?._id} type="hidden" />
 
 
-                        <div className="flex justify-end gap-2 mt-10 font-poppins">
+                        <div className="flex justify-end gap-2 mt-10 font-nunito">
                             <Button color="danger" onPress={onClose}>
                                 Close
                             </Button>
-                            <button className="bg-primary-400 rounded-xl font-poppins px-4" >
+                            <button className="bg-primary-400 rounded-xl text-white font-nunito px-4" >
                                 Submit
                             </button>
                         </div>
                     </Form>
                 )}
             </EditModal>
+            <ConfirmModal className="bg-gray-200 dark:bg-slate-950 border border-white/5" content="Are you sure to delete product" header="Comfirm Delete" isOpen={isConfirmedModalOpened} onOpenChange={handleConfirmModalClosed}>
+                <div className="flex gap-4">
+                    <Button size="sm" color="danger" className="font-nunito " onPress={handleConfirmModalClosed}>
+                        No
+                    </Button>
+                    <Button size="sm" color="primary" className="font-nunito" onClick={() => {
+                        if (selectedProducts) {
+                            submit({
+                                intent: "delete",
+                                id: selectedProducts?._id
+
+                            }, {
+                                method: "post"
+                            })
+                        }
+                    }} >
+                        Yes
+                    </Button>
+                </div>
+            </ConfirmModal>
         </AdminLayout>
     )
 }
@@ -393,19 +497,57 @@ export const action: ActionFunction = async ({ request }) => {
     const formData = await request.formData()
     const name = formData.get("name") as string;
     const price = formData.get("price") as string;
+    const costPrice = formData.get("costPrice") as string;
     const quantity = formData.get("quantity") as string;
     const category = formData.get("category") as string;
     const base64Image = formData.get("base64Image") as string;
-    const lowstock = formData.get("lowstock") as string;
+    const low_stock = formData.get("lowstock") as string;
     const description = formData.get("description") as string;
-    const userid = formData.get("userid") as string;
+    const seller = formData.get("userid") as string;
+    const id = formData.get("id") as string;
+    const intent = formData.get("intent")
 
-    const products = await productsController.ProductAdd(request, name, price, quantity, category, base64Image, lowstock, description, userid);
-    return products
+    switch (intent) {
+        case "create":
+            const products = await productsController.ProductAdd(request, name, price, quantity, category, base64Image, low_stock, description, seller, costPrice, intent);
+            return products
+        case "updateProduct":
+            const upadate = await productsController.UpdateProduct({
+                name,
+                price,
+                quantity,
+                category,
+                base64Image,
+                low_stock,
+                description,
+                seller,
+                costPrice,
+                intent,
+                id,
+            })
+            return upadate
+        case "delete":
+            const deleteProduct = await productsController.Delete({ intent, id })
+            return deleteProduct
+        case "logout":
+            const logout = await usersController.logout(intent)
+            return logout
+        default:
+            return json({
+                message: "Bad request",
+                success: false,
+                status: 500
+            })
+    }
 
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
+    const session = await getSession(request.headers.get("Cookie"));
+    const token = session.get("email");
+    if(!token){
+        return redirect("/")
+    }
     const { categories, user, product } = await productsController.ProductFetch(request);
 
     return { categories, user, product }; // Ensure this returns an array

@@ -19,6 +19,7 @@ const RefundSchema = new mongoose.Schema({
     ref: "registration",
     required: true
   },
+ 
   totalAmount: {
     type: String,
     required: true

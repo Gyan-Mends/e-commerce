@@ -3,6 +3,8 @@ import { ActionFunction, json, LoaderFunction } from "@remix-run/node"
 import { Form, useActionData, useLoaderData, useSubmit } from "@remix-run/react"
 import { useEffect, useState } from "react"
 import { Toaster } from "react-hot-toast"
+import { DeleteIcon } from "~/components/icons/DeleteIcon"
+import { EditIcon } from "~/components/icons/EditIcon"
 import PlusIcon from "~/components/icons/PlusIcon"
 import { SearchIcon } from "~/components/icons/SearchIcon"
 import ConfirmModal from "~/components/modal/confirmModal"
@@ -17,14 +19,14 @@ import AdminLayout from "~/layout/adminLayout"
 
 const Users = () => {
     const [isCreateModalOpened, setIsCreateModalOpened] = useState(false)
-    const [base64Image, setBase64Image] = useState()
+    const [base64Image, setBase64Image] = useState<any>()
     const [rowsPerPage, setRowsPerPage] = useState(13)
     const [isConfirmModalOpened, setIsConfirmModalOpened] = useState(false)
     const [isEditModalOpened, setIsEditModalOpened] = useState(false)
     const [dataValue, setDataValue] = useState<RegistrationInterface>()
     const submit = useSubmit()
     const actionData = useActionData<any>()
-    const { user, users } = useLoaderData<{ user: { _id: string }, users: RegistrationInterface[]}>()
+    const { user, users } = useLoaderData<{ user: { _id: string }, users: RegistrationInterface[] }>()
 
     const handleCreateModalClosed = () => {
         setIsCreateModalOpened(false)
@@ -52,7 +54,7 @@ const Users = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredUsers, setFilteredUsers] = useState(users);
 
-    const handleSearchChange = (event:any) => {
+    const handleSearchChange = (event: any) => {
         setSearchQuery(event.target.value);
     };
 
@@ -63,7 +65,7 @@ const Users = () => {
                 user.firstName.toLowerCase().includes(lowerCaseQuery) ||
                 user.phone.toLowerCase().includes(lowerCaseQuery) ||
                 user.lastName.toLowerCase().includes(lowerCaseQuery) ||
-                user.email.toLowerCase().includes(lowerCaseQuery) 
+                user.email.toLowerCase().includes(lowerCaseQuery)
             );
         });
         setFilteredUsers(filtered);
@@ -74,19 +76,20 @@ const Users = () => {
                 <Toaster position="top-center" />
                 <div>
                     <Input
-                        placeholder="Search product..."
+                        size="lg"
+                        placeholder="Search user..."
                         startContent={<SearchIcon className="" />}
                         value={searchQuery}
                         onChange={handleSearchChange}
                         classNames={{
-                            inputWrapper: "h-14 lg:w-80",
+                            inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5",
                         }}
                     />
                 </div>
                 <div>
-                    <Button variant="flat" onClick={() => {
+                    <Button size="lg" variant="flat" onClick={() => {
                         setIsCreateModalOpened(true)
-                    }} color="primary" className="h-14 font-poppins text-md">
+                    }} color="primary" className="font-montserrat font-semibold text-md">
                         <PlusIcon className="h-6 w-6" />Create User
                     </Button>
                 </div>
@@ -94,40 +97,48 @@ const Users = () => {
 
 
             <CustomTable columns={UserColumns} rowsPerPage={rowsPerPage} onRowsPerPageChange={handleRowsPerPageChange}>
-            {filteredUsers.map((user: RegistrationInterface, index: number) => (
+                {filteredUsers.map((user: RegistrationInterface, index: number) => (
                     <TableRow key={index}>
                         <TableCell className="text-xs">
-                            <User
-                                avatarProps={{ radius: "sm", src: user.image }}
-                                name={user.firstName + ' ' + user.middleName + ' ' + user.lastName}
-                            />
+                            <p className="!text-xs">
+                                <User
+                                    avatarProps={{ radius: "sm", src: user.image }}
+                                    name={
+                                        <p className="font-nunito text-xs">
+                                            {user.firstName + ' ' + user.middleName + ' ' + user.lastName}
+                                        </p>
+                                    }
+                                />
+                            </p>
                         </TableCell>
-                        <TableCell className="text-sm">{user.email}</TableCell>
+                        <TableCell className="text-xs">{user.email}</TableCell>
                         <TableCell>{user.phone}</TableCell>
                         <TableCell>{user.role}</TableCell>
                         <TableCell className="relative flex items-center gap-4">
-                            <Button color="success" variant="flat" onClick={() => {
+                            <Button size="sm" color="success" variant="flat" onClick={() => {
                                 setIsEditModalOpened(true)
                                 setDataValue(user)
                             }}>
-                                Edit
+                               <EditIcon /> Edit
                             </Button>
-                            <Button color="danger" variant="flat" onClick={() => {
+                            <Button size="sm" color="danger" variant="flat" onClick={() => {
                                 setIsConfirmModalOpened(true)
                                 setDataValue(user)
                             }}>
-                                Delete
+                               <DeleteIcon /> Delete
                             </Button>
 
                         </TableCell>
                     </TableRow>
-                ))}            </CustomTable>
-            <ConfirmModal isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
+                ))}
+            </CustomTable>
+
+            <ConfirmModal className="dark:bg-slate-950 border border-white/5" header="Confirm Delete" content="Are you sure to delete user?" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
                 <div className="flex gap-4">
-                    <Button color="primary" variant="flat" className="font-poppins text-md" onPress={handleConfirmModalClosed}>
+                    <Button color="primary" variant="flat" className="font-montserrat font-semibold" size="sm" onPress={handleConfirmModalClosed}>
                         No
                     </Button>
-                    <Button color="danger" variant="flat" className="font-poppins text-md" onClick={() => {
+                    <Button color="danger" variant="flat" className="font-montserrat font-semibold " size="sm" onClick={() => {
                         setIsConfirmModalOpened(false)
                         if (dataValue) {
                             submit({
@@ -144,6 +155,7 @@ const Users = () => {
             </ConfirmModal>
             {/* Create Modal */}
             <EditModal
+                className="bg-gray-200 dark:bg-slate-950 "
                 modalTitle="Update user details"
                 isOpen={isEditModalOpened}
                 onOpenChange={handleEditModalClosed}
@@ -160,7 +172,8 @@ const Users = () => {
                             type="text"
                             labelPlacement="outside"
                             classNames={{
-                                label: "font-poppins text-sm text-default-100",
+                                label: "font-nunito text-sm text-default-100",
+                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 "
                             }}
                         />
                         <div className="flex gap-4">
@@ -173,8 +186,8 @@ const Users = () => {
                                 type="text"
                                 labelPlacement="outside"
                                 classNames={{
-                                    label: "font-poppins text-sm text-default-100",
-                                    inputWrapper: "mt-2"
+                                    label: "font-nunito text-sm text-default-100",
+                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
                                 }}
                             />
                             <Input
@@ -187,8 +200,8 @@ const Users = () => {
                                 type="text"
                                 labelPlacement="outside"
                                 classNames={{
-                                    label: "font-poppins text-sm text-default-100",
-                                    inputWrapper: "mt-2"
+                                    label: "font-nunito text-sm text-default-100",
+                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
                                 }}
                             />
                         </div>
@@ -202,11 +215,11 @@ const Users = () => {
                             type="text"
                             labelPlacement="outside"
                             classNames={{
-                                label: "font-poppins text-sm text-default-100",
-                                inputWrapper: "mt-2"
+                                label: "font-nunito text-sm text-default-100",
+                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
                             }}
                         />
-                        <div className="flex gap-4">
+                        <div className="flex gap-4 ">
                             <Input
                                 label=" Phone"
                                 isRequired
@@ -217,8 +230,8 @@ const Users = () => {
                                 type="text"
                                 labelPlacement="outside"
                                 classNames={{
-                                    label: "font-poppins text-sm text-default-100",
-                                    inputWrapper: "mt-2"
+                                    label: "font-nunito text-sm text-default-100",
+                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
                                 }}
                             />
                             <Input
@@ -231,36 +244,36 @@ const Users = () => {
                                 type="text"
                                 labelPlacement="outside"
                                 classNames={{
-                                    label: "font-poppins text-sm text-default-100",
-                                    inputWrapper: "mt-2"
+                                    label: "font-nunito text-sm text-default-100",
+                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
                                 }}
                             />
                         </div>
                         <Input
-                                label=" Role"
-                                isRequired
-                                name="role"
-                                defaultValue={dataValue?.role}
-                                isClearable
-                                placeholder=" "
-                                type="text"
-                                labelPlacement="outside"
-                                classNames={{
-                                    label: "font-poppins text-sm text-default-100",
-                                    inputWrapper: "mt-2"
-                                }}
-                            />
-                       
+                            label=" Role"
+                            isRequired
+                            name="role"
+                            defaultValue={dataValue?.role}
+                            isClearable
+                            placeholder=" "
+                            type="text"
+                            labelPlacement="outside"
+                            classNames={{
+                                label: "font-nunito text-sm text-default-100",
+                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
+                            }}
+                        />
+
 
                         <input name="admin" value={user._id} type="hidden" />
                         <input name="intent" value="update" type="hidden" />
                         <input name="id" value={dataValue?._id} type="hidden" />
 
-                        <div className="flex justify-end gap-2 mt-10 font-poppins">
-                            <Button color="danger" variant="flat" onPress={onClose}>
+                        <div className="flex justify-end gap-2 mt-10 ">
+                            <Button className="font-montserrat font-semibold" color="danger" variant="flat" onPress={onClose}>
                                 Close
                             </Button>
-                            <button type="submit" className="bg-primary-400 rounded-xl bg-opacity-20 text-primary text-sm font-poppins px-4">
+                            <button type="submit" className="bg-primary-400 rounded-xl bg-opacity-20 text-primary text-sm font-montserrat font-semibold px-4">
                                 Submit
                             </button>
                         </div>
@@ -270,6 +283,7 @@ const Users = () => {
 
             {/* Create Modal */}
             <CreateModal
+                className="bg-gray-200 dark:bg-slate-950"
                 modalTitle="Create New User"
                 isOpen={isCreateModalOpened}
                 onOpenChange={handleCreateModalClosed}
@@ -285,7 +299,8 @@ const Users = () => {
                             type="text"
                             labelPlacement="outside"
                             classNames={{
-                                label: "font-poppins text-sm text-default-100",
+                                label: "font-nunito text-sm text-default-100",
+                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 "
                             }}
                         />
                         <div className="flex gap-4">
@@ -297,8 +312,8 @@ const Users = () => {
                                 type="text"
                                 labelPlacement="outside"
                                 classNames={{
-                                    label: "font-poppins text-sm text-default-100",
-                                    inputWrapper: "mt-2"
+                                    label: "font-nunito text-sm text-default-100",
+                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
                                 }}
                             />
                             <Input
@@ -310,8 +325,8 @@ const Users = () => {
                                 type="text"
                                 labelPlacement="outside"
                                 classNames={{
-                                    label: "font-poppins text-sm text-default-100",
-                                    inputWrapper: "mt-2"
+                                    label: "font-nunito text-sm text-default-100",
+                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
                                 }}
                             />
                         </div>
@@ -324,8 +339,8 @@ const Users = () => {
                             type="text"
                             labelPlacement="outside"
                             classNames={{
-                                label: "font-poppins text-sm text-default-100",
-                                inputWrapper: "mt-2"
+                                label: "font-nunito text-sm text-default-100",
+                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
                             }}
                         />
                         <div className="flex gap-4">
@@ -338,8 +353,8 @@ const Users = () => {
                                 type="text"
                                 labelPlacement="outside"
                                 classNames={{
-                                    label: "font-poppins text-sm text-default-100",
-                                    inputWrapper: "mt-2"
+                                    label: "font-nunito text-sm text-default-100",
+                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
                                 }}
                             />
                             <Input
@@ -351,35 +366,40 @@ const Users = () => {
                                 type="text"
                                 labelPlacement="outside"
                                 classNames={{
-                                    label: "font-poppins text-sm text-default-100",
-                                    inputWrapper: "mt-2"
+                                    label: "font-nunito text-sm text-default-100",
+                                    inputWrapper: "bg-white focus:dark:bg-slate-900 focus:bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
                                 }}
                             />
                         </div>
-                        <div className="pt-2">
+                        <div className="mt-4">
                             <Select
                                 label="Role"
                                 labelPlacement="outside"
                                 placeholder=" "
                                 isRequired
                                 name="role"
+                                classNames={{
+                                    label: "font-nunito text-sm text-default-100",
+                                    popoverContent: "focus:dark:bg-slate-900 focus-bg-white bg-white shadow-sm dark:bg-slate-900 border border-white/5 font-nunito",
+                                    trigger: "focus:dark:bg-slate-900 focus:bg-white bg-white shadow-sm dark:bg-slate-900 border border-white/5 font-nunito mt-4"
+                                }}
                             >
                                 {[
                                     { key: "admin", value: "admin", display_name: "Admin" },
                                     { key: "attendant", value: "attendant", display_name: "Attendant" },
                                 ].map((role) => (
-                                    <SelectItem key={role.key}>{role.display_name}</SelectItem>
+                                    <SelectItem  key={role.key}>{role.display_name}</SelectItem>
                                 ))}
                             </Select>
                         </div>
 
-                        <div className="pt-2">
-                            <label className="font-poppins block text-sm" htmlFor="">Image</label>
+                        <div className=" mt-4">
+                            <label className="font-nunito block text-sm" htmlFor="">Image</label>
                             <input
                                 name="image"
                                 required
                                 placeholder=" "
-                                className="font-poppins mt-2 rounded-lg h-10 w-[25vw] bg-default-100"
+                                className="focus:dark:bg-slate-900 focus:bg-white font-nunito mt-2 rounded-lg h-10 w-[25vw] bg-white shadow-smx dark:bg-slate-900 border border-white/5"
                                 type="file"
                                 onChange={(event: any) => {
                                     const file = event.target.files[0];
@@ -398,11 +418,11 @@ const Users = () => {
                         <input name="intent" value="create" type="hidden" />
                         <input name="base64Image" value={base64Image} type="hidden" />
 
-                        <div className="flex justify-end gap-2 mt-10 font-poppins">
+                        <div className="flex justify-end gap-2 mt-10 font-nunito">
                             <Button color="danger" variant="flat" onPress={onClose}>
                                 Close
                             </Button>
-                            <button type="submit" className="bg-primary-400 rounded-xl bg-opacity-20 text-primary text-sm font-poppins px-4">
+                            <button type="submit" className="bg-primary-400 rounded-xl bg-opacity-20 text-primary text-sm font-nunito px-4">
                                 Submit
                             </button>
                         </div>

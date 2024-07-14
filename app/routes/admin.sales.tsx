@@ -16,9 +16,9 @@ import AttendantLayout from "~/layout/attendantLayout"
 
 const Sales = () => {
     const [rowsPerPage, setRowsPerPage] = useState(8)
-    const { sales } = useLoaderData<{ sales: SalesInterface[] }>()
+    const { adminsales } = useLoaderData<{ adminsales: SalesInterface[] }>()
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredSales, setFilteredSales] = useState(sales);
+    const [filteredSales, setFilteredSales] = useState(adminsales);
     const [isEditModalOpened, setIsEditModalOpened] = useState(false)
     const [dataValue, setDataValue] = useState<SalesInterface>()
     const actionData = useActionData<any>()
@@ -86,14 +86,14 @@ const Sales = () => {
    }
 
     useEffect(() => {
-        const filtered = sales.filter(sale => {
+        const filtered = adminsales.filter(sale => {
             const lowerCaseQuery = searchQuery.toLowerCase();
             return (
                 sale._id.toLowerCase().includes(lowerCaseQuery)
             );
         });
         setFilteredSales(filtered);
-    }, [searchQuery, sales]);
+    }, [searchQuery, adminsales]);
     useEffect(() => {
         if (actionData) {
             if (actionData.success) {
@@ -347,7 +347,7 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
-    const { sales } = await salesController.salesFetch({ request });
+    const { adminsales } = await salesController.salesFetch({ request });
 
-    return { sales }
+    return { adminsales }
 }

@@ -3,6 +3,8 @@ import { ActionFunction, json, LoaderFunction } from "@remix-run/node"
 import { Form, useActionData, useLoaderData, useSubmit } from "@remix-run/react"
 import { useEffect, useState } from "react"
 import { Toaster } from "react-hot-toast"
+import { DeleteIcon } from "~/components/icons/DeleteIcon"
+import { EditIcon } from "~/components/icons/EditIcon"
 import PlusIcon from "~/components/icons/PlusIcon"
 import { SearchIcon } from "~/components/icons/SearchIcon"
 import ConfirmModal from "~/components/modal/confirmModal"
@@ -75,19 +77,20 @@ const Suppliers = () => {
                 <Toaster position="top-center" />
                 <div>
                     <Input
+                    size="lg"
                         placeholder="Search product..."
                         startContent={<SearchIcon className="" />}
                         value={searchQuery}
                         onChange={handleSearchChange}
                         classNames={{
-                            inputWrapper: "h-14 lg:w-80",
+                            inputWrapper: "dark:bg-slate-900 bg-white shadow-sm border border-white/5",
                         }}
                     />
                 </div>
                 <div>
-                    <Button variant="flat" onClick={() => {
+                    <Button variant="flat" size="lg" onClick={() => {
                         setIsCreateModalOpened(true)
-                    }} color="primary" className="h-14 font-poppins text-md">
+                    }} color="primary" className=" font-monserrat font-semibold">
                         <PlusIcon className="h-6 w-6" />Create Supplier
                     </Button>
                 </div>
@@ -100,35 +103,39 @@ const Suppliers = () => {
                         <TableCell className="text-xs">
                             <User
                                 avatarProps={{ radius: "sm", src: supplier.firstName }}
-                                name={supplier.firstName + ' ' + supplier.middleName + ' ' + supplier.lastName}
+                                name={
+                                    <p className="font-nunito text-xs">
+                                        {supplier.firstName + ' ' + supplier.middleName + ' ' + supplier.lastName}
+                                    </p>
+                                }
                             />
                         </TableCell>
-                        <TableCell className="text-sm">{supplier.email}</TableCell>
+                        <TableCell className="">{supplier.email}</TableCell>
                         <TableCell>{supplier.phone}</TableCell>
                         <TableCell className="relative flex items-center gap-4">
-                            <Button color="success" variant="flat" onClick={() => {
+                            <Button size="sm" color="success" variant="flat" onClick={() => {
                                 setIsEditModalOpened(true)
                                 setDataValue(supplier)
                             }}>
-                                Edit
+                               <EditIcon/> Edit
                             </Button>
-                            <Button color="danger" variant="flat" onClick={() => {
+                            <Button size="sm" color="danger" variant="flat" onClick={() => {
                                 setIsConfirmModalOpened(true)
                                 setDataValue(supplier)
                             }}>
-                                Delete
+                                <DeleteIcon/> Delete
                             </Button>
 
                         </TableCell>
                     </TableRow>
                 ))}
             </CustomTable>
-            <ConfirmModal isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
+            <ConfirmModal content="Are you sure to delete supplier?" header="Cnfirm Delete" className="dark:bg-slate-900 border border-white/5"  isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
                 <div className="flex gap-4">
-                    <Button color="primary" variant="flat" className="font-poppins text-md" onPress={handleConfirmModalClosed}>
+                    <Button size="sm" color="primary" variant="flat" className="font-montserrat font-semibold" onPress={handleConfirmModalClosed}>
                         No
                     </Button>
-                    <Button color="danger" variant="flat" className="font-poppins text-md" onClick={() => {
+                    <Button size="sm" color="danger" variant="flat" className="font-montserrat font-semibold" onClick={() => {
                         setIsConfirmModalOpened(false)
                         if (dataValue) {
                             submit({
@@ -145,6 +152,7 @@ const Suppliers = () => {
             </ConfirmModal>
             {/* Create Modal */}
             <EditModal
+                className="dark:bg-slate-950 border border-white/5 bg-gray-200"
                 modalTitle="Update user details"
                 isOpen={isEditModalOpened}
                 onOpenChange={handleEditModalClosed}
@@ -161,7 +169,7 @@ const Suppliers = () => {
                             type="text"
                             labelPlacement="outside"
                             classNames={{
-                                label: "font-poppins text-sm text-default-100",
+                                inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
                             }}
                         />
                         <div className="flex gap-4">
@@ -174,8 +182,7 @@ const Suppliers = () => {
                                 type="text"
                                 labelPlacement="outside"
                                 classNames={{
-                                    label: "font-poppins text-sm text-default-100",
-                                    inputWrapper: "mt-2"
+                                    inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
                                 }}
                             />
                             <Input
@@ -188,8 +195,7 @@ const Suppliers = () => {
                                 type="text"
                                 labelPlacement="outside"
                                 classNames={{
-                                    label: "font-poppins text-sm text-default-100",
-                                    inputWrapper: "mt-2"
+                                    inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
                                 }}
                             />
                         </div>
@@ -203,8 +209,7 @@ const Suppliers = () => {
                             type="text"
                             labelPlacement="outside"
                             classNames={{
-                                label: "font-poppins text-sm text-default-100",
-                                inputWrapper: "mt-2"
+                                inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
                             }}
                         />
                         <div className="flex gap-4">
@@ -218,8 +223,7 @@ const Suppliers = () => {
                                 type="text"
                                 labelPlacement="outside"
                                 classNames={{
-                                    label: "font-poppins text-sm text-default-100",
-                                    inputWrapper: "mt-2"
+                                    inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
                                 }}
                             />
                            
@@ -230,11 +234,11 @@ const Suppliers = () => {
                         <input name="intent" value="update" type="hidden" />
                         <input name="id" value={dataValue?._id} type="hidden" />
 
-                        <div className="flex justify-end gap-2 mt-10 font-poppins">
+                        <div className="flex justify-end gap-2 mt-10 font-nunito">
                             <Button color="danger" variant="flat" onPress={onClose}>
                                 Close
                             </Button>
-                            <button type="submit" className="bg-primary-400 rounded-xl bg-opacity-20 text-primary text-sm font-poppins px-4">
+                            <button type="submit" className="bg-primary-400 rounded-xl bg-opacity-20 text-primary text-sm font-nunito px-4">
                                 Submit
                             </button>
                         </div>
@@ -244,6 +248,7 @@ const Suppliers = () => {
 
             {/* Create Modal */}
             <CreateModal
+                className="dark:bg-slate-950 border border-white/5 bg-gray-200"
                 modalTitle="Create New User"
                 isOpen={isCreateModalOpened}
                 onOpenChange={handleCreateModalClosed}
@@ -259,8 +264,8 @@ const Suppliers = () => {
                             type="text"
                             labelPlacement="outside"
                             classNames={{
-                                label: "font-poppins text-sm text-default-100",
-                            }}
+                                    inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
+                                }}
                         />
                         <div className="flex gap-4">
                             <Input
@@ -271,8 +276,7 @@ const Suppliers = () => {
                                 type="text"
                                 labelPlacement="outside"
                                 classNames={{
-                                    label: "font-poppins text-sm text-default-100",
-                                    inputWrapper: "mt-2"
+                                    inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
                                 }}
                             />
                             <Input
@@ -284,8 +288,7 @@ const Suppliers = () => {
                                 type="text"
                                 labelPlacement="outside"
                                 classNames={{
-                                    label: "font-poppins text-sm text-default-100",
-                                    inputWrapper: "mt-2"
+                                    inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
                                 }}
                             />
                         </div>
@@ -298,8 +301,7 @@ const Suppliers = () => {
                             type="text"
                             labelPlacement="outside"
                             classNames={{
-                                label: "font-poppins text-sm text-default-100",
-                                inputWrapper: "mt-2"
+                                inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
                             }}
                         />
                         <div className="flex gap-4">
@@ -312,8 +314,7 @@ const Suppliers = () => {
                                 type="text"
                                 labelPlacement="outside"
                                 classNames={{
-                                    label: "font-poppins text-sm text-default-100",
-                                    inputWrapper: "mt-2"
+                                    inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
                                 }}
                             />
                         </div>
@@ -322,11 +323,11 @@ const Suppliers = () => {
                         <input name="admin" value={user._id} type="hidden" />
                         <input name="intent" value="create" type="hidden" />
 
-                        <div className="flex justify-end gap-2 mt-10 font-poppins">
+                        <div className="flex justify-end gap-2 mt-10 font-nunito">
                             <Button color="danger" variant="flat" onPress={onClose}>
                                 Close
                             </Button>
-                            <button type="submit" className="bg-primary-400 rounded-xl bg-opacity-20 text-primary text-sm font-poppins px-4">
+                            <button type="submit" className="bg-primary-400 rounded-xl bg-opacity-20 text-primary text-sm font-nunito px-4">
                                 Submit
                             </button>
                         </div>

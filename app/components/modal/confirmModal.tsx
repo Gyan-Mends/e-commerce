@@ -5,21 +5,22 @@ import { ReactNode } from "react";
 interface DeleteModalProps{
   header:ReactNode,
     content:ReactNode,
+    className:string,
     isOpen: boolean,
     onOpenChange: () => void,
     children:ReactNode
 }
-export default function ConfirmModal({isOpen,onOpenChange,children,content,header}: DeleteModalProps) {
+export default function ConfirmModal({isOpen,onOpenChange,children,content,header,className}: DeleteModalProps) {
 
   return (
     <>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal className={className} isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex items-center justify-center gap-1 font-poppins text-2xl text-danger">{header}</ModalHeader>
+              <ModalHeader className="flex items-center justify-center gap-1 font-montserrat font-semibold text-2xl text-danger">{header}</ModalHeader>
               <ModalBody className="flex items-center justify-center">
-                <p className="font-poppins">{content}</p>
+                <p className="font-nunito text-md">{content}</p>
               </ModalBody>
               <ModalFooter className="flex items-center justify-center">
                 {children}

@@ -115,8 +115,9 @@ class SalesContoller {
     const token = session.get("email");
     const user = await Registration.findOne({ email: token })
     const sales = await Sales.find({ attendant: user?._id }).populate("products.product").populate("attendant").exec();
+    const adminsales = await Sales.find().populate("products.product").populate("attendant").exec();
 
-    return { sales }
+    return { sales,adminsales }
   }
 }
 

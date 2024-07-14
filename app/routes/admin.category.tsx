@@ -15,6 +15,8 @@ import AdminLayout from "~/layout/adminLayout";
 import { CategoryInterface } from "~/interfaces/interface";
 import ViewModal from "~/components/modal/viewModal";
 import ConfirmModal from "~/components/modal/confirmModal";
+import { EditIcon } from "~/components/icons/EditIcon";
+import { DeleteIcon } from "~/components/icons/DeleteIcon";
 
 type SessionData = {
     sessionId: {
@@ -56,7 +58,7 @@ const Category = () => {
     const handleCreateModalOpened = () => {
         setCreateModalOpened(false)
     }
-   
+
 
 
 
@@ -76,17 +78,18 @@ const Category = () => {
                 <Toaster position="top-center" />
                 <div>
                     <Input
+                        size="lg"
                         placeholder="Search product..."
                         startContent={<SearchIcon className="" />}
                         classNames={{
-                            inputWrapper: "h-14 lg:w-80",
+                            inputWrapper: "dark:bg-slate-900 bg-white border border-white/5"
                         }}
                     />
                 </div>
                 <div>
                     <Button variant="flat" onClick={() => {
                         setCreateModalOpened(true)
-                    }} color="primary" className="h-14 font-poppins text-md">
+                    }} size="lg" color="primary" className=" font-montserrat font-semibold">
                         <PlusIcon className="h-6 w-6" />Add Category
                     </Button>
                 </div>
@@ -99,20 +102,19 @@ const Category = () => {
                             <TableCell>{categories.name}</TableCell>
                             <TableCell>{categories.description}</TableCell>
                             <TableCell className="relative flex items-center gap-4">
-                                
-                                <Button color="success" variant="flat" onClick={() => {
+                                <Button size="sm" color="success" variant="flat" onClick={() => {
                                     setEditModalOpened(true)
                                     setSelectedCategory(categories)
 
                                 }}>
-                                    Edit
+                                    <EditIcon /> Edit
                                 </Button >
-                                    <Button color="danger" variant="flat" onClick={() => {
-                                        setSelectedCategory(categories)
-                                        setConfirmModalOpened(true)
-                                    }}>
-                                        Delete
-                                    </Button>
+                                <Button size="sm" color="danger" variant="flat" onClick={() => {
+                                    setSelectedCategory(categories)
+                                    setConfirmModalOpened(true)
+                                }}>
+                                    <DeleteIcon /> Delete
+                                </Button>
 
                             </TableCell>
                         </TableRow>
@@ -121,8 +123,8 @@ const Category = () => {
             </div>
 
             <EditModal
+                className="dark:bg-slate-950 bg-gray-200"
                 modalTitle="Edit Category"
-                name="Edit Category"
                 isOpen={editModalOpened}
                 onOpenChange={handleEditModalClose}
             >
@@ -136,7 +138,8 @@ const Category = () => {
                             type="text"
                             labelPlacement="outside"
                             classNames={{
-                                label: "font-poppins text-sm text-default-100",
+                                label: "font-nunito text-sm text-default-100",
+                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 "
                             }}
                         />
                         <input name="seller" value={sessionId._id} type="hidden" />
@@ -149,16 +152,19 @@ const Category = () => {
                             labelPlacement="outside"
                             placeholder=" "
                             name="description"
-                            className="mt-4 font-poppins text-sm"
+                            className="mt-4 font-nunito text-sm"
                             defaultValue={selectedCategory?.description}
+                            classNames={{
+                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 "
+                            }}
                         />
 
 
-                        <div className="flex justify-end gap-2 mt-10 font-poppins">
+                        <div className="flex justify-end gap-2 mt-10 font-nunito">
                             <Button color="danger" onPress={onClose}>
                                 Close
                             </Button>
-                            <button type="submit" className="bg-primary-400 rounded-xl font-poppins px-4">
+                            <button type="submit" className="text-white bg-primary-400 rounded-xl font-nunito px-4">
                                 Submit
                             </button>
                         </div>
@@ -169,21 +175,22 @@ const Category = () => {
 
             <ViewModal className="" modalTitle="Category Dateails" isOpen={viewModalOpened} onOpenChange={handleViewModalClosed}>
                 <div >
-                    <p className="font-poppins text-md">Category Name</p>
+                    <p className="font-nunito text-md">Category Name</p>
                     <p>{selectedCategory?.name}</p>
 
-                    <p className="font-poppins text-md mt-6">Category Description</p>
+                    <p className="font-nunito text-md mt-6">Category Description</p>
                     <p>{selectedCategory?.description}</p>
 
                 </div>
             </ViewModal>
 
-            <ConfirmModal isOpen={confirmModalOpened} onOpenChange={handleConfirmModalClosed}>
+            <ConfirmModal className="dark:bg-slate-950 bg-gray-200"
+                content="Are you sure to delete category" header="Comfirm Delete" isOpen={confirmModalOpened} onOpenChange={handleConfirmModalClosed}>
                 <div className="flex gap-4">
-                    <Button color="danger" className="font-poppins text-md" onPress={handleConfirmModalClosed}>
+                    <Button size="sm" color="danger" className="font-montserrat font-semibold" onPress={handleConfirmModalClosed}>
                         No
                     </Button>
-                    <Button color="primary" className="font-poppins text-md" onClick={() => {
+                    <Button size="sm" color="primary" className="font-montserrat font-semibold" onClick={() => {
                         if (selectedCategory) {
                             submit({
                                 intent: "delete",
@@ -200,8 +207,8 @@ const Category = () => {
             </ConfirmModal>
 
             <CreateModal
+                className="dark:bg-slate-950 bg-gray-200"
                 modalTitle="Add new category"
-                name="Add Category"
                 isOpen={createModalOpened}
                 onOpenChange={handleCreateModalOpened}
             >
@@ -214,10 +221,11 @@ const Category = () => {
                             type="text"
                             labelPlacement="outside"
                             classNames={{
-                                label: "font-poppins text-sm text-default-100",
+                                label: "font-nunito text-sm text-default-100",
+                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 "
                             }}
                         />
-                        <input name="seller" value={sessionId._id} type="" />
+                        <input hidden name="seller" value={sessionId._id} type="" />
 
                         <Textarea
                             autoFocus
@@ -225,20 +233,24 @@ const Category = () => {
                             labelPlacement="outside"
                             placeholder=" "
                             name="description"
-                            className="mt-4 font-poppins text-sm"
+                            className="mt-4 font-nunito text-sm"
+                            classNames={{
+                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 "
+                            }}
                         />
 
-                        <div className="flex justify-end gap-2 mt-10 font-poppins">
+                        <div className="flex justify-end gap-2 mt-10 font-nunito">
                             <Button color="danger" onPress={onClose}>
                                 Close
                             </Button>
-                            <button type="submit" className="bg-primary-400 rounded-xl font-poppins px-4">
+                            <button type="submit" className=" text-white bg-primary-400 rounded-xl font-nunito px-4">
                                 Submit
                             </button>
                         </div>
                     </Form>
                 )}
             </CreateModal>
+            
         </AdminLayout>
     );
 };

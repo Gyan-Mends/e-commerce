@@ -48,10 +48,10 @@ const Login = () => {
     }
 
     return (
-        <div className={`lg:grid lg:grid-cols-2 h-[100vh] bg-slate-950 overflow-y-hidden `}>
+        <div className={`lg:grid lg:grid-cols-2 h-[100vh] dark:bg-slate-950 overflow-y-hidden `}>
             <Toaster position="top-center" />
             <div className="h-[100vh] w-full flex items-center justify-center ">
-                <div className="bg-slate-900 p-6 rounded-2xl lg:w-[30vw] border border-white/5 relative">
+                <div className="dark:bg-slate-900 shadow-lg p-6 rounded-2xl lg:w-[30vw] border border-white/5 relative">
                     <p className=" font-montserrat font-semibold text-3xl">Login To </p>
                     <p className="font-montserrat font-semibold text-3xl mt-2">Your Account </p>
                     <Form method="post" className="mt-16">
@@ -117,7 +117,7 @@ const Login = () => {
                             <Checkbox ><p className="font-nunito text-sm">Remember me</p></Checkbox>
                             <Link to=""><p className="text-primary font-nunito text-sm">Forgot password?</p></Link>
                         </div>
-                        <button className=" bg-primary rounded-lg w-full h-10  mt-10 font-semibold font-montserrat">Login</button>
+                        <button className=" bg-primary rounded-lg w-full h-10  mt-10 font-semibold font-montserrat text-white">Login</button>
                     </Form>
                 </div>
             </div>

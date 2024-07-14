@@ -30,24 +30,24 @@ const Attendant = () => {
                     {loading ? (
                         <div className='lg:grid lg:grid-cols-2 gap-10'>
                             {skeletons.slice(0, 2).map((_, index) => (
-                                <Skeleton key={index} className="rounded-lg h-[100px] transition-all duration-200" />
+                                <Skeleton key={index} className="rounded-lg h-[85px] rounded-2xl transition-all duration-200" />
                             ))}
                         </div>
                     ) : (
                         // Sales && Refunds overview
                         <div className='lg:grid lg:grid-cols-2 gap-10'>
                             {/* events */}
-                            <div className="h-[85px] rounded-2xl transition-all duration-200 bg-primary shadow-lg dark:bg-slate-900 border border-white/5 flex items-center justify-between px-4">
+                            <div className="h-[85px] rounded-2xl transition-all duration-200 bg-white  shadow-sm  dark:bg-slate-900 border border-white/5 flex items-center justify-between px-4">
                                 <div className='flex '>
                                     <div className='flex gap-4'>
                                         {/* Other content here */}
-                                        <div className='bg-white dark:bg-indigo-500 flex items-center justify-center p-2 rounded-xl shadow-md'>
-                                            <EventIcon className="h-8 w-8 dark:text-white text-primary" />
+                                        <div className='bg-primary dark:bg-indigo-500 flex items-center justify-center p-2 rounded-xl shadow-md'>
+                                            <EventIcon className="h-8 w-8 dark:text-white text-white" />
                                         </div>
                                         <div className='flex items-center text-white'>
                                             <span>
-                                                <p className='font-poppins text-md'>23434K</p>
-                                                <p className='font-poppins text-sm'>Daily Sales</p>
+                                                <p className='text-black dark:text-white font-nunito text-md'>23434K</p>
+                                                <p className='text-black dark:text-white font-nunito text-md'>Daily Sales</p>
                                             </span>
                                         </div>
                                     </div>
@@ -57,17 +57,17 @@ const Attendant = () => {
                                 </div>
                             </div>
                             {/* category */}
-                            <div className="h-[85px] rounded-2xl transition-all duration-200 bg-primary shadow-lg dark:bg-slate-900 border border-white/5 flex items-center justify-between px-4">
+                            <div className="h-[85px] rounded-2xl transition-all duration-200 bg-white  shadow-sm  dark:bg-slate-900 border border-white/5 flex items-center justify-between px-4">
                                 <div className='flex '>
                                     <div className='flex gap-4'>
                                         {/* Other content here */}
-                                        <div className='bg-white dark:bg-indigo-500 flex items-center justify-center p-2 rounded-xl shadow-md'>
-                                            <EventIcon className="h-8 w-8 dark:text-white text-primary" />
+                                        <div className='bg-primary dark:bg-indigo-500 flex items-center justify-center p-2 rounded-xl shadow-md'>
+                                            <EventIcon className="h-8 w-8 dark:text-white text-white" />
                                         </div>
                                         <div className='flex items-center text-white'>
                                             <span>
-                                                <p className='font-poppins text-md'>23434K</p>
-                                                <p className='font-poppins text-sm'>Daily Sales</p>
+                                                <p className='text-black dark:text-white font-nunito text-md'>23434K</p>
+                                                <p className='text-black dark:text-white font-nunito text-md'>Daily Sales</p>
                                             </span>
                                         </div>
                                     </div>
@@ -83,23 +83,23 @@ const Attendant = () => {
                     {loading ? (
                         <div className='lg:grid lg:grid-cols-2  mt-6 gap-10'>
                             {skeletons.slice(0, 2).map((_, index) => (
-                                <Skeleton key={index} className="rounded-lg h-[100px] transition-all duration-200" />
+                                <Skeleton key={index} className="rounded-lg rounded-2xl h-[85px] transition-all duration-200" />
                             ))}
                         </div>
                     ) : (
                         <div className='lg:grid lg:grid-cols-2 mt-6 gap-10'>
                             {/* Contestants */}
-                            <div className="h-[85px] rounded-2xl transition-all duration-200 bg-primary shadow-lg dark:bg-slate-900 border border-white/5 flex items-center justify-between px-4">
+                            <div className="h-[85px] rounded-2xl transition-all duration-200 bg-white  shadow-sm  dark:bg-slate-900 border border-white/5 flex items-center justify-between px-4">
                                 <div className='flex '>
                                     <div className='flex gap-4'>
                                         {/* Other content here */}
-                                        <div className='bg-white dark:bg-indigo-500 flex items-center justify-center p-2 rounded-xl shadow-md'>
-                                            <EventIcon className="h-8 w-8 dark:text-white text-primary" />
+                                        <div className='bg-primary dark:bg-indigo-500 flex items-center justify-center p-2 rounded-xl shadow-md'>
+                                            <EventIcon className="h-8 w-8 dark:text-white text-white" />
                                         </div>
                                         <div className='flex items-center text-white'>
                                             <span>
-                                                <p className='font-poppins text-md'>23434K</p>
-                                                <p className='font-poppins text-sm'>Daily Sales</p>
+                                                <p className='text-black dark:text-white font-nunito text-md'>23434K</p>
+                                                <p className='text-black dark:text-white font-nunito text-md'>Daily Sales</p>
                                             </span>
                                         </div>
                                     </div>
@@ -109,17 +109,17 @@ const Attendant = () => {
                                 </div>
                             </div>
                             {/* Edition */}
-                            <div className="h-[85px] rounded-2xl transition-all duration-200 bg-primary shadow-lg dark:bg-slate-900 border border-white/5 flex items-center justify-between px-4">
+                            <div className="h-[85px] rounded-2xl transition-all duration-200 bg-white  shadow-sm  dark:bg-slate-900 border border-white/5 flex items-center justify-between px-4">
                                 <div className='flex '>
                                     <div className='flex gap-4'>
                                         {/* Other content here */}
-                                        <div className='bg-white dark:bg-indigo-500 flex items-center justify-center p-2 rounded-xl shadow-md'>
-                                            <EventIcon className="h-8 w-8 dark:text-white text-primary" />
+                                        <div className='bg-primary dark:bg-indigo-500 flex items-center justify-center p-2 rounded-xl shadow-md'>
+                                            <EventIcon className="h-8 w-8 dark:text-white text-white" />
                                         </div>
                                         <div className='flex items-center text-white'>
                                             <span>
-                                                <p className='font-poppins text-md'>23434K</p>
-                                                <p className='font-poppins text-sm'>Daily Sales</p>
+                                                <p className='text-black dark:text-white font-nunito text-md'>23434K</p>
+                                                <p className='text-black dark:text-white font-nunito text-md'>Daily Sales</p>
                                             </span>
                                         </div>
                                     </div>
@@ -134,9 +134,9 @@ const Attendant = () => {
                     {/* Chart */}
                     {/* Chart */}
                     {loading ? (
-                        <div className=' mt-20 gap-10'>
+                        <div className=' mt-10 gap-10'>
                             {skeletons.slice(0, 1).map((_, index) => (
-                                <Skeleton key={index} className="rounded-lg h-[45vh] transition-all duration-200" />
+                                <Skeleton key={index} className="rounded-lg h-[55vh] transition-all duration-200" />
                             ))}
                         </div>
                     ) : (

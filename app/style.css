@@ -7,25 +7,40 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-    font-family: 'poppins';
-    src: url('./components/fonts/Poppins-Regular.ttf') format('ttf');
-  }
+
   
-  /* Custom scrollbar styles */
-.scrollbar-thin::-webkit-scrollbar {
+  /* Custom scrollbar for darkmode */
+.darkscrollbar-thin::-webkit-scrollbar {
   width: 2px;
   border-radius: 10px;
 }
 
-.scrollbar-thin::-webkit-scrollbar-track {
+.darkscrollbar-thin::-webkit-scrollbar-track {
   background: #020617;
 }
 
-.scrollbar-thin::-webkit-scrollbar-thumb {
+.darkscrollbar-thin::-webkit-scrollbar-thumb {
   background: #020617;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: #020617;
 }
+
+  /* Custom scrollbar styles */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 2px;
+    border-radius: 10px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: #E5E7EB;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #E5E7EB;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #E5E7EB;
+  }

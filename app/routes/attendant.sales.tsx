@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import CartIcon from "~/components/icons/CartIcon";
 import { DeleteIcon } from "~/components/icons/DeleteIcon";
+import MinusIcon from "~/components/icons/MinusIcon";
 import PlusIcon from "~/components/icons/PlusIcon";
 import { SearchIcon } from "~/components/icons/SearchIcon";
 import ConfirmModal from "~/components/modal/confirmModal";
@@ -38,24 +39,19 @@ const Sales = () => {
     const [amountPaid, setAmountPaid] = useState('');
     const [balance, setBalance] = useState(0);
     const [cartTotalPricePerItem] = useState();
-
     const [isCheckoutDisabled, setIsCheckoutDisabled] = useState(true);
-
 
     const mm = carts.reduce((acc, cart) => {
         return acc + Number(cart.price); // Ensure quantity is treated as a number
     }, 0);
-
     const handleAmountPaidChange = (event: any) => {
         const paid = parseFloat(event.target.value) || 0;
         setAmountPaid(event.target.value);
         setBalance(totalCost - paid);
     };
-
     const handleSearchChange = (event: any) => {
         setSearchQuery(event.target.value);
     };
-
     const handleEditModalClose = () => {
         setIsEditModalOpened(false);
     };
@@ -72,7 +68,6 @@ const Sales = () => {
         });
         setFilteredSuppliers(filtered);
     }, [searchQuery, product]);
-
     useEffect(() => {
         if (actionData) {
             if (actionData.success) {
@@ -130,7 +125,7 @@ const Sales = () => {
                         <span>Total Amount</span>
                         <span>Ghc ${totalPrice}</span>
                     </div>
-                    <div class="item">
+                    <div classname="text-primary" class="item">
                         <span>Amount Paid</span>
                         <span>Ghc ${amountPaid}</span>
                     </div>
@@ -152,8 +147,6 @@ const Sales = () => {
     };
 
 
-
-
     return (
         <AttendantLayout pageName="Sales Point">
             <Toaster position="top-center" />
@@ -167,26 +160,26 @@ const Sales = () => {
                             value={searchQuery}
                             onChange={handleSearchChange}
                             classNames={{
-                                inputWrapper: "h-14 lg:w-80 bg-slate-900 border border-white/5 hover:bg-slate-800",
+                                inputWrapper: "h-14 lg:w-80 dark:bg-slate-900 bg-white border border-white/5 hover:bg-slate-800",
                             }}
                         />
                     </div>
 
                     {/* product items */}
-                    <div className="mt-4 lg:grid lg:grid-cols-4 gap-10 overflow-y-scroll scrollbar-thin pr-8
+                    <div className="mt-4 lg:grid lg:grid-cols-4 gap-10 overflow-y-scroll scrollbar-thin dark:scrollbar-thin pr-8
                          h-[76vh] rounded-lg overflow-x-hidden">
                         {filteredSuppliers.map((products: ProductInterface, index: number) => (
-                            <div className="lg:w-[13vw] rounded-lg p-2 lg:h-[30vh] mt-4 bg-slate-900 border border-white/5" key={index} onClick={() => {
+                            <div className="lg:w-[13vw] rounded-lg p-2 lg:h-[30vh] mt-4 dark:bg-slate-900 bg-white border border-white/5" key={index} onClick={() => {
                                 setIsEditModalOpened(true);
                                 setDataValue(products);
                             }}>
                                 <div className="h-[19vh] w-full">
                                     <img className="rounded-lg h-[19vh] w-full" src={products?.image} alt="" />
                                 </div>
-                                <p className="font-poppins mt-4 text-sm">{products?.name}</p>
+                                <p className="font-nunito mt-4 text-sm">{products?.name}</p>
                                 <div className="flex justify-between">
-                                    <p className="font-poppins mt-4 text-xl text-primary">GHC {products?.price}</p>
-                                    <p className="font-poppins mt-4 text-sm">{products?.quantity} items</p>
+                                    <p className="font-nunito mt-4 text-xl text-primary">GHC {products?.price}</p>
+                                    <p className="font-nunito mt-4 text-sm">{products?.quantity} items</p>
                                 </div>
                             </div>
                         ))}
@@ -194,18 +187,18 @@ const Sales = () => {
                 </div>
                 {/* Items added to cart */}
                 <Form method="post">
-                    <div className="h-[85vh] border border-white/5 rounded-xl shadow-lg flex flex-col justify-between">
-                        <div className="h-[53vh] overflow-y-scroll scrollbar-thin">
+                    <div className="h-[85vh] border border-white/5   rounded-xl  dark:bg-slate-950 flex flex-col justify-between">
+                        <div className="h-[53vh] overflow-y-scroll scrollbar-thin dark:darkscrollbar-thin">
                             {/* added items come here */}
                             {carts.map((cart: CartInterface, index: number) => (
-                                <div key={index} className="h-20 w-full bg-slate-900 border border-white/5 mt-4 rounded-lg p-2 flex gap-10">
+                                <div key={index} className="h-20 w-full bg-white dark:bg-slate-900 border border-white/5 mt-4 rounded-lg p-2 flex gap-10">
                                     <div className="h-16 w-20">
                                         <img className="h-16 w-20 rounded-lg" src={cart?.product?.image} alt="" />
                                     </div>
                                     <div className="flex flex-col justify-between w-full">
                                         <div>
                                             <div className="flex justify-between">
-                                                <p className="font-poppins text-lg">{cart?.product?.name}</p>
+                                                <p className="font-nunito text-lg">{cart?.product?.name}</p>
                                                 <button className="text-danger" type="button" onClick={() => {
                                                     setIsConfirmModalOpened(true);
                                                     setCartDataValue(cart);
@@ -213,10 +206,10 @@ const Sales = () => {
                                             </div>
                                         </div>
                                         <div className="flex justify-between">
-                                            <p className="font-poppins text-sm">
+                                            <p className="font-nunito text-sm">
                                                 {cart?.quantity === 1 ? `${cart.quantity} item` : `${cart.quantity} items`}
                                             </p>
-                                            <p className="font-poppins text-md">Ghc {cart?.price}</p>
+                                            <p className="font-nunito text-md">Ghc {cart?.price}</p>
                                         </div>
                                     </div>
                                     <input name="quantity" type="hidden" value={cart.quantity} />
@@ -224,15 +217,15 @@ const Sales = () => {
                                 </div>
                             ))}
                         </div>
-                        <div className="bg-slate-900 border border-white/5 h-60 flex flex-col justify-between rounded-xl px-10 py-4 text-white">
+                        <div className="dark:bg-slate-900 bg-white border border-white/5 h-60 flex flex-col justify-between rounded-xl px-10 py-4 dark:text-white">
                             <div>
                                 <div className="flex justify-between">
-                                    <p className="text-md font-poppins">Quantity</p>
-                                    <p className="text-md font-poppins">{totalQuantity}</p>
+                                    <p className="text-md font-nunito">Quantity</p>
+                                    <p className="text-md font-nunito">{totalQuantity}</p>
                                 </div>
                                 <div className="flex justify-between mt-4">
-                                    <p className="text-md font-poppins">Total Amount</p>
-                                    <p className="text-md font-poppins">Ghc {totalPrice}</p>
+                                    <p className="text-md font-nunito">Total Amount</p>
+                                    <p className="text-md font-nunito">Ghc {totalPrice}</p>
                                 </div>
                             </div>
                             <div className="flex gap-4">
@@ -256,16 +249,17 @@ const Sales = () => {
                                         {
                                             carts.length === 0 ? (
                                                 <>
-                                                    <button className="w-80 h-14 bg-danger rounded-xl flex items-center justify-center gap-2 bg-opacity-20 text-danger font-poppins text-xl" color="primary" onClick={(e: any) => {
+                                                    <button className="w-80 h-14 bg-danger rounded-xl flex items-center justify-center gap-2 bg-opacity-20 text-danger font-nunito text-xl" color="primary" onClick={(e: any) => {
                                                         e.preventDefault()
                                                     }}     >
                                                         No cart item found
                                                     </button>
-                                                </>) : (<>
-                                                    <button className="w-80 h-14 bg-success rounded-xl flex items-center justify-center gap-2 bg-opacity-20 text-success font-poppins text-xl" color="primary" type="submit" onClick={(event: any) => {
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <button className="w-80 h-14 bg-success rounded-xl flex items-center justify-center gap-2 bg-opacity-20 text-success font-nunito text-xl" color="primary" type="submit" onClick={(event: any) => {
                                                         event.preventDefault()
                                                         const receiptContent = generateReceiptContent();
-
                                                         // Open a new window for the receipt
                                                         const printWindow = window.open('', '_blank', 'width=800,height=600');
                                                         printWindow?.document.write(receiptContent);
@@ -275,12 +269,14 @@ const Sales = () => {
 
                                                     }}  >
                                                         Print Receipt
-                                                    </button></>)
+                                                    </button>
+                                                </>
+                                            )
                                         }
                                     </>
                                 ) : (
                                     <>
-                                        <button className="w-80 h-14 bg-primary rounded-xl flex items-center justify-center gap-2 bg-opacity-20 text-primary font-poppins text-xl" color="primary" type="submit">
+                                        <button className="w-80 h-14 bg-primary rounded-xl flex items-center justify-center gap-2 bg-opacity-20 text-primary font-nunito text-xl" color="primary" type="submit">
                                             Checkout
                                         </button>
                                     </>
@@ -296,10 +292,10 @@ const Sales = () => {
             </div>
             <ConfirmModal header="Confirm Remove" content="Are you sure to remove item from cart? " isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
                 <div className="flex gap-4">
-                    <Button color="primary" variant="flat" className="font-poppins text-md" onPress={handleConfirmModalClosed}>
+                    <Button color="primary" variant="flat" className="font-nunito text-md" onPress={handleConfirmModalClosed}>
                         No
                     </Button>
-                    <Button color="danger" variant="flat" className="font-poppins text-md" onClick={() => {
+                    <Button color="danger" variant="flat" className="font-nunito text-md" onClick={() => {
                         setIsConfirmModalOpened(false);
                         if (cartDataValue) {
                             submit({
@@ -315,7 +311,7 @@ const Sales = () => {
                 </div>
             </ConfirmModal>
 
-            <EditModal modalTitle="" className="bg-slate-800" onOpenChange={handleEditModalClose} isOpen={isEditModalOpened}>
+            <EditModal modalTitle="" className="dark:bg-slate-800 bg-white" onOpenChange={handleEditModalClose} isOpen={isEditModalOpened}>
                 {(onClose) => (
                     <Form method="post">
                         <div className="flex flex-col justify-center">
@@ -324,14 +320,14 @@ const Sales = () => {
                             <input type="hidden" name="product" value={dataValue?._id} />
                             <input type="hidden" name="price" value={dataValue?.price * quantity} />
                             <input type="hidden" name="intent" value="addToCart" />
-                            <p className="text-4xl font-poppins">{dataValue?.name}</p>
-                            <p className="text-2xl font-poppins mt-4">GHC {dataValue?.price}</p>
+                            <p className="text-4xl font-nunito">{dataValue?.name}</p>
+                            <p className="text-2xl font-nunito mt-4">GHC {dataValue?.price}</p>
                         </div>
-                        <div className="flex justify-start gap-8 mt-10 font-poppins">
+                        <div className="flex justify-start gap-8 mt-10 font-nunito">
                             <Button color="danger" className="h-20" variant="flat" onClick={() => {
                                 setQuantity(quantity - 1);
                             }}>
-                                Close
+                                <MinusIcon className="h-60 w-60" />
                             </Button>
                             <div className="flex items-center justify-center">
                                 <p>{quantity}</p>
@@ -342,7 +338,7 @@ const Sales = () => {
                                 <PlusIcon className="h-60 w-60" />
                             </Button>
                         </div>
-                        <button className="mt-10 bg-primary rounded-xl flex items-center justify-center gap-2 bg-opacity-20 text-primary h-16 w-60 font-poppins text-xl" onClick={() => {
+                        <button className="mt-10 bg-primary rounded-xl flex items-center justify-center gap-2 bg-opacity-20 text-primary h-16 w-60 font-nunito text-xl" onClick={() => {
                             setCartItemNewPrice(quantity * dataValue?.price);
                             setIsEditModalOpened(false);
                         }}>

@@ -7,7 +7,8 @@ export const CategoryColumns = [
 export const ProductColumns = [
     { key: "name", label: "Name" },
     { key: "category", label: "Category" },
-    { key: "price", label: "Price" },
+    { key: "costPrice", label: "Cost Price" },
+    { key: "price", label: "Selling Price" },
     { key: "quantity", label: "Quantity" },
     { key: "low_stock", label: "Low Stock" },
     {key:"action", label: "Action"}

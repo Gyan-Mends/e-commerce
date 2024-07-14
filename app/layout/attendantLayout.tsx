@@ -35,9 +35,63 @@ const AttendantLayout = ({ children, pageName }: UserLayoutProps) => {
                 {/* logo */}
                 <div className="flex items-center gap-2">
                     <div>
+                    </div>
+                    <div className="font-montserrat text-2xl font-semibold">Point of Sales</div>
+                </div>
+                {/* profile */}
+                <div className="font-nunito mt-10">
+                    <User
+                        name="Jane Doe"
+                        description="Product Designer"
+                        avatarProps={{
+                            src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
+                        }}
+                    ></User>
+                </div>
+                {/* Side Nav Content */}
+                <ul className="mt-10">
+                    <Link className="" to="/attendant">
+                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-nunito text-md p-2 rounded-lg flex items-center gap-2">
+                            <DashboardIcon className="text-md" />
+                            Dashboard
+                        </li>
+                    </Link>
+                    <Link className="" to="/attendant/sales">
+                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-nunito text-md p-2 rounded-lg flex items-center gap-2">
+                            <DashboardIcon className="text-md" />
+                            Sales Point
+                        </li>
+                    </Link>
+                    <Link className="" to="/sales">
+                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-nunito text-md p-2 rounded-lg flex items-center gap-2">
+                            <DashboardIcon className="text-md" />
+                            Sales 
+                        </li>
+                    </Link>
+                    <Link className="" to="/attendant/sales">
+                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-nunito text-md p-2 rounded-lg flex items-center gap-2">
+                            <DashboardIcon className="text-md" />
+                            Refund
+                        </li>
+                    </Link>
+                   
+
+                </ul>
+            </div>
+
+            {/* Mobile Side Navigation Bar */}
+            <div className={`h-full lg:hidden z-10  absolute md:hidden w-64 bg-primary bg-opacity-40  text-white backdrop-blur transition-transform duration-500 p-6 ${mobileNavOpen ? "transform-none" : "-translate-x-full"}`}>
+                {/* Side Nav Content */}
+                <button onClick={mobileNavToggle} className="block md:hidden ml-auto lg:hidden">
+                    <CloseIcon className="text-danger-300" />
+                </button>
+
+                {/* logo */}
+                <div className="flex items-center gap-2">
+                    <div>
                         <img className="bg-white rounded-full h-10 w-10 " src={logo} alt="logo" />
                     </div>
-                    <div className="font-poppins text-3xl">Point of Sales</div>
+                    <div className="font-nunito text-3xl">VoteEase</div>
                 </div>
                 {/* profile */}
                 <div className=" mt-10">
@@ -51,35 +105,21 @@ const AttendantLayout = ({ children, pageName }: UserLayoutProps) => {
                 </div>
                 {/* Side Nav Content */}
                 <ul className="mt-10">
-                    <Link className="" to="/attendant">
-                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-poppins p-2 rounded-lg flex items-center gap-2">
+                    <Link className="" to="/user">
+                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-nunito p-2 rounded-lg flex items-center gap-2">
                             <DashboardIcon className="h-4 w-4" />
                             Dashboard
                         </li>
                     </Link>
-                    <Link className="" to="/attendant/sales">
-                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-poppins p-2 rounded-lg flex items-center gap-2">
-                            <DashboardIcon className="h-4 w-4" />
-                            Sales Point
+                    <Link className="" to="/user/ticket">
+                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-nunito p-2 rounded-lg flex items-center gap-2">
+                            {/* <TicketIcon className="h-4 w-4" /> */}
+                            Tickets
                         </li>
                     </Link>
-                    <Link className="" to="/sales">
-                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-poppins p-2 rounded-lg flex items-center gap-2">
-                            <DashboardIcon className="h-4 w-4" />
-                            Sales 
-                        </li>
-                    </Link>
-                    <Link className="" to="/attendant/sales">
-                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-poppins p-2 rounded-lg flex items-center gap-2">
-                            <DashboardIcon className="h-4 w-4" />
-                            Refund
-                        </li>
-                    </Link>
-                   
 
                 </ul>
             </div>
-
 
             {/* Page Content */}
             <div className={`p-4 transition-all duration-500 overflow-x-hidden z-1 ${desktopNav ? "lg:ml-64 md:ml-64" : ""}`}>
@@ -95,7 +135,7 @@ const AttendantLayout = ({ children, pageName }: UserLayoutProps) => {
                         <button onClick={desktopNavToggle} className="hidden md:block lg:block">
                             <NavTogglerIcon className="text-white" />
                         </button>
-                        <p className="font-poppins text-2xl text-white">{pageName}</p>
+                        <p className="font-nunito text-2xl text-white">{pageName}</p>
                     </div>
 
                     {/* Mode Switch and Logout */}
