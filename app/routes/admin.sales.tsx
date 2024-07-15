@@ -1,5 +1,5 @@
 import { Button, Input, Select, SelectItem, TableCell, TableRow, Textarea, User } from "@nextui-org/react"
-import { ActionFunction, LoaderFunction } from "@remix-run/node"
+import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node"
 import { Form, useActionData, useLoaderData } from "@remix-run/react"
 import { useEffect, useState } from "react"
 import { Toaster } from "react-hot-toast"
@@ -14,6 +14,7 @@ import salesController from "~/controllers/sales"
 import { SalesInterface } from "~/interfaces/interface"
 import AdminLayout from "~/layout/adminLayout"
 import AttendantLayout from "~/layout/attendantLayout"
+import { getSession } from "~/session"
 
 const Sales = () => {
     const [rowsPerPage, setRowsPerPage] = useState(8)
@@ -352,6 +353,11 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
+    const session = await getSession(request.headers.get("Cookie"));
+    const token = session.get("email");
+    if(!token){
+        return redirect("/")
+    }
     const { adminsales } = await salesController.salesFetch({ request });
 
     return { adminsales }

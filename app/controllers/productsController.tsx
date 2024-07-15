@@ -16,49 +16,50 @@ class ProductsController {
         description: string,
         seller: string,
         costPrice: string,
-        intent:string
+        intent: string
     ) {
         try {
-            if(intent === "create"){
+            if (intent === "create") {
                 // Check if the porduct does not exist
-            const ProductCheck = await Product.findOne({ name: name })
-            if (ProductCheck) {
-                return json({ message: "Product already exist. Just update it quantity", success: false }, { status: 400 })
-            }
-
-            //saving the data
-            const products = new Product({
-                name,
-                price,
-                quantity,
-                category,
-                image: base64Image,
-                low_stock,
-                description,
-                seller,
-                costPrice
-            })
-
-            if (low_stock >= quantity) {
-                return json({ message: "Low stock must be less than quantity", success: false }, { status: 400 })
-            }else if(price < costPrice){
-                return json({ message: "Runnig at loss, selling price must be equal to or more than cost price", success: false }, { status: 400 })
-            } else {
-                const response = await products.save();
-
-                if (response) {
-                    return json({ message: "Poduct saved successfully", success: true }, { status: 200 })
-                } else {
-                    return json({ message: "Uable to save product", success: false }, { status: 400 })
-
+                const ProductCheck = await Product.findOne({ name: name })
+                if (ProductCheck) {
+                    return json({ message: "Product already exist. Just update it quantity", success: false }, { status: 400 })
                 }
-            }
 
-            }else{
-                return json({ 
-                    message: "Wrong intent", 
-                    success: false ,
-                     status: 400 })
+                //saving the data
+                const products = new Product({
+                    name,
+                    price,
+                    quantity,
+                    category,
+                    image: base64Image,
+                    low_stock,
+                    description,
+                    seller,
+                    costPrice
+                })
+
+                if (low_stock >= quantity) {
+                    return json({ message: "Low stock must be less than quantity", success: false }, { status: 400 })
+                } else if (price < costPrice) {
+                    return json({ message: "Runnig at loss, selling price must be equal to or more than cost price", success: false }, { status: 400 })
+                } else {
+                    const response = await products.save();
+
+                    if (response) {
+                        return json({ message: "Poduct saved successfully", success: true }, { status: 200 })
+                    } else {
+                        return json({ message: "Uable to save product", success: false }, { status: 400 })
+
+                    }
+                }
+
+            } else {
+                return json({
+                    message: "Wrong intent",
+                    success: false,
+                    status: 400
+                })
 
             }
 
@@ -99,7 +100,7 @@ class ProductsController {
     ) {
         try {
             if (intent === "updateProduct") {
-                const update = await Product.findByIdAndUpdate(id,{
+                const update = await Product.findByIdAndUpdate(id, {
                     name,
                     price,
                     quantity,
@@ -110,18 +111,18 @@ class ProductsController {
                     seller,
                     costPrice,
                 })
-                if(update){
+                if (update) {
                     return json({
                         message: "Product update successfully",
                         success: true,
                         status: 200
-                    }) 
-                }else{
+                    })
+                } else {
                     return json({
                         message: "Unable to update product",
                         success: false,
                         status: 200
-                    }) 
+                    })
                 }
             } else {
                 return json({
@@ -140,30 +141,30 @@ class ProductsController {
     async Delete({
         intent,
         id
-    }:{
-        intent:string,
-        id:string
-    }){
-        if(intent === "delete"){
+    }: {
+        intent: string,
+        id: string
+    }) {
+        if (intent === "delete") {
             const deleteProduct = await Product.findByIdAndDelete(id);
-            if(deleteProduct){
+            if (deleteProduct) {
                 return json({
-                    message :"Product deleted",
-                    success:true,
-                    status:500
-                })  
-            }else{
+                    message: "Product deleted",
+                    success: true,
+                    status: 500
+                })
+            } else {
                 return json({
-                    message :"Unable to deete product",
-                    success:false,
-                    status:500
+                    message: "Unable to deete product",
+                    success: false,
+                    status: 500
                 })
             }
-        }else{
+        } else {
             return json({
-                message :"Wrong intent",
-                success:false,
-                status:500
+                message: "Wrong intent",
+                success: false,
+                status: 500
             })
         }
     }
@@ -175,18 +176,27 @@ class ProductsController {
             const session = await getSession(request.headers.get("Cookie"))
             const token = await session.get("email");
             const user = await Registration.findOne({ email: token });
-
-
-
+            const product = await Product.find().populate("category");
+            const productsCount = await Product.countDocuments()
+            const categories = await Category.find();
             if (!token) {
                 return redirect("/login")
             }
-
+           
             //fetching categories
-            const categories = await Category.find();
-            const product = await Product.find().populate("category");
-            const productsCount = await Product.countDocuments()
-            return { categories, user, product, productsCount };
+            
+            const sellinPrice = product.reduce((acc, products) => {
+                return acc + Number(products.price); // Ensure quantity is treated as a number
+            }, 0);
+
+            const costPrice = product.reduce((acc, products) => {
+                return acc + Number(products.costPrice); // Ensure quantity is treated as a number
+            }, 0);
+
+            const profit = sellinPrice-costPrice
+           
+
+            return { categories, user, product, productsCount,profit};
         } catch (error) {
 
         }

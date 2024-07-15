@@ -36,3 +36,12 @@ export const SalesColumns = [
     { key: "balance", label: "Balance" },
     {key:"action", label: "Action"}
 ]
+export const AdminDashboardSalesColumns = [
+    { key: "products", label: "Products" },
+    { key: "quantity", label: "Quantity" },
+    { key: "attendant", label: "Attendant" },
+    { key: "totalAmount", label: "Total Amount" },
+    { key: "amountPaid", label: "Amount Paid" },
+    { key: "balance", label: "Balance" },
+    {key:"action", label: "Action"}
+]

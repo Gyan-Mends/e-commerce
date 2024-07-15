@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Input, Textarea, TableRow, TableCell, Tooltip } from "@nextui-org/react";
-import { ActionFunction, LoaderFunction, json } from "@remix-run/node";
+import { ActionFunction, LoaderFunction, json, redirect } from "@remix-run/node";
 import { Form, useActionData, useLoaderData, useSubmit } from "@remix-run/react";
 import { Toaster } from "react-hot-toast";
 import PlusIcon from "~/components/icons/PlusIcon";
@@ -17,6 +17,8 @@ import ViewModal from "~/components/modal/viewModal";
 import ConfirmModal from "~/components/modal/confirmModal";
 import { EditIcon } from "~/components/icons/EditIcon";
 import { DeleteIcon } from "~/components/icons/DeleteIcon";
+import { getSession } from "~/session";
+import usersController from "~/controllers/Users";
 
 type SessionData = {
     sessionId: {
@@ -226,6 +228,7 @@ const Category = () => {
                             }}
                         />
                         <input hidden name="seller" value={sessionId._id} type="" />
+                        <input hidden name="intent" value="create" type="" />
 
                         <Textarea
                             autoFocus
@@ -250,7 +253,7 @@ const Category = () => {
                     </Form>
                 )}
             </CreateModal>
-            
+
         </AdminLayout>
     );
 };
@@ -258,6 +261,11 @@ const Category = () => {
 export default Category;
 
 export const loader: LoaderFunction = async ({ request }) => {
+    const session = await getSession(request.headers.get("Cookie"));
+    const token = session.get("email");
+    if (!token) {
+        return redirect("/")
+    }
     const { sessionId, cats } = await category.CategoryFetch(request);
     return { sessionId, cats };
 };
@@ -273,8 +281,27 @@ export const action: ActionFunction = async ({ request }) => {
 
 
 
-        const categories = await category.CategoryAdd(request, name, description, seller, intent, id);
-        return categories;
+        switch (intent) {
+            case 'create':
+                const categories = await category.CategoryAdd(request, name, description, seller, intent, id);
+                return categories;
+            case "logout":
+                const logout = await usersController.logout(intent)
+                return logout
+            case "delete":
+                const deleteCat = await category.DeleteCat(intent,id)
+                return deleteCat
+            case "update":
+                const updateCat = await category.UpdateCat({ 
+                    intent,
+                    id,
+                    name,
+                    description
+                })
+                return updateCat
+            default:
+                break;
+        }
 
     } catch (error: any) {
         return json({ message: error.message, success: false }, { status: 500 });

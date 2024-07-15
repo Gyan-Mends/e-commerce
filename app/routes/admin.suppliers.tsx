@@ -1,5 +1,5 @@
 import { Button, Input, Select, SelectItem, TableCell, TableRow, User } from "@nextui-org/react"
-import { ActionFunction, json, LoaderFunction } from "@remix-run/node"
+import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node"
 import { Form, useActionData, useLoaderData, useSubmit } from "@remix-run/react"
 import { useEffect, useState } from "react"
 import { Toaster } from "react-hot-toast"
@@ -17,6 +17,7 @@ import suppliersController from "~/controllers/Suppliers"
 import usersController from "~/controllers/Users"
 import { RegistrationInterface, SuppliersInterface } from "~/interfaces/interface"
 import AdminLayout from "~/layout/adminLayout"
+import { getSession } from "~/session"
 
 const Suppliers = () => {
     const [isCreateModalOpened, setIsCreateModalOpened] = useState(false)
@@ -77,7 +78,7 @@ const Suppliers = () => {
                 <Toaster position="top-center" />
                 <div>
                     <Input
-                    size="lg"
+                        size="lg"
                         placeholder="Search product..."
                         startContent={<SearchIcon className="" />}
                         value={searchQuery}
@@ -117,20 +118,20 @@ const Suppliers = () => {
                                 setIsEditModalOpened(true)
                                 setDataValue(supplier)
                             }}>
-                               <EditIcon/> Edit
+                                <EditIcon /> Edit
                             </Button>
                             <Button size="sm" color="danger" variant="flat" onClick={() => {
                                 setIsConfirmModalOpened(true)
                                 setDataValue(supplier)
                             }}>
-                                <DeleteIcon/> Delete
+                                <DeleteIcon /> Delete
                             </Button>
 
                         </TableCell>
                     </TableRow>
                 ))}
             </CustomTable>
-            <ConfirmModal content="Are you sure to delete supplier?" header="Cnfirm Delete" className="dark:bg-slate-900 border border-white/5"  isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
+            <ConfirmModal content="Are you sure to delete supplier?" header="Cnfirm Delete" className="dark:bg-slate-900 border border-white/5" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
                 <div className="flex gap-4">
                     <Button size="sm" color="primary" variant="flat" className="font-montserrat font-semibold" onPress={handleConfirmModalClosed}>
                         No
@@ -226,9 +227,9 @@ const Suppliers = () => {
                                     inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
                                 }}
                             />
-                           
+
                         </div>
-                       
+
 
                         <input name="admin" value={user._id} type="hidden" />
                         <input name="intent" value="update" type="hidden" />
@@ -264,8 +265,8 @@ const Suppliers = () => {
                             type="text"
                             labelPlacement="outside"
                             classNames={{
-                                    inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
-                                }}
+                                inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
+                            }}
                         />
                         <div className="flex gap-4">
                             <Input
@@ -383,7 +384,9 @@ export const action: ActionFunction = async ({ request }) => {
                 intent,
             })
             return updateSupplier
-
+        case "logout":
+            const logout = await usersController.logout(intent)
+            return logout
         default:
             return json({
                 message: "Bad request",
@@ -394,6 +397,11 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
+    const session = await getSession(request.headers.get("Cookie"));
+    const token = session.get("email");
+    if (!token) {
+        return redirect("/")
+    }
     const { user, suppliers } = await suppliersController.FetchSuppliers({ request })
 
     return { user, suppliers }

@@ -4,48 +4,65 @@ import Registration from "~/modal/registration";
 import { getSession } from "~/session"
 
 class CategoryController {
+    async DeleteCat(intent:string, id:string){
+        // Delete Logic
+        if (intent === "delete") {
+            const deleteCategory = await Category.findByIdAndDelete(id);
+            if (deleteCategory) {
+                return json({ message: "Category deleted successfully", success: true }, { status: 200 });
+            } else {
+                return json({ message: "Category not found", success: false }, { status: 404 });
+            }
+        }
+    }
+
+    async UpdateCat({
+        intent,
+        id,
+        name,
+        description,
+    }:{
+        intent:string,
+        id:string,
+        name:string,
+        description:string,
+    }){
+          // Update Logic
+          if (intent === "update") {
+
+            const updateCategory = await Category.findByIdAndUpdate(id, { name, description });
+            if (updateCategory) {
+                return json({ message: "Category updated successfully", success: true }, { status: 200 });
+            } else {
+                return json({ message: "Category not found", success: false }, { status: 404 });
+            }
+
+        }
+    }
+
     async CategoryAdd(request: Request, name: string, description: string, seller: string, intent: string, id: string) {
         try {
-            // Update Logic
-            if (intent === "update") {
 
-                const updateCategory = await Category.findByIdAndUpdate(id, { name, description });
-                if (updateCategory) {
-                    return json({ message: "Category updated successfully", success: true }, { status: 200 });
-                } else {
-                    return json({ message: "Category not found", success: false }, { status: 404 });
-                }
-
-            }
-
-            // Delete Logic
-            if (intent === "delete") {
-                const deleteCategory = await Category.findByIdAndDelete(id);
-                if (deleteCategory) {
-                    return json({ message: "Category deleted successfully", success: true }, { status: 200 });
-                } else {
-                    return json({ message: "Category not found", success: false }, { status: 404 });
-                }
-            }
-
-            // Checking if category already exists
-            const categoryExistCheck = await Category.findOne({ seller, name });
-            if (categoryExistCheck) {
-                return json({ message: "Category already exists", success: false }, { status: 400 });
-            }
-
-            // Saving data if category does not exist
-            const category = new Category({
-                name,
-                description,
-                seller
-            });
-
-            const response = await category.save();
-            if (response) {
-                return json({ message: "Category created successfully", success: true }, { status: 200 });
-            }
-
+           if(intent === "create"){
+             // Checking if category already exists
+             const categoryExistCheck = await Category.findOne({ seller, name });
+             if (categoryExistCheck) {
+                 return json({ message: "Category already exists", success: false }, { status: 400 });
+             }
+ 
+             // Saving data if category does not exist
+             const category = new Category({
+                 name,
+                 description,
+                 seller
+             });
+ 
+             const response = await category.save();
+             if (response) {
+                 return json({ message: "Category created successfully", success: true }, { status: 200 });
+             }
+ 
+           }
         } catch (error: any) {
             return json({ message: error.message, success: false }, { status: 400 });
         }

@@ -1,5 +1,5 @@
 import { Button, Input, Select, SelectItem, TableCell, TableRow, User } from "@nextui-org/react"
-import { ActionFunction, json, LoaderFunction } from "@remix-run/node"
+import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node"
 import { Form, useActionData, useLoaderData, useSubmit } from "@remix-run/react"
 import { useEffect, useState } from "react"
 import { Toaster } from "react-hot-toast"
@@ -16,6 +16,7 @@ import { errorToast, successToast } from "~/components/toast"
 import usersController from "~/controllers/Users"
 import { RegistrationInterface } from "~/interfaces/interface"
 import AdminLayout from "~/layout/adminLayout"
+import { getSession } from "~/session"
 
 const Users = () => {
     const [isCreateModalOpened, setIsCreateModalOpened] = useState(false)
@@ -119,13 +120,13 @@ const Users = () => {
                                 setIsEditModalOpened(true)
                                 setDataValue(user)
                             }}>
-                               <EditIcon /> Edit
+                                <EditIcon /> Edit
                             </Button>
                             <Button size="sm" color="danger" variant="flat" onClick={() => {
                                 setIsConfirmModalOpened(true)
                                 setDataValue(user)
                             }}>
-                               <DeleteIcon /> Delete
+                                <DeleteIcon /> Delete
                             </Button>
 
                         </TableCell>
@@ -388,7 +389,7 @@ const Users = () => {
                                     { key: "admin", value: "admin", display_name: "Admin" },
                                     { key: "attendant", value: "attendant", display_name: "Attendant" },
                                 ].map((role) => (
-                                    <SelectItem  key={role.key}>{role.display_name}</SelectItem>
+                                    <SelectItem key={role.key}>{role.display_name}</SelectItem>
                                 ))}
                             </Select>
                         </div>
@@ -485,7 +486,9 @@ export const action: ActionFunction = async ({ request }) => {
                 intent,
             })
             return updateUser
-
+        case "logout":
+            const logout = await usersController.logout(intent)
+            return logout
         default:
             return json({
                 message: "Bad request",
@@ -496,6 +499,11 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
+    const session = await getSession(request.headers.get("Cookie"));
+    const token = session.get("email");
+    if (!token) {
+        return redirect("/")
+    }
     const { user, users } = await usersController.FetchUsers({ request })
 
     return { user, users }

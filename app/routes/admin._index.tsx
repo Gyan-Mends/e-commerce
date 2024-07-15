@@ -3,6 +3,8 @@ import { Skeleton } from "@nextui-org/react";
 import AdminLayout from "~/layout/adminLayout";
 import EventIcon from '~/components/icons/EventsIcon';
 import { LoaderFunction, redirect } from '@remix-run/node';
+import {Calendar} from "@nextui-org/react";
+import {today, getLocalTimeZone} from "@internationalized/date";
 import { getSession } from '~/session';
 import usersController from '~/controllers/Users';
 import { useLoaderData } from '@remix-run/react';
@@ -12,16 +14,21 @@ import UsersGroup from '~/components/icons/UsersGroup';
 import SupplierIcon from '~/components/icons/SupplierIcon';
 import productsController from '~/controllers/productsController';
 import category from '~/controllers/categoryController';
-import { Button,  TableCell, TableRow } from "@nextui-org/react"
+import { Button, TableCell, TableRow } from "@nextui-org/react"
 import CustomTable from '~/components/table/table';
 import salesController from '~/controllers/sales';
-import { SalesColumns } from '~/components/table/columns';
+import { AdminDashboardSalesColumns, SalesColumns } from '~/components/table/columns';
+import ProfitIcon from '~/components/icons/ProfitIcon';
 
 
 const Admin = () => {
     const [loading, setLoading] = useState(true);
-    const { userCount, supplierCount, productsCount, categoryCount } = useLoaderData<{ userCount: string, supplierCount: string, productsCount: string, categoryCount: string }>()
+    const { userCount, supplierCount, productsCount, categoryCount,profit } = useLoaderData<{ userCount: string, supplierCount: string, productsCount: string, categoryCount: string ,profit:string}>()
     const { adminsales } = useLoaderData<{ adminsales: SalesInterface[] }>()
+    const [rowsPerPage, setRowsPerPage] = useState(8)
+    const handleRowsPerPageChange = (newRowsPerPage: number) => {
+        setRowsPerPage(newRowsPerPage)
+    }
     useEffect(() => {
         const timer = setTimeout(() => {
             setLoading(false);
@@ -151,12 +158,9 @@ const Admin = () => {
                         <div className='mt-10 gap-10'>
                             <div className="h-[55vh] mt-4 lg:mt-0 md:mt-0 rounded-lg transition-all duration-200 bg-white shadow-lg dark:bg-slate-900 border border-white/5  px-4 py-4">
                                 <p className='font-montserrat font-semibold'>Recent Sales</p>
-                                <CustomTable columns={SalesColumns}>
+                                <CustomTable rowsPerPage={rowsPerPage} onRowsPerPageChange={handleRowsPerPageChange} columns={AdminDashboardSalesColumns}>
                                     {adminsales.map((sale: SalesInterface, index: number) => (
                                         <TableRow key={index}>
-                                            <TableCell className="">
-                                                {sale._id}
-                                            </TableCell>
                                             <TableCell className="">
                                                 {sale.products.map((productDetail: SalesInterface, idx: number) => (
                                                     <div className="" key={idx}>
@@ -200,7 +204,7 @@ const Admin = () => {
                                                 </Button>
                                                 <Button
                                                     size="sm"
-                                                    color="success"
+                                                    color="primary"
                                                     variant="flat"
                                                     onClick={() => {
                                                         // const receipt = generateReceipt()
@@ -231,10 +235,30 @@ const Admin = () => {
                         ))}
                     </div>
                 ) : (
-                    <div className='bg-white h-[84vh] mt-20 lg:mt-0 md:mt-0 dark:bg-slate-900 border border-white/5 shadow-lg  w-full rounded-xl'>
-                        {/* Additional content or components */}
-                        hiusdfih
-
+                    <div>
+                        <div className='bg-white h-[39vh] mt-20 lg:mt-0 md:mt-0 dark:bg-slate-900 border border-white/5 shadow-lg  w-full rounded-xl px-4 py-4'>
+                            {/* Additional content or components */}
+                            <Calendar
+                                aria-label="Date (Read Only)"
+                                value={today(getLocalTimeZone())}
+                                isReadOnly
+                                classNames={{
+                                    headerWrapper: "dark:bg-slate-950",
+                                    header:"dark:bg-slate-950",
+                                    content: "dark:bg-slate-950 w-[21vw] border border-white/5 shadow-md"
+                                }}
+                            />
+                        </div>
+                        <div className='bg-white h-[39vh]  mt-10 dark:bg-slate-900 border border-white/5 shadow-lg  w-full rounded-xl px-4 py-4 relative'>
+                            {/* Additional content or components */}
+                            <p className='font-montserrat font-semibold'>Yearly Profit</p>
+                            <div className='absolute flex justify-end'>
+                                <ProfitIcon className="h-60 w-60 dark:opacity-10 opacity-50 text-gray-200 lg:ml-20 lg:mt-10 "/>
+                            </div>
+                            <div className=''>
+                               <p className='font-nunito mt-8 text-4xl text-primary'> <span className='text-black dark:text-white'> GHC </span>{profit}</p>
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>
@@ -245,16 +269,16 @@ const Admin = () => {
 export default Admin;
 
 export const loader: LoaderFunction = async ({ request }) => {
-    const session = getSession(request.headers.get("Cookie"));
-    const token = (await session).get("email")
+    const session = await getSession(request.headers.get("Cookie"));
+    const token = session.get("email");
     if (!token) {
-        return redirect("/login")
+        return redirect("/")
     }
 
     const { adminsales } = await salesController.salesFetch({ request });
-    const { userCount} = await usersController.FetchUsers({ request });
+    const { userCount } = await usersController.FetchUsers({ request });
     const { supplierCount } = await suppliersController.FetchSuppliers({ request })
-    const { productsCount } = await productsController.ProductFetch(request)
+    const { productsCount,profit } = await productsController.ProductFetch(request)
     const { categoryCount } = await category.CategoryFetch(request)
-    return { userCount, supplierCount, productsCount, categoryCount,adminsales }
+    return { userCount, supplierCount, productsCount, categoryCount, adminsales,profit }
 }
