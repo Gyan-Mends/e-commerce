@@ -1,11 +1,10 @@
-import { json } from "@remix-run/node"
+import { json } from "@remix-run/node";
 import Cart from "~/modal/cart";
 import Registration from "~/modal/registration";
-import Sales from "~/modal/sales"
+import Sales from "~/modal/sales";
 import { getSession } from "~/session";
 
-class SalesContoller {
-
+class SalesController {
   async AddCartToSales({
     intent,
     request,
@@ -23,7 +22,7 @@ class SalesContoller {
     totalAmount: string;
     amountPaid: string;
     balance: string;
-    quantity: string
+    quantity: string;
   }) {
     if (intent === "addCartToSales") {
       try {
@@ -31,42 +30,43 @@ class SalesContoller {
         const token = session.get("email");
         const user = await Registration.findOne({ email: token });
         const carts = await Cart.find({ attendant: user?._id }).populate("product");
-        if(carts.length == 0){
+
+        if (carts.length === 0) {
           return json({
             message: "There is no item in your cart, can't proceed to checkout",
             success: false,
             status: 400,
           });
-        }else{
+        } else {
           if (Number(balance) <= 0) {
-            // Assuming products is an array of objects with product and quantity
-            const productsArray = []; // Initialize an array to store product objects
-  
-            const cart = await Cart.find()
-  
-            for (const item of cart) {
-              const { product: prod, quantity } = item; // Destructure product and quantity from item
+            const productsArray = [];
+
+            // Fetch the cart items for the specific user
+            const cartItems = await Cart.find({ attendant: user?._id }).populate("product");
+
+            for (const item of cartItems) {
+              const { product: prod, quantity } = item;
               productsArray.push({ product: prod, quantity });
             }
-  
-            console.log("Products array after loop:", productsArray); // Debugging: log the products array after loop
-  
+
+            console.log("Products array after loop:", productsArray);
+
             const sales = new Sales({
-              products: productsArray, // Assign the array of products
+              products: productsArray,
               attendant,
               totalAmount,
               amountPaid,
               balance,
             });
-  
+
             const addSales = await sales.save();
             if (addSales) {
-              const emptyCart = await Cart.deleteMany({ attendant: user })
+              const emptyCart = await Cart.deleteMany({ attendant: user });
               if (emptyCart) {
                 return json({
                   message: "Sales made successfully",
                   success: true,
-                  status: 400,
+                  status: 200, // Changed status to 200 for success
                 });
               }
             } else {
@@ -84,7 +84,6 @@ class SalesContoller {
             });
           }
         }
-        
       } catch (error: any) {
         return json({
           message: error.message,
@@ -99,27 +98,24 @@ class SalesContoller {
         status: 500,
       });
     }
-
-
-
   }
 
-
-
-  async salesFetch({
-    request,
-  }: {
-    request: Request,
-  }) {
+  async salesFetch({ request }: { request: Request }) {
     const session = await getSession(request.headers.get("Cookie"));
     const token = session.get("email");
-    const user = await Registration.findOne({ email: token })
-    const sales = await Sales.find({ attendant: user?._id }).populate("products.product").populate("attendant").exec();
-    const adminsales = await Sales.find().populate("products.product").populate("attendant").exec();
+    const user = await Registration.findOne({ email: token });
+    const sales = await Sales.find({ attendant: user?._id })
+      .populate("products.product")
+      .populate("attendant")
+      .exec();
+    const adminsales = await Sales.find()
+      .populate("products.product")
+      .populate("attendant")
+      .exec();
 
-    return { sales,adminsales }
+    return { sales, adminsales };
   }
 }
 
-const salesController = new SalesContoller
-export default salesController
+const salesController = new SalesController();
+export default salesController;

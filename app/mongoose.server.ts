@@ -1,21 +1,24 @@
+
+
 import mongoose from "mongoose";
 
-//connecting to the database 
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/pos");
+// Define the database URL
+const databaseUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/pos';
 
-//creating a new instance of the database connection
+// Connect to the database
+mongoose.connect(databaseUrl);
+
+// Get the default connection
 const db = mongoose.connection;
 
-try {
-    //checking if the database is connected successful
-    db.once("open", () =>  {
-        console.log("db connected successful");
-    })
-} catch (error) {
-    db.on("error", () => {
-        console.log("Unable to connect to the database");
-        
-    })
-}
+// Event handlers for successful and failed connection
+db.on("connected", () => {
+  console.log(`Connected to MongoDB`);
+});
 
-export default mongoose
+db.on("error", (error) => {
+  console.error(`Error connecting to MongoDB: ${error}`);
+});
+
+// Export the connected mongoose instance
+export default mongoose;

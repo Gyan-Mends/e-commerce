@@ -16,8 +16,6 @@ import productsController from "~/controllers/productsController";
 import salesController from "~/controllers/sales";
 import { CartInterface, ProductInterface } from "~/interfaces/interface";
 import AttendantLayout from "~/layout/attendantLayout";
-import { json } from '@remix-run/node';
-import logger from '~/log/logger';
 
 const Sales = () => {
     const { product, user, carts, totalQuantity, totalPrice } = useLoaderData<{
@@ -402,15 +400,10 @@ export const action: ActionFunction = async ({ request }) => {
 
 export const loader: LoaderFunction = async ({ request }) => {
     const { product, user } = await productsController.ProductFetch(request);
-    try {
-        logger.info('Loader function called');
-        const { carts, totalQuantity, totalPrice } = await cartController.FetchCart(request);
 
-        // Simulate some processing
-        const data = { message: 'Hello from Remix!' };
-        return { product, user, carts, totalQuantity, totalPrice,data };
-      } catch (error) {
-        logger.error('Error in loader function', error);
-        throw error;
-    };
+    const { carts, totalQuantity, totalPrice } = await cartController.FetchCart(request);
+
+    return { product, user, carts, totalQuantity, totalPrice };
+
+    
 };
