@@ -5,10 +5,10 @@ interface CustomedCard {
     className: string,
     title: string,
     children: ReactNode,
-    icon:ReactNode
+    icon: ReactNode
 }
 
-const CustomedIconCard = ({ className, title, children,icon }: CustomedCard) => {
+const CustomedIconCard = ({ className, title, children, icon }: CustomedCard) => {
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
@@ -21,13 +21,15 @@ const CustomedIconCard = ({ className, title, children,icon }: CustomedCard) => 
     return (
         <Skeleton className="rounded-2xl" isLoaded={loading}>
             <div className={className}>
-               <div className="">
-                    {icon}
-               </div>
-               <div>
-               <p className="font-nunito font-semibold">{title}</p>
-               <p>{children}</p>
-               </div>
+                <div className="flex gap-10">
+                    <div className="flex items-center justify-center">
+                        {icon}
+                    </div>
+                    <div>
+                        <p className="font-montserrat font-semibold text-lg ">{title}</p>
+                        <p>{children}</p>
+                    </div>
+                </div>
             </div>
         </Skeleton>
     )

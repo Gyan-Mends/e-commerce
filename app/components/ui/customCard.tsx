@@ -1,8 +1,8 @@
 import { Skeleton } from "@nextui-org/react"
-import { useEffect, useState } from "react"
+import { ReactNode, useEffect, useState } from "react"
 
 interface CustomCardInterfca {
-    children: string,
+    children: ReactNode,
     className: string,
     title:string
 }
@@ -20,7 +20,7 @@ const CustomCard = ({
         return () => clearTimeout(timer)
     }, [])
     return (
-        <Skeleton isLoaded={loading}>
+        <Skeleton className="rounded-2xl" isLoaded={loading}>
             <div className={className}>
                 <p className="font-montserat font-semibold">{title}</p>
                 {children}

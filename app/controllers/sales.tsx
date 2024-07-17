@@ -108,12 +108,27 @@ class SalesController {
       .populate("products.product")
       .populate("attendant")
       .exec();
+      
     const adminsales = await Sales.find()
       .populate("products.product")
       .populate("attendant")
       .exec();
 
-    return { sales, adminsales };
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const salesCount = await Sales.countDocuments({
+      createdAt: {
+        $gte: today
+      }
+    }).exec();
+    const dailySales = await Sales.find({
+      createdAt: {
+        $gte: today
+      }
+    }).exec();
+
+    return { sales, adminsales, salesCount,dailySales };
   }
 }
 
