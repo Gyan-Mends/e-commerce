@@ -130,6 +130,7 @@ class SalesController {
 
     return { sales, adminsales, salesCount,dailySales };
   }
+  
 }
 
 const salesController = new SalesController();

@@ -28,8 +28,6 @@ export const SuppliersColumns = [
 ]
 export const SalesColumns = [
     { key: "Receipt ID", label: "Receipt ID" },
-    { key: "products", label: "Products" },
-    { key: "quantity", label: "Quantity" },
     { key: "attendant", label: "Attendant" },
     { key: "totalAmount", label: "Total Amount" },
     { key: "amountPaid", label: "Amount Paid" },

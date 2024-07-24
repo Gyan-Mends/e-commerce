@@ -55,24 +55,6 @@ const Login = () => {
                     <p className=" font-montserrat font-semibold text-3xl">Login To </p>
                     <p className="font-montserrat font-semibold text-3xl mt-2">Your Account </p>
                     <Form method="post" className="mt-16">
-                        <Select
-                            label="Role"
-                            labelPlacement="outside"
-                            placeholder=" "
-                            isRequired
-                            name="role"
-                            classNames={{
-                                base: "shadow-none  font-nunito rounded-xl",
-                                label: "font-nunito text-sm"
-                            }}
-                        >
-                            {[
-                                { key: "Admin", value: "Admin", display_name: "Admin" },
-                                { key: "Attendant", value: "Attendant", display_name: "Attendant" },
-                            ].map((role) => (
-                                <SelectItem className="font-nunito text-sm" key={role.key}>{role.display_name}</SelectItem>
-                            ))}
-                        </Select>
                         <Input
                             name="email"
                             label="Email"
@@ -134,9 +116,8 @@ export const action: ActionFunction = async ({ request }) => {
     const formData = await request.formData();
     const email = formData.get("email") as string
     const password = formData.get("password") as string
-    const role = formData.get("role") as string
 
-    const signin = await login.Login(request, role, email, password)
+    const signin = await login.Logins(request, email, password)
 
     return signin
 }

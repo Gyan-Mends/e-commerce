@@ -290,7 +290,7 @@ const Sales = () => {
                     </div>
                 </Form>
             </div>
-            <ConfirmModal header="Confirm Remove" content="Are you sure to remove item from cart? " isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
+            <ConfirmModal className="" header="Confirm Remove" content="Are you sure to remove item from cart? " isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
                 <div className="flex gap-4">
                     <Button color="primary" variant="flat" className="font-nunito text-md" onPress={handleConfirmModalClosed}>
                         No

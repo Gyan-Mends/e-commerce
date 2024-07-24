@@ -77,6 +77,12 @@ const AdminLayout = ({ children, pageName }: UserLayoutProps) => {
                             Suppliers
                         </li>
                     </Link>
+                    <Link className="" to="/data">
+                        <li className="hover:bg-primary-400 text-sm hover:bg-white hover:text-primary font-nunito p-1 rounded-lg flex items-center gap-2">
+                            <SupplierIcon className="h-[18px] w-[18px]" />
+                            data
+                        </li>
+                    </Link>
                     <Link className="" to="/admin/products">
                         <li className="hover:bg-primary-400 text-sm hover:bg-white hover:text-primary font-nunito p-1 rounded-lg flex items-center gap-2">
                             <DashboardIcon className="text-sm" />

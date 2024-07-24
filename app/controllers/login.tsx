@@ -1,30 +1,28 @@
 import { json, redirect } from "@remix-run/node";
 import { commitSession, getSession } from "~/session";
-import bcrypt from 'bcryptjs'; 
+import bcrypt from 'bcryptjs';
 import Registration from "~/modal/registration";
 
 class LoginController {
-    async Login(request: Request, role: string, email: string, password: string) {
+    async Logins(request: Request, email: string, password: string) {
         try {
-            // checking if user exists
-            const userCheck = await Registration.findOne({ email: email });
+            const userCheck = await Registration.findOne({ email });
             const session = await getSession(request.headers.get("Cookie"));
-            session.set("email", email)
 
-            if (userCheck && await bcrypt.compare(password, userCheck.password) && role == "Admin") {
-                // Redirect to a protected route or home page after successful login
-                return redirect("/admin", {
-                    headers: {
-                        "Set-Cookie": await commitSession(session),
-                    },
-                });
+            if (userCheck && await bcrypt.compare(password, userCheck.password)) {
+                session.set("email", email);
+                const cookie = await commitSession(session);
 
-            } else if (userCheck && await bcrypt.compare(password, userCheck.password) && role == "Attendant") {
-                return redirect("/attendant", {
-                    headers: {
-                        "Set-Cookie": await commitSession(session),
-                    },
-                });
+                if (userCheck.role === "admin") {
+                    return redirect("/admin", { headers: { "Set-Cookie": cookie } });
+                } else if (userCheck.role === "attendant") {
+                    return redirect("/attendant", { headers: { "Set-Cookie": cookie } });
+                } else {
+                    return json({
+                        message: "Invalid role selection",
+                        success: false
+                    });
+                }
             } else {
                 return json({ message: "Invalid email or password", success: false }, { status: 400 });
             }

@@ -48,7 +48,7 @@ const Attendant = () => {
                             {/* greeting container */}
                             <CustomCard className='w-full h-60 p-4 bg-white shadow-sm dark:bg-slate-900 border border-white/5 rounded-2xl' title='' >
                                 <p className='font-montserrat font-semibold text-4xl'>{greeting}</p>
-                                <p className='font-nunito text-2xl text-primary'>{user.firstName + " " + user.lastName}</p>
+                                <p className='font-nunito text-2xl text-primary mt-4'>{user.firstName + " " + user.lastName}</p>
                             </CustomCard>
                         </div>
 

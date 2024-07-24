@@ -1,17 +1,18 @@
 import { Button, Input, Select, SelectItem, TableCell, TableRow, Textarea, User } from "@nextui-org/react"
 import { ActionFunction, LoaderFunction } from "@remix-run/node"
-import { Form, useActionData, useLoaderData } from "@remix-run/react"
+import { Form, useActionData, useLoaderData, useSubmit } from "@remix-run/react"
 import { useEffect, useState } from "react"
 import { Toaster } from "react-hot-toast"
 import PlusIcon from "~/components/icons/PlusIcon"
 import { SearchIcon } from "~/components/icons/SearchIcon"
+import ConfirmModal from "~/components/modal/confirmModal"
 import EditModal from "~/components/modal/EditModal"
 import { SalesColumns } from "~/components/table/columns"
 import CustomTable from "~/components/table/table"
 import { errorToast, successToast } from "~/components/toast"
 import refundController from "~/controllers/refund"
 import salesController from "~/controllers/sales"
-import { SalesInterface } from "~/interfaces/interface"
+import { ProductInterface, SalesInterface } from "~/interfaces/interface"
 import AttendantLayout from "~/layout/attendantLayout"
 
 const Sales = () => {
@@ -20,9 +21,15 @@ const Sales = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredSales, setFilteredSales] = useState(sales);
     const [isEditModalOpened, setIsEditModalOpened] = useState(false)
+    const [isConfirmModalOpened, setIsConfirmedModalOPened] = useState(false)
     const [dataValue, setDataValue] = useState<SalesInterface>()
+    const [productDataValue, setProductDataValue] = useState<ProductInterface>()
     const actionData = useActionData<any>()
+    const submit = useSubmit()
 
+    const handleConfirmedModalClosed = () => {
+        setIsConfirmedModalOPened(false)
+    }
     const handleRowsPerPageChange = (newRowsPerPage: number) => {
         setRowsPerPage(newRowsPerPage)
     }
@@ -32,8 +39,9 @@ const Sales = () => {
     const handleEditModalClosed = () => {
         setIsEditModalOpened(false)
     }
-   const generateReceipt = () => {
-   let receipt = `
+    
+    const generateReceipt = () => {
+        let receipt = `
     <div className="flex justify-between">
         <div className="text-default-500 font-nunito text-sm">
             <p>Receipt No</p>
@@ -82,8 +90,8 @@ const Sales = () => {
     </div>
 `;
 
-    return receipt
-   }
+        return receipt
+    }
 
     useEffect(() => {
         const filtered = sales.filter(sale => {
@@ -135,32 +143,16 @@ const Sales = () => {
                             {sale._id}
                         </TableCell>
                         <TableCell className="">
-                            {sale.products.map((productDetail: SalesInterface, idx: number) => (
-                                <div className="" key={idx}>
-                                    {/* Display the product name */}
-                                    <div>{productDetail.product?.name}</div>
-                                </div>
-                            ))}
+                            {sale?.attendant?.firstName} {sale?.attendant?.middleName} {sale?.attendant?.lastName}
                         </TableCell>
                         <TableCell className="">
-                            {sale.products.map((productDetail: SalesInterface, idx: number) => (
-                                <div className="" key={idx}>
-                                    {/* Display the product quantity */}
-                                    <div>{productDetail.quantity}</div>
-                                </div>
-                            ))}
+                            GHC {sale?.totalAmount}
                         </TableCell>
                         <TableCell className="">
-                            {sale.attendant?.firstName} {sale.attendant?.middleName} {sale.attendant?.lastName}
+                            GHC {sale?.amountPaid}
                         </TableCell>
                         <TableCell className="">
-                            GHC {sale.totalAmount}
-                        </TableCell>
-                        <TableCell className="">
-                            GHC {sale.amountPaid}
-                        </TableCell>
-                        <TableCell className="">
-                            GHC {sale.balance}
+                            GHC {sale?.balance}
                         </TableCell>
 
                         <TableCell className="relative flex items-center gap-4">
@@ -180,8 +172,8 @@ const Sales = () => {
                                 color="success"
                                 variant="flat"
                                 onClick={() => {
-                                    const receipt  = generateReceipt()
-                                    const printWindow = window.open('','_blank','width=800,height=600');
+                                    const receipt = generateReceipt()
+                                    const printWindow = window.open('', '_blank', 'width=800,height=600');
                                     printWindow?.document.write(receipt);
                                     printWindow?.document.close();
                                     printWindow?.print()
@@ -195,119 +187,53 @@ const Sales = () => {
                 ))}
             </CustomTable>
 
-            <EditModal modalTitle="Refund" className="" onOpenChange={handleEditModalClosed} isOpen={isEditModalOpened}>
+            <EditModal modalTitle="Refund" className="dark:bg-slate-950 bg-gray-200 border border-white/5" onOpenChange={handleEditModalClosed} isOpen={isEditModalOpened}>
                 {(onClose) => (
-                    <Form method="post" action="/sales">
-                        <div className="flex justify-between">
-                            <div className="text-default-500 font-nunito text-sm">
-                                <p>Receipt No</p>
-                                <p>{dataValue?._id}</p>
-                            </div>
-                            <div className="font-nunito text-default-500 text-sm">
-                                <p>Attendant</p>
-                                <p>{dataValue?.attendant.firstName} {dataValue?.attendant.middleName} {dataValue?.attendant.lastName}</p>
-                            </div>
-                        </div>
-
-                        <p className="mt-6 font-nunito text-md font-semibold">Product Details</p>
-                        <div className="flex justify-between mt-2 text-md text-default-500">
-                            <div>
-                                <p className="font-nunito font-semibold">Products</p>
-                                {dataValue.products.map((productDetail: SalesInterface, idx: number) => (
-                                    <div key={idx}>
-                                        <p>{productDetail.product?.name}</p>
+                    <div className="grid grid-cols-2 gap-4">
+                        {
+                            dataValue?.products?.map((product: ProductInterface, index: number) => (
+                                <div key={index}>
+                                    <div className="dark:bg-slate-900 bg-white rounded-xl flex flex-col gap-2 border border-white/5 w-40 p-2">
+                                        <img className="w-40 h-20 rounded-xl" src={product?.product?.image} alt="" />
+                                       <div>
+                                       <p className="font-nunito text-xs">{product?.product?.name}</p>
+                                       <p className="font-nunito text-xs">{product?.price}</p>
+                                       </div>
+                                        <Button  size="sm" color="primary"  variant="flat" onClick={() => {
+                                            setIsConfirmedModalOPened(true)
+                                            setProductDataValue(product)
+                                        }}>
+                                            Remove
+                                        </Button>
                                     </div>
-                                ))}
-                            </div>
-                            <div>
-                                <p className="font-nunito font-semibold">Quantities</p>
-                                {dataValue.products.map((productDetail: SalesInterface, idx: number) => (
-                                    <div key={idx}>
-                                        <p>{productDetail.quantity}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <p className="mt-10 font-nunito text-md font-semibold">Payment Details</p>
-                        <div className="flex justify-between mt-2">
-                            <div className="text-default-500 text-md">
-                                <p className="font-nunito font-semibold">Total Amount</p>
-                                <p className="font-nunito text-sm">GHC {dataValue?.totalAmount}</p>
-                            </div>
-                            <div className="text-default-500 text-md">
-                                <p className="font-nunito font-semibold">Amount Paid</p>
-                                <p className="font-nunito text-sm">GHC {dataValue?.amountPaid}</p>
-                            </div>
-                            <div className="text-default-500 text-md">
-                                <p className="font-nunito font-semibold">Balance</p>
-                                <p className="font-nunito text-sm">GHC {dataValue?.balance}</p>
-                            </div>
-                        </div>
-
-                        <div className="mt-10">
-                            <p className="font-nunito text-lg text-primary">Why Refund</p>
-                            <Textarea
-                                className="mt-2 font-nunito"
-                                label="Reason"
-                                labelPlacement="outside"
-                                placeholder=" "
-                                isRequired
-                                name="reason"
-                            />
-                            <div className="pt-4">
-                                <Select
-                                    label="Products"
-                                    labelPlacement="outside"
-                                    placeholder=" "
-                                    isRequired
-                                    selectionMode="multiple"
-                                    className="mt-4 font-nunito"
-                                    name="product"
-                                >
-                                    {dataValue.products.map((productDetail: SalesInterface) => (
-                                        <SelectItem textValue={productDetail?.product.name} className="mt-4" key={productDetail.product?._id}>
-                                            {productDetail.product?.name}
-                                        </SelectItem>
-                                    ))}
-                                </Select>
-                                <input name="intent" value="refund" type="hidden" />
-                                <input name="attendant" value={dataValue?.attendant?._id} type="hidden" />
-                                <input name="totalAmount" value={dataValue?.totalAmount} type="hidden" />
-                                <input name="amountPaid" value={dataValue?.amountPaid} type="hidden" />
-                                <input name="balance" value={dataValue?.balance} type="hidden" />
-                                <input className="text-black" name="totalQuantity" value={dataValue?.quantity} type="hidden" />
-                            </div>
-                            <div className="pt-4">
-                                <Select
-                                    label="Quantity"
-                                    labelPlacement="outside"
-                                    placeholder=" "
-                                    isRequired
-                                    selectionMode="multiple"
-                                    className="mt-4 font-nunito"
-                                    name="quantity"
-                                >
-                                    {dataValue.products.map((productDetail: SalesInterface) => (
-                                        <SelectItem textValue={productDetail.quantity} className="mt-4" key={productDetail.quantity}>
-                                            {productDetail.quantity}
-                                        </SelectItem>
-                                    ))}
-                                </Select>
-                            </div>
-                            <div className="flex gap-4 justify-end mt-6">
-                                <Button color="primary" variant="flat" onClick={handleEditModalClosed}>Close</Button>
-                                <button
-                                    className="bg-danger rounded-xl flex items-center justify-center gap-2 bg-opacity-20 text-danger h-10 font-nunito text-sm px-2"
-                                    type="submit"
-                                >
-                                    Proceed to Refund
-                                </button>
-                            </div>
-                        </div>
-                    </Form>
+                                </div>
+                            ))
+                        }
+                    </div>
                 )}
             </EditModal>
+
+            <ConfirmModal className="dark:slate-900" header="Confirm Remove" content="Are you sure to refund item? " isOpen={isConfirmModalOpened} onOpenChange={handleConfirmedModalClosed}>
+                <div className="flex gap-4">
+                    <Button color="primary" variant="flat" className="font-nunito text-md" onPress={handleConfirmedModalClosed}>
+                        No
+                    </Button>
+                    <Button color="danger" variant="flat" className="font-nunito text-md" onClick={() => {
+                        setIsConfirmedModalOPened(false);
+                        if (productDataValue) {
+                            submit({
+                                intent: "refund",
+                                id: productDataValue?._id
+                                
+                            }, {
+                                method: "post"
+                            });
+                        }
+                    }}>
+                        Yes
+                    </Button>
+                </div>
+            </ConfirmModal>
         </AttendantLayout>
     )
 }
@@ -324,20 +250,14 @@ export const action: ActionFunction = async ({ request }) => {
     const product = formData.get("product") as string
     const quantity = formData.get("quantity") as string
     const reason = formData.get("reason") as string
-    console.log(quantity);
+    const id =  formData.get("reason") as string
 
 
     switch (intent) {
         case "refund":
-            const makeRefund = await refundController.ApplyRefund({
-                intent,
-                request,
-                attendant,
-                totalAmount,
-                amountPaid,
-                balance,
-                quantity,
-                product,
+            const makeRefund = await refundController.Refund({
+               request,
+               id
             })
             return makeRefund
 

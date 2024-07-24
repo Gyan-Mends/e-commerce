@@ -38,15 +38,15 @@ export function getGreeting() {
         );
     } else {
         return (
-            <div className="lg:grid lg:grid-cols-2 flex items-center justify-center">
+            <div className=" flex items-center justify-between gap-4">
                 <div>
                     <p className=" font-nunito">{currentTime}</p>
                     <p className="mt-4">
                         Good Evening
                     </p>
                 </div>
-                <div>
-                    <MoonIcon className="h-40 w-40 opacity-20" />
+                <div className="">
+                    <MoonIcon className="h-20 w-20 opacity-20" />
                 </div>
             </div>
         );
