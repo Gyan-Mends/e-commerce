@@ -4,7 +4,18 @@ import bcrypt from 'bcryptjs';
 import Registration from "~/modal/registration";
 
 class LoginController {
-    async Logins(request: Request, email: string, password: string) {
+    async Logins({
+        request,
+        email,
+        password,
+        rememberMe
+    }:{
+        request: Request,
+        email:string,
+        password:string,
+        rememberMe: string
+
+    }) {
         try {
             const userCheck = await Registration.findOne({ email });
             const session = await getSession(request.headers.get("Cookie"));
