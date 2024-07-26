@@ -44,3 +44,19 @@
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
     background: #E5E7EB;
   }
+
+  @keyframes loading {
+  0% {
+    border-color: red;
+  }
+  50% {
+    border-color: transparent;
+  }
+  100% {
+    border-color: red;
+  }
+}
+
+.loading {
+  animation: loading 1s infinite;
+}

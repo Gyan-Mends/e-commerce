@@ -1,5 +1,5 @@
 import { json, redirect } from "@remix-run/node";
-import { commitSession, getSession } from "~/session";
+import { getSession, setSession } from "~/session";
 import bcrypt from 'bcryptjs';
 import Registration from "~/modal/registration";
 
@@ -9,20 +9,18 @@ class LoginController {
         email,
         password,
         rememberMe
-    }:{
+    }: {
         request: Request,
-        email:string,
-        password:string,
+        email: string,
+        password: string,
         rememberMe: string
-
     }) {
         try {
             const userCheck = await Registration.findOne({ email });
             const session = await getSession(request.headers.get("Cookie"));
 
             if (userCheck && await bcrypt.compare(password, userCheck.password)) {
-                session.set("email", email);
-                const cookie = await commitSession(session);
+                const cookie = await setSession(session, email, rememberMe === 'on');
 
                 if (userCheck.role === "admin") {
                     return redirect("/admin", { headers: { "Set-Cookie": cookie } });

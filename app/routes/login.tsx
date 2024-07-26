@@ -113,7 +113,7 @@ export const action: ActionFunction = async ({ request }) => {
     const formData = await request.formData();
     const email = formData.get("email") as string
     const password = formData.get("password") as string
-    const rememberMe = formData.get("rememberMe") === "on" as string;
+    const rememberMe = formData.get("rememberMe") === "on" ;
 
     const signin = await login.Logins({request, email, password, rememberMe})
 

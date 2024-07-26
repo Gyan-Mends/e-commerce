@@ -1,4 +1,3 @@
-// app/sessions.ts
 import { createCookieSessionStorage } from "@remix-run/node";
 
 type SessionData = {
@@ -24,15 +23,15 @@ const { getSession, commitSession, destroySession } = createCookieSessionStorage
     name: "psgh-admin-session",
     httpOnly: true,
     path: "/",
+    
     sameSite: "lax",
     secrets: [secret],
-    maxAge: 60 * 60 * 45, // 45 minutes by default
   },
 });
 
 // Utility function to set session with appropriate maxAge
-export async function setSession(session, user, rememberMe) {
-  session.set("email", user.email);
+export async function setSession(session:any, email:string, rememberMe:boolean) {
+  session.set("email", email);
   return commitSession(session, {
     maxAge: rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 45, // 30 days for remember me, 45 minutes otherwise
   });
