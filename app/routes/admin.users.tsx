@@ -1,6 +1,6 @@
 import { Button, Input, Select, SelectItem, TableCell, TableRow, User } from "@nextui-org/react"
 import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node"
-import { Form, useActionData, useLoaderData, useSubmit } from "@remix-run/react"
+import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react"
 import { useEffect, useState } from "react"
 import { Toaster } from "react-hot-toast"
 import { DeleteIcon } from "~/components/icons/DeleteIcon"
@@ -11,7 +11,7 @@ import ConfirmModal from "~/components/modal/confirmModal"
 import CreateModal from "~/components/modal/createModal"
 import EditModal from "~/components/modal/EditModal"
 import { UserColumns } from "~/components/table/columns"
-import CustomTable from "~/components/table/table"
+import NewCustomTable from "~/components/table/newTable"
 import { errorToast, successToast } from "~/components/toast"
 import usersController from "~/controllers/Users"
 import { RegistrationInterface } from "~/interfaces/interface"
@@ -21,13 +21,14 @@ import { getSession } from "~/session"
 const Users = () => {
     const [isCreateModalOpened, setIsCreateModalOpened] = useState(false)
     const [base64Image, setBase64Image] = useState<any>()
-    const [rowsPerPage, setRowsPerPage] = useState(13)
     const [isConfirmModalOpened, setIsConfirmModalOpened] = useState(false)
     const [isEditModalOpened, setIsEditModalOpened] = useState(false)
     const [dataValue, setDataValue] = useState<RegistrationInterface>()
     const submit = useSubmit()
     const actionData = useActionData<any>()
-    const { user, users } = useLoaderData<{ user: { _id: string }, users: RegistrationInterface[] }>()
+    const navigate = useNavigate()
+    const navigation = useNavigation()
+    const { user, users, totalPages } = useLoaderData<{ user: { _id: string }, users: RegistrationInterface[], totalPages:number }>()
 
     const handleCreateModalClosed = () => {
         setIsCreateModalOpened(false)
@@ -38,9 +39,7 @@ const Users = () => {
     const handleEditModalClosed = () => {
         setIsEditModalOpened(false)
     }
-    const handleRowsPerPageChange = (newRowsPerPage: number) => {
-        setRowsPerPage(newRowsPerPage)
-    }
+
 
     useEffect(() => {
         if (actionData) {
@@ -97,8 +96,15 @@ const Users = () => {
             </div>
 
 
-            <CustomTable columns={UserColumns} rowsPerPage={rowsPerPage} onRowsPerPageChange={handleRowsPerPageChange}>
-                {filteredUsers.map((user: RegistrationInterface, index: number) => (
+            <NewCustomTable
+                columns={UserColumns}
+                loadingState={navigation.state === "loading" ? "loading" : "idle"}
+                totalPages={totalPages}
+                page={1}
+                setPage={(page) => (
+                    navigate(`?page=${page}`)
+                )}>
+                {users.map((user: RegistrationInterface, index: number) => (
                     <TableRow key={index}>
                         <TableCell className="text-xs">
                             <p className="!text-xs">
@@ -132,7 +138,7 @@ const Users = () => {
                         </TableCell>
                     </TableRow>
                 ))}
-            </CustomTable>
+            </NewCustomTable>
 
             <ConfirmModal className="dark:bg-slate-950 border border-white/5" header="Confirm Delete" content="Are you sure to delete user?" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
                 <div className="flex gap-4">
@@ -499,12 +505,18 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
+    const url = new URL(request.url);
+    const page = parseInt(url.searchParams.get("page") as string) || 1;
+    const search_term = url.searchParams.get("search_term") as string;
     const session = await getSession(request.headers.get("Cookie"));
     const token = session.get("email");
     if (!token) {
         return redirect("/")
     }
-    const { user, users } = await usersController.FetchUsers({ request })
+    const { user,users,totalPages } = await usersController.FetchUsers({ request,
+        page,
+        search_term
+    });
 
-    return { user, users }
+    return json({user, users,totalPages });
 }

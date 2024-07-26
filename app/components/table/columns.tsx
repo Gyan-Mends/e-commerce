@@ -14,11 +14,11 @@ export const ProductColumns = [
     {key:"action", label: "Action"}
 ]
 export const UserColumns = [
-    { key: "name", label: "Name" },
-    { key: "email", label: "Email" },
-    { key: "phone", label: "Phone" },
-    { key: "role", label: "Role" },
-    {key:"action", label: "Action"}
+    {title:"Name", allowSort:true },
+    {title:"Password", allowSort:true },
+    { title:"Phone", allowSort:true },
+    { title:"Role", allowSort:true },
+    {title:"Action", allowSort:true}
 ]
 export const SuppliersColumns = [
     { key: "name", label: "Name" },

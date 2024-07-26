@@ -25,8 +25,7 @@ export default function NewCustomTable(
         page: number,
         setPage: (page: number) => void
     }) {
-
-
+        
     return (
         <div className="z-0">
             <Table className="mt-6 " aria-label="Example table with custom cells"

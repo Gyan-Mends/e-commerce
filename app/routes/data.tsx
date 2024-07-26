@@ -10,13 +10,13 @@
 //     return (
 //         <div>
 //             <NewCustomTable
-//             columns={TryColumn}
-//             loadingState={navigation.state === "loading"? "loading" : "idle"}
-//             totalPages={totalPages}
-//             page={1}
-//             setPage={(page) =>(
-//                 navigate(`?page=${page}`)
-//             )}
+            // columns={TryColumn}
+            // loadingState={navigation.state === "loading"? "loading" : "idle"}
+            // totalPages={totalPages}
+            // page={1}
+            // setPage={(page) =>(
+            //     navigate(`?page=${page}`)
+            // )}
 //             >
 //                 <TableRow>
 //                     <TableCell>efjsdlfh</TableCell>
