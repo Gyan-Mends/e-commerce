@@ -181,36 +181,112 @@ class UsersController {
         }
     }
 
-    async logout(intent:string) {
-        if(intent === "logout"){
+    async logout(intent: string) {
+        if (intent === "logout") {
             const session = await getSession();
 
-        return redirect("/", {
-            headers: {
-                "Set-Cookie": await commitSession(session),
-            },
-        });
+            return redirect("/", {
+                headers: {
+                    "Set-Cookie": await commitSession(session),
+                },
+            });
         }
     }
 
-    async FetchUsers({ request }: { request: Request }) {
+    async  FetchUsers({
+        request,
+        page,
+        search_term,
+        limit = 10
+    }: {
+        request: Request,
+        page: number;
+        search_term: string;
+        limit?: number;
+    }) {
+        const skipCount = (page - 1) * limit; // Calculate the number of documents to skip
+    
+        // Define the search filter only once
+        const searchFilter = search_term
+            ? {
+                $or: [
+                    {
+                        firstName: {
+                            $regex: new RegExp(
+                                search_term
+                                    .split(" ")
+                                    .map((term) => `(?=.*${term})`)
+                                    .join(""),
+                                "i"
+                            ),
+                        },
+                    },
+                    {
+                        lastName: {
+                            $regex: new RegExp(
+                                search_term
+                                    .split(" ")
+                                    .map((term) => `(?=.*${term})`)
+                                    .join(""),
+                                "i"
+                            ),
+                        },
+                    },
+                    {
+                        email: {
+                            $regex: new RegExp(
+                                search_term
+                                    .split(" ")
+                                    .map((term) => `(?=.*${term})`)
+                                    .join(""),
+                                "i"
+                            ),
+                        },
+                    },
+                    {
+                        phone: {
+                            $regex: new RegExp(
+                                search_term
+                                    .split(" ")
+                                    .map((term) => `(?=.*${term})`)
+                                    .join(""),
+                                "i"
+                            ),
+                        },
+                    },
+                ],
+            }
+            : {};
+    
         try {
+            // Get session and user information
             const session = await getSession(request.headers.get("Cookie"));
             const token = session.get("email");
             const user = await Registration.findOne({ email: token });
-            const users = await Registration.find();
-            const userCount = await  Registration.countDocuments()
-            
-            return { user, users,userCount }
+    
+            // Get total employee count and calculate total pages
+            const totalEmployeeCount = await Registration.countDocuments(searchFilter).exec();
+            const totalPages = Math.ceil(totalEmployeeCount / limit);
+    
+            // Find users with pagination and search filter
+            const users = await Registration.find(searchFilter)
+                .skip(skipCount)
+                .limit(limit)
+                .exec();
+    
+            const userCount = await Registration.countDocuments(searchFilter).exec();
+    
+            return { user, users, userCount, totalPages };
         } catch (error: any) {
-            return json({
+            return {
                 message: error.message,
-                success: true,
+                success: false,
                 status: 500
-            })
+            };
         }
     }
 }
+    
 
 const usersController = new UsersController
 export default usersController
