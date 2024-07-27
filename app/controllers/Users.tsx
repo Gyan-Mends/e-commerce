@@ -147,7 +147,8 @@ class UsersController {
                     lastName,
                     email,
                     phone,
-                    role
+                    role,
+                    admin,
                 })
 
                 if (updateUser) {
@@ -197,7 +198,7 @@ class UsersController {
         request,
         page,
         search_term,
-        limit = 10
+        limit = 9
     }: {
         request: Request,
         page: number;
@@ -264,7 +265,7 @@ class UsersController {
             const token = session.get("email");
             const user = await Registration.findOne({ email: token });
     
-            // Get total employee count and calculate total pages
+            // Get total employee count and calculate total pages       
             const totalEmployeeCount = await Registration.countDocuments(searchFilter).exec();
             const totalPages = Math.ceil(totalEmployeeCount / limit);
     

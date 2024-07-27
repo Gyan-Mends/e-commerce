@@ -25,11 +25,12 @@ export default function NewCustomTable(
         page: number,
         setPage: (page: number) => void
     }) {
-        
+
     return (
         <div className="z-0">
             <Table className="mt-6 " aria-label="Example table with custom cells"
                 classNames={{
+                    base: "h-[76vh] overflow-y-auto w-screen md:w-full overflow-x-auto  shadow-none",
                     wrapper:
                         "dark:bg-slate-900 vertical-scrollbar horizontal-scrollbar shadow-none bg-white rounded-2xl dark:border border-white/5",
                     th: "dark:bg-slate-800",
@@ -50,8 +51,8 @@ export default function NewCustomTable(
                     loadingState={loadingState}
                     loadingContent={<LoaderIcon className="" />}
                     emptyContent={
-                        <div className="">
-                            <img src={noDataIllustration} alt="" />
+                        <div className="h-full flex items-center justify-center">
+                            <img className="h-[65vh]" src={noDataIllustration} alt="" />
                         </div>
                     }
                 >
@@ -59,7 +60,7 @@ export default function NewCustomTable(
                 </TableBody>
             </Table>
 
-            <div className="flex w-full">
+            <div className="flex w-full mt-2">
                 {totalPages > 1 && (
                     <Pagination
                         page={page}

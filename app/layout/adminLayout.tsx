@@ -37,7 +37,7 @@ const AdminLayout = ({ children, pageName }: UserLayoutProps) => {
     };
 
     return (
-        <div className={`h-[100vh]  transition duration-500 ${theme === "light" ? "bg-gray-200" : "bg-slate-950"}`}>
+        <div className={`h-[100vh] overflow-y-hidden transition duration-500 ${theme === "light" ? "bg-gray-200" : "bg-slate-950"}`}>
             {/* Desktop Side Navigation Bar */}
             <div className={`h-full hidden lg:block md:block w-64 bg-primary text-white fixed transition-transform duration-500 p-6 ${desktopNav ? "transform-none" : "-translate-x-full"}`}>
                 {/* logo */}

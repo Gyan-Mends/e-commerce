@@ -1,5 +1,5 @@
 import { Button, Input, Select, SelectItem, TableCell, TableRow, User } from "@nextui-org/react"
-import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node"
+import { ActionFunction, json, LoaderFunction, MetaFunction, redirect } from "@remix-run/node"
 import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react"
 import { useEffect, useState } from "react"
 import { Toaster } from "react-hot-toast"
@@ -28,7 +28,7 @@ const Users = () => {
     const actionData = useActionData<any>()
     const navigate = useNavigate()
     const navigation = useNavigation()
-    const { user, users, totalPages } = useLoaderData<{ user: { _id: string }, users: RegistrationInterface[], totalPages:number }>()
+    const { user, users, totalPages } = useLoaderData<{ user: { _id: string }, users: RegistrationInterface[], totalPages: number }>()
 
     const handleCreateModalClosed = () => {
         setIsCreateModalOpened(false)
@@ -51,37 +51,24 @@ const Users = () => {
         }
     }, [actionData])
 
-    const [searchQuery, setSearchQuery] = useState('');
-    const [filteredUsers, setFilteredUsers] = useState(users);
 
-    const handleSearchChange = (event: any) => {
-        setSearchQuery(event.target.value);
-    };
-
-    useEffect(() => {
-        const filtered = users.filter(user => {
-            const lowerCaseQuery = searchQuery.toLowerCase();
-            return (
-                user.firstName.toLowerCase().includes(lowerCaseQuery) ||
-                user.phone.toLowerCase().includes(lowerCaseQuery) ||
-                user.lastName.toLowerCase().includes(lowerCaseQuery) ||
-                user.email.toLowerCase().includes(lowerCaseQuery)
-            );
-        });
-        setFilteredUsers(filtered);
-    }, [searchQuery, users]);
     return (
         <AdminLayout pageName="Users Management">
-            <div className="flex z-0 justify-between gap-2">
+            {/* search */}
+            {/* search */}
+            <div className="flex z-0 justify-between gap-2 overflow-y-hidden">
                 <Toaster position="top-center" />
                 <div>
                     <Input
                         size="lg"
                         placeholder="Search user..."
                         startContent={<SearchIcon className="" />}
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                        classNames={{
+                        onValueChange={(value) => {
+                            const timeoutId = setTimeout(() => {
+                                navigate(`?search_term=${value}`);
+                            }, 100);
+                            return () => clearTimeout(timeoutId);
+                        }} classNames={{
                             inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5",
                         }}
                     />
@@ -95,7 +82,8 @@ const Users = () => {
                 </div>
             </div>
 
-
+            {/* table  */}
+            {/* table  */}
             <NewCustomTable
                 columns={UserColumns}
                 loadingState={navigation.state === "loading" ? "loading" : "idle"}
@@ -139,8 +127,10 @@ const Users = () => {
                     </TableRow>
                 ))}
             </NewCustomTable>
-
-            <ConfirmModal className="dark:bg-slate-950 border border-white/5" header="Confirm Delete" content="Are you sure to delete user?" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
+            
+            {/* confirm modal */}
+            {/* confirm modal */}
+            <ConfirmModal className="dark:bg-slate-900 border border-white/5" header="Confirm Delete" content="Are you sure to delete user?" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
                 <div className="flex gap-4">
                     <Button color="primary" variant="flat" className="font-montserrat font-semibold" size="sm" onPress={handleConfirmModalClosed}>
                         No
@@ -160,6 +150,8 @@ const Users = () => {
                     </Button>
                 </div>
             </ConfirmModal>
+
+            {/* Create Modal */}
             {/* Create Modal */}
             <EditModal
                 className="bg-gray-200 dark:bg-slate-950 "
@@ -508,15 +500,47 @@ export const loader: LoaderFunction = async ({ request }) => {
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get("page") as string) || 1;
     const search_term = url.searchParams.get("search_term") as string;
+
     const session = await getSession(request.headers.get("Cookie"));
     const token = session.get("email");
     if (!token) {
         return redirect("/")
     }
-    const { user,users,totalPages } = await usersController.FetchUsers({ request,
+    const { user, users, totalPages } = await usersController.FetchUsers({
+        request,
         page,
         search_term
     });
 
-    return json({user, users,totalPages });
+    return json({ user, users, totalPages });
 }
+
+export const meta: MetaFunction = () => {
+    return [
+        { title: "Sales | Point of Sale" },
+        {
+            name: "description",
+            content: ".",
+        },
+        {
+            name: "author",
+            content: "MendsGyan",
+        },
+        { name: "og:title", content: "Point of Sale" },
+        {
+            name: "og:description",
+            content: "",
+        },
+        {
+            name: "og:image",
+            content:
+                "https://res.cloudinary.com/app-deity/image/upload/v1701282976/qfdbysyu0wqeugtcq9wq.jpg",
+        },
+        { name: "og:url", content: "https://marry-right.vercel.app" },
+        {
+            name: "keywords",
+            content:
+                "point of sales in Ghana, online shops, sales, e-commerce",
+        },
+    ];
+};

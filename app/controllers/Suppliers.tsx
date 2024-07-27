@@ -170,16 +170,84 @@ class SuppliersController {
         }
     }
 
-    async FetchSuppliers({ request }: { request: Request }) {
+    async FetchSuppliers({
+        request,
+        page,
+        search_term,
+        limit = 9
+    }: {
+        request: Request,
+        page: number;
+        search_term: string;
+        limit?: number;
+    }) {
+        const skipCount = (page - 1) * limit; // Calculate the number of documents to skip
+
+        // Define the search filter only once
+        const searchFilter = search_term
+            ? {
+                $or: [
+                    {
+                        firstName: {
+                            $regex: new RegExp(
+                                search_term
+                                    .split(" ")
+                                    .map((term) => `(?=.*${term})`)
+                                    .join(""),
+                                "i"
+                            ),
+                        },
+                    },
+                    {
+                        lastName: {
+                            $regex: new RegExp(
+                                search_term
+                                    .split(" ")
+                                    .map((term) => `(?=.*${term})`)
+                                    .join(""),
+                                "i"
+                            ),
+                        },
+                    },
+                    {
+                        email: {
+                            $regex: new RegExp(
+                                search_term
+                                    .split(" ")
+                                    .map((term) => `(?=.*${term})`)
+                                    .join(""),
+                                "i"
+                            ),
+                        },
+                    },
+                    {
+                        phone: {
+                            $regex: new RegExp(
+                                search_term
+                                    .split(" ")
+                                    .map((term) => `(?=.*${term})`)
+                                    .join(""),
+                                "i"
+                            ),
+                        },
+                    },
+                ],
+            }
+            : {};
         try {
             const session = await getSession(request.headers.get("Cookie"));
             const token = session.get("email");
             const user = await Registration.findOne({ email: token });
-            const suppliers = await Suppliers.find();
 
-            const supplierCount = await  Suppliers.countDocuments()
-            
-            return { user, suppliers,supplierCount }
+            const totalSuppliers = await Suppliers.countDocuments(searchFilter).exec();
+            const totalPages = Math.ceil(totalSuppliers/limit);
+
+            const users = await   Suppliers.find(searchFilter)
+            .skip(skipCount)
+            .limit(limit)
+            .exec()
+
+            return { user,users,totalPages, }
         } catch (error: any) {
             return json({
                 message: error.message,
