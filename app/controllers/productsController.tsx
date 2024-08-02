@@ -3,6 +3,8 @@ import Category from "~/modal/category"
 import Product from "~/modal/products"
 import Registration from "~/modal/registration"
 import { getSession } from "~/session"
+import category from "./categoryController"
+import { ProductInterface, RegistrationInterface } from "~/interfaces/interface"
 
 class ProductsController {
     async ProductAdd(
@@ -169,36 +171,67 @@ class ProductsController {
         }
     }
 
-
-    async ProductFetch(request: Request) {
-        try {
-            //check if user is logged in
-            const session = await getSession(request.headers.get("Cookie"))
-            const token = await session.get("email");
-            const user = await Registration.findOne({ email: token });
-            const product = await Product.find().populate("category");
-            const productsCount = await Product.countDocuments()
-            const categories = await Category.find();
-            if (!token) {
-                return redirect("/login")
+    async  FetchProducts({
+        request,
+        page,
+        search_term,
+        limit = 9
+    }: {
+        request: Request,
+        page: number;
+        search_term: string;
+        limit?: number;
+    }):Promise<{
+        user: RegistrationInterface[],
+        products:ProductInterface[],
+        totalPages: number
+    } | any> {
+        const skipCount = (page - 1) * limit; // Calculate the number of documents to skip
+    
+        // Define the search filter only once
+        const searchFilter = search_term
+            ? {
+                $or: [
+                    {
+                        name: {
+                            $regex: new RegExp(
+                                search_term
+                                    .split(" ")
+                                    .map((term) => `(?=.*${term})`)
+                                    .join(""),
+                                "i"
+                            ),
+                        },
+                    },
+                   
+                ],
             }
-           
-            //fetching categories
-            
-            const sellinPrice = product.reduce((acc, products) => {
-                return acc + Number(products.price); // Ensure quantity is treated as a number
-            }, 0);
-
-            const costPrice = product.reduce((acc, products) => {
-                return acc + Number(products.costPrice); // Ensure quantity is treated as a number
-            }, 0);
-
-            const profit = sellinPrice-costPrice
-           
-
-            return { categories, user, product, productsCount,profit};
-        } catch (error) {
-
+            : {};
+    
+        try {
+            // Get session and user information
+            const session = await getSession(request.headers.get("Cookie"));
+            const token = session.get("email");
+            const user = await Registration.findOne({ email: token });
+    
+            // Get total employee count and calculate total pages       
+            const totalEmployeeCount = await Product.countDocuments(searchFilter).exec();
+            const totalPages = Math.ceil(totalEmployeeCount / limit);
+    
+            // Find users with pagination and search filter
+            const products = await Product.find(searchFilter)
+                .skip(skipCount)
+                .limit(limit)
+                .exec();
+    
+    
+            return { user, products, totalPages };
+        } catch (error: any) {
+            return {
+                message: error.message,
+                success: false,
+                status: 500
+            };
         }
     }
 }

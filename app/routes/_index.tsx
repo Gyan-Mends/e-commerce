@@ -8,7 +8,7 @@ const LandingPage = () => {
     useEffect(() => {
         setTimeout(() => {
             navigate("/login")
-        }, 500)
+        }, 1000)
     }, [])
     return(
         <div className="w-full h-[100vh] bg-slate-950 flex flex-col items-center justify-center gap-4">

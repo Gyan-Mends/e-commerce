@@ -19,6 +19,7 @@ import CustomTable from '~/components/table/table';
 import salesController from '~/controllers/sales';
 import { AdminDashboardSalesColumns, SalesColumns } from '~/components/table/columns';
 import ProfitIcon from '~/components/icons/ProfitIcon';
+import dashboardController from '~/controllers/dashboard';
 
 
 const Admin = () => {
@@ -275,10 +276,15 @@ export const loader: LoaderFunction = async ({ request }) => {
         return redirect("/")
     }
 
-    const { adminsales } = await salesController.salesFetch({ request });
-    const { userCount } = await usersController.FetchUsers({ request });
-    const { supplierCount } = await suppliersController.FetchSuppliers({ request })
-    const { productsCount,profit } = await productsController.ProductFetch(request)
-    const { categoryCount } = await category.CategoryFetch(request)
+    const { 
+        adminsales,
+        userCount,
+        supplierCount,
+        productsCount,
+        profit,
+        categoryCount
+    } = await dashboardController.Dashboard();
+  
+
     return { userCount, supplierCount, productsCount, categoryCount, adminsales,profit }
 }

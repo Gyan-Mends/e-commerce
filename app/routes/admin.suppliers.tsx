@@ -1,6 +1,6 @@
 import { Button, Input, Select, SelectItem, TableCell, TableRow, User } from "@nextui-org/react"
-import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node"
-import { Form, useActionData, useLoaderData, useSubmit } from "@remix-run/react"
+import { ActionFunction, json, LoaderFunction, MetaFunction, redirect } from "@remix-run/node"
+import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react"
 import { useEffect, useState } from "react"
 import { Toaster } from "react-hot-toast"
 import { DeleteIcon } from "~/components/icons/DeleteIcon"
@@ -11,6 +11,7 @@ import ConfirmModal from "~/components/modal/confirmModal"
 import CreateModal from "~/components/modal/createModal"
 import EditModal from "~/components/modal/EditModal"
 import { SuppliersColumns, UserColumns } from "~/components/table/columns"
+import NewCustomTable from "~/components/table/newTable"
 import CustomTable from "~/components/table/table"
 import { errorToast, successToast } from "~/components/toast"
 import suppliersController from "~/controllers/Suppliers"
@@ -22,13 +23,14 @@ import { getSession } from "~/session"
 const Suppliers = () => {
     const [isCreateModalOpened, setIsCreateModalOpened] = useState(false)
     const [base64Image, setBase64Image] = useState()
-    const [rowsPerPage, setRowsPerPage] = useState(13)
     const [isConfirmModalOpened, setIsConfirmModalOpened] = useState(false)
     const [isEditModalOpened, setIsEditModalOpened] = useState(false)
     const [dataValue, setDataValue] = useState<SuppliersInterface>()
     const submit = useSubmit()
     const actionData = useActionData<any>()
-    const { user, suppliers } = useLoaderData<{ user: { _id: string }, suppliers: SuppliersInterface[] }>()
+    const { user, suppliers, totalPages } = useLoaderData<{ user: { _id: string }, suppliers: SuppliersInterface[], totalPages: number }>()
+    const navigate = useNavigate()
+    const navigation = useNavigation()
 
     const handleCreateModalClosed = () => {
         setIsCreateModalOpened(false)
@@ -39,9 +41,7 @@ const Suppliers = () => {
     const handleEditModalClosed = () => {
         setIsEditModalOpened(false)
     }
-    const handleRowsPerPageChange = (newRowsPerPage: number) => {
-        setRowsPerPage(newRowsPerPage)
-    }
+
 
     useEffect(() => {
         if (actionData) {
@@ -53,25 +53,7 @@ const Suppliers = () => {
         }
     }, [actionData])
 
-    const [searchQuery, setSearchQuery] = useState('');
-    const [filteredSuppliers, setFilteredSuppliers] = useState(suppliers);
 
-    const handleSearchChange = (event: any) => {
-        setSearchQuery(event.target.value);
-    };
-
-    useEffect(() => {
-        const filtered = suppliers.filter(supplier => {
-            const lowerCaseQuery = searchQuery.toLowerCase();
-            return (
-                supplier.firstName.toLowerCase().includes(lowerCaseQuery) ||
-                supplier.phone.toLowerCase().includes(lowerCaseQuery) ||
-                supplier.lastName.toLowerCase().includes(lowerCaseQuery) ||
-                supplier.email.toLowerCase().includes(lowerCaseQuery)
-            );
-        });
-        setFilteredSuppliers(filtered);
-    }, [searchQuery, suppliers]);
     return (
         <AdminLayout pageName="Supliers Management">
             <div className="flex z-0 justify-between gap-2">
@@ -81,8 +63,11 @@ const Suppliers = () => {
                         size="lg"
                         placeholder="Search product..."
                         startContent={<SearchIcon className="" />}
-                        value={searchQuery}
-                        onChange={handleSearchChange}
+                        onValueChange={(value) => {
+                            const timeout = setTimeout(() => {
+                                navigate(`?search_term= ${value}`)
+                            }, 100)
+                        }}
                         classNames={{
                             inputWrapper: "dark:bg-slate-900 bg-white shadow-sm border border-white/5",
                         }}
@@ -98,8 +83,16 @@ const Suppliers = () => {
             </div>
 
 
-            <CustomTable columns={SuppliersColumns} rowsPerPage={rowsPerPage} onRowsPerPageChange={handleRowsPerPageChange}>
-                {filteredSuppliers.map((supplier: SuppliersInterface, index: number) => (
+            <NewCustomTable
+                columns={SuppliersColumns}
+                loadingState={navigation.state === "loading" ? "loading" : "idle"}
+                totalPages={totalPages}
+                page={1}
+                setPage={(page) => {
+                    navigate(`?pages= ${page}`)
+                }}
+            >
+                {suppliers.map((supplier: SuppliersInterface, index: number) => (
                     <TableRow key={index}>
                         <TableCell className="text-xs">
                             <User
@@ -118,7 +111,7 @@ const Suppliers = () => {
                                 setIsEditModalOpened(true)
                                 setDataValue(supplier)
                             }}>
-                                <EditIcon /> Edit
+                                <EditIcon />Edit
                             </Button>
                             <Button size="sm" color="danger" variant="flat" onClick={() => {
                                 setIsConfirmModalOpened(true)
@@ -130,7 +123,7 @@ const Suppliers = () => {
                         </TableCell>
                     </TableRow>
                 ))}
-            </CustomTable>
+            </NewCustomTable>
             <ConfirmModal content="Are you sure to delete supplier?" header="Cnfirm Delete" className="dark:bg-slate-900 border border-white/5" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
                 <div className="flex gap-4">
                     <Button size="sm" color="primary" variant="flat" className="font-montserrat font-semibold" onPress={handleConfirmModalClosed}>
@@ -397,12 +390,48 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
+    const url = new URL(request.url);
+    const page = parseInt(url.searchParams.get("page") as string) || 1;
+    const search_term = url.searchParams.get("search_term") as string
+
     const session = await getSession(request.headers.get("Cookie"));
     const token = session.get("email");
     if (!token) {
         return redirect("/")
     }
-    const { user, suppliers } = await suppliersController.FetchSuppliers({ request })
 
-    return { user, suppliers }
+    const { user, suppliers, totalPages, supplierCount } = await suppliersController.FetchSuppliers({ request, page, search_term });
+
+    return { user, suppliers, totalPages, supplierCount }
+
 }
+
+export const meta: MetaFunction = () => {
+    return [
+        { title: "Sales | Point of Sale" },
+        {
+            name: "description",
+            content: ".",
+        },
+        {
+            name: "author",
+            content: "MendsGyan",
+        },
+        { name: "og:title", content: "Point of Sale" },
+        {
+            name: "og:description",
+            content: "",
+        },
+        {
+            name: "og:image",
+            content:
+                "https://res.cloudinary.com/app-deity/image/upload/v1701282976/qfdbysyu0wqeugtcq9wq.jpg",
+        },
+        { name: "og:url", content: "https://marry-right.vercel.app" },
+        {
+            name: "keywords",
+            content:
+                "point of sales in Ghana, online shops, sales, e-commerce",
+        },
+    ];
+};

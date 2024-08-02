@@ -46,7 +46,7 @@ const Login = () => {
 
     return (
         <div className={`lg:grid lg:grid-cols-2 h-[100vh] dark:bg-slate-950 overflow-y-hidden `}>
-            <Toaster position="top-center" />
+            <Toaster position="top-right" />
             <div className="h-[100vh] w-full flex items-center justify-center ">
                 <div className="dark:bg-slate-900 shadow-lg p-6 rounded-2xl lg:w-[30vw] border border-white/5 relative">
                     <p className=" font-montserrat font-semibold text-3xl">Login To </p>

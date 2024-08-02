@@ -109,10 +109,7 @@ class SalesController {
       .populate("attendant")
       .exec();
       
-    const adminsales = await Sales.find()
-      .populate("products.product")
-      .populate("attendant")
-      .exec();
+    
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -128,7 +125,7 @@ class SalesController {
       }
     }).exec();
 
-    return { sales, adminsales, salesCount,dailySales };
+    return { sales, salesCount,dailySales };
   }
   
 }

@@ -3,6 +3,7 @@ import Registration from "~/modal/registration"
 import { getSession } from "~/session"
 import bcrypt from 'bcryptjs'; // Import bcrypt
 import Suppliers from "~/modal/suppliers";
+import { RegistrationInterface, SuppliersInterface } from "~/interfaces/interface";
 
 
 class SuppliersController {
@@ -29,12 +30,18 @@ class SuppliersController {
             if (intent === "create") {
                 // checking if user exist
                 const UserCheck = await Suppliers.findOne({ email: email })
+                const phoneNumberCheck = await Suppliers.findOne({ phone: phone })
 
                 if (UserCheck) {
                     return json({
                         message: "Supplier with this email already exist",
                         success: false,
                         status: 500
+                    })
+                }else if(phoneNumberCheck) {
+                    return  json({
+                        message: "Phone Number already exist",
+                        success: false
                     })
                 } else {
 
@@ -180,7 +187,7 @@ class SuppliersController {
         page: number;
         search_term: string;
         limit?: number;
-    }) {
+    }):Promise<{user:RegistrationInterface[]; totalPages:number;suppliers:SuppliersInterface[],supplierCount:number} | any> {
         const skipCount = (page - 1) * limit; // Calculate the number of documents to skip
 
         // Define the search filter only once
@@ -192,7 +199,18 @@ class SuppliersController {
                             $regex: new RegExp(
                                 search_term
                                     .split(" ")
-                                    .map((term) => `(?=.*${term})`)
+                                    .map((term) => `(?=${term})`)
+                                    .join(""),
+                                "i"
+                            ),
+                        },
+                    },
+                    {
+                        middleName: {
+                            $regex: new RegExp(
+                                search_term
+                                    .split(" ")
+                                    .map((term) => `(?=${term})`)
                                     .join(""),
                                 "i"
                             ),
@@ -203,7 +221,7 @@ class SuppliersController {
                             $regex: new RegExp(
                                 search_term
                                     .split(" ")
-                                    .map((term) => `(?=.*${term})`)
+                                    .map((term) => `(?=${term})`)
                                     .join(""),
                                 "i"
                             ),
@@ -214,7 +232,7 @@ class SuppliersController {
                             $regex: new RegExp(
                                 search_term
                                     .split(" ")
-                                    .map((term) => `(?=.*${term})`)
+                                    .map((term) => `(?=${term})`)
                                     .join(""),
                                 "i"
                             ),
@@ -242,12 +260,14 @@ class SuppliersController {
             const totalSuppliers = await Suppliers.countDocuments(searchFilter).exec();
             const totalPages = Math.ceil(totalSuppliers/limit);
 
-            const users = await   Suppliers.find(searchFilter)
+            const suppliers = await   Suppliers.find(searchFilter)
             .skip(skipCount)
             .limit(limit)
             .exec()
 
-            return { user,users,totalPages, }
+
+            return { user,suppliers,totalPages }
+            
         } catch (error: any) {
             return json({
                 message: error.message,

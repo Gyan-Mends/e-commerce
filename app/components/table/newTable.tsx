@@ -49,7 +49,7 @@ export default function NewCustomTable(
                 </TableHeader>
                 <TableBody
                     loadingState={loadingState}
-                    loadingContent={<LoaderIcon className="" />}
+                    loadingContent={<LoaderIcon className="text-white" />}
                     emptyContent={
                         <div className="h-full flex items-center justify-center">
                             <img className="h-[65vh]" src={noDataIllustration} alt="" />

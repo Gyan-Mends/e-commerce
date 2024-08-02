@@ -5,26 +5,26 @@ export const CategoryColumns = [
 ];
 
 export const ProductColumns = [
-    { key: "name", label: "Name" },
-    { key: "category", label: "Category" },
-    { key: "costPrice", label: "Cost Price" },
-    { key: "price", label: "Selling Price" },
-    { key: "quantity", label: "Quantity" },
-    { key: "low_stock", label: "Low Stock" },
-    {key:"action", label: "Action"}
+    { title: "Name" , allowSort: true},
+    { title: "Category" , allowSort: true},
+    { title: "Cost Price" , allowSort: true},
+    { title: "Selling Price" , allowSort: true},
+    { title: "Quantity" , allowSort: true},
+    { title: "Low Stock" , allowSort: true},
+    { title: "Action", allowSort: true }
 ]
 export const UserColumns = [
-    {title:"Name", allowSort:true },
-    {title:"Password", allowSort:true },
-    { title:"Phone", allowSort:true },
-    { title:"Role", allowSort:true },
-    {title:"Action", allowSort:true}
+    { title: "Name", allowSort: true },
+    { title: "Password", allowSort: true },
+    { title: "Phone", allowSort: true },
+    { title: "Role", allowSort: true },
+    { title: "Action", allowSort: true }
 ]
 export const SuppliersColumns = [
-    { key: "name", label: "Name" },
-    { key: "email", label: "Email" },
-    { key: "phone", label: "Phone" },
-    {key:"action", label: "Action"}
+    { title: "Name", allowSort: true },
+    { title: "Email", allowSort: true },
+    { title: "Phone", allowSort: true },
+    { title: "Action", allowSort: true }
 ]
 export const SalesColumns = [
     { key: "Receipt ID", label: "Receipt ID" },
@@ -32,7 +32,7 @@ export const SalesColumns = [
     { key: "totalAmount", label: "Total Amount" },
     { key: "amountPaid", label: "Amount Paid" },
     { key: "balance", label: "Balance" },
-    {key:"action", label: "Action"}
+    { key: "action", label: "Action" }
 ]
 export const AdminDashboardSalesColumns = [
     { key: "products", label: "Products" },
@@ -41,5 +41,5 @@ export const AdminDashboardSalesColumns = [
     { key: "totalAmount", label: "Total Amount" },
     { key: "amountPaid", label: "Amount Paid" },
     { key: "balance", label: "Balance" },
-    {key:"action", label: "Action"}
+    { key: "action", label: "Action" }
 ]

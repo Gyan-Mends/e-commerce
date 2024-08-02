@@ -1,6 +1,6 @@
 import { Button, Input, Select, SelectItem, TableCell, TableRow, Textarea, User } from "@nextui-org/react"
 import { ActionFunction, LoaderFunction, json, redirect } from "@remix-run/node"
-import { Form, useActionData, useLoaderData, useSubmit } from "@remix-run/react"
+import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react"
 import { useEffect, useState } from "react"
 import { Toaster } from "react-hot-toast"
 import { DeleteIcon } from "~/components/icons/DeleteIcon"
@@ -12,6 +12,7 @@ import ConfirmModal from "~/components/modal/confirmModal"
 import CreateModal from "~/components/modal/createModal"
 import ViewModal from "~/components/modal/viewModal"
 import { ProductColumns } from "~/components/table/columns"
+import NewCustomTable from "~/components/table/newTable"
 import CustomTable from "~/components/table/table"
 import { errorToast, successToast } from "~/components/toast"
 import usersController from "~/controllers/Users"
@@ -23,46 +24,19 @@ import { getSession } from "~/session"
 const Products = () => {
 
     const [createModalOpened, setCreateModalOpened] = useState(false)
-    const { categories, user, product } = useLoaderData<{ categories: CategoryInterface[], user: { _id: string }, product: ProductInterface[] }>();
+    const { categories, user, products, totalPages } = useLoaderData<{ categories: CategoryInterface[], user: { _id: string }, products: ProductInterface[], totalPages: number }>();
     const actionData = useActionData<any>()
     const [base64Image, setBase64Image] = useState<any>();
-    const [rowsPerPage, setRowsPerPage] = useState(13)
     const [viewModalOpened, setViewModalOpened] = useState(false);
     const [editModalOpened, setEditmOdalOpened] = useState(false)
     const [selectedProducts, setSelectedProducts] = useState<ProductInterface>()
     const [isConfirmedModalOpened, setIsConfirmedModalOpened] = useState(false)
     const submit = useSubmit()
-    const [searchQuery, setSearchQuery] = useState('');
-    const [filteredUsers, setFilteredUsers] = useState(product);
+    const navigate = useNavigate()
+    const navigation = useNavigation()
 
-    useEffect(() => {
-        const filtered = product.filter(products => {
-            const lowerCaseQuery = searchQuery.toLowerCase();
-            return (
-                products.name.toLowerCase().includes(lowerCaseQuery) ||
-                products.category.toLowerCase().includes(lowerCaseQuery)
-            );
-        });
-        setFilteredUsers(filtered);
-    }, [searchQuery, product]);
-    useEffect(() => {
-        if (actionData) {
-            if (actionData.success) {
-                successToast(actionData.message)
-            } else {
-                errorToast(actionData.message)
-            }
-        }
-    }, [actionData])
-
-    const handleSearchChange = (event: any) => {
-        setSearchQuery(event.target.value);
-    };
     const handleCloseCreateModal = () => {
         setCreateModalOpened(false)
-    }
-    const handleRowsPerPageChange = (newRowsPerPage: number) => {
-        setRowsPerPage(newRowsPerPage)
     }
     const handleViewModalClosed = () => {
         setViewModalOpened(false)
@@ -82,17 +56,17 @@ const Products = () => {
             <Toaster position="top-center" />
             <div className="flex justify-between">
                 <div>
-                    <Input
+                <Input
                         size="lg"
-                        placeholder="Search product..."
-                        className="font-nunito"
-                        startContent={
-                            <SearchIcon className="" />
-                        }
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                        classNames={{
-                            inputWrapper: "dark:bg-slate-900 bg-white border border-white/5"
+                        placeholder="Search user..."
+                        startContent={<SearchIcon className="" />}
+                        onValueChange={(value) => {
+                            const timeoutId = setTimeout(() => {
+                                navigate(`?search_term=${value}`);
+                            }, 100);
+                            return () => clearTimeout(timeoutId);
+                        }} classNames={{
+                            inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5",
                         }}
                     />
                 </div>
@@ -106,8 +80,16 @@ const Products = () => {
                 </div>
             </div>
 
-            <CustomTable columns={ProductColumns} rowsPerPage={rowsPerPage} onRowsPerPageChange={handleRowsPerPageChange}>
-                {filteredUsers.map((products: ProductInterface, index: number) => (
+            <NewCustomTable
+                columns={ProductColumns}
+                loadingState={navigation.state === "loading" ? "loading" : "idle"}
+                totalPages={totalPages}
+                page={1}
+                setPage={(page) => {
+                    navigate(`?pages=${page}`)
+                }}
+            >
+                {products.map((products: ProductInterface, index: number) => (
                     <TableRow key={index}>
                         <TableCell>
                             <User
@@ -142,7 +124,7 @@ const Products = () => {
                         </TableCell>
                     </TableRow>
                 ))}
-            </CustomTable>
+            </NewCustomTable>
 
             <CreateModal className="dark:bg-slate-950 bg-gray-200" modalTitle="Add new product" isOpen={createModalOpened} onOpenChange={handleCloseCreateModal} >
                 {(onClose) => (
@@ -309,6 +291,7 @@ const Products = () => {
                     </div>
                 </div>
             </ViewModal>
+
             <EditModal modalTitle="Edit Product detail" className="dark:bg-slate-950 bg-gray-200" onOpenChange={handleEditModalClose} isOpen={editModalOpened}>
                 {(onClose) => (
                     <Form method="post">
@@ -468,6 +451,7 @@ const Products = () => {
                     </Form>
                 )}
             </EditModal>
+
             <ConfirmModal className="bg-gray-200 dark:bg-slate-950 border border-white/5" content="Are you sure to delete product" header="Comfirm Delete" isOpen={isConfirmedModalOpened} onOpenChange={handleConfirmModalClosed}>
                 <div className="flex gap-4">
                     <Button size="sm" color="danger" className="font-nunito " onPress={handleConfirmModalClosed}>
@@ -543,13 +527,19 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
+    const url = new URL(request.url);
+    const page = parseInt(url.searchParams.get("page") as string) || 1;
+    const search_term = url.searchParams.get("search_term") as string
+
     const session = await getSession(request.headers.get("Cookie"));
     const token = session.get("email");
-    if(!token){
+    if (!token) {
         return redirect("/")
-    }
-    const { categories, user, product } = await productsController.ProductFetch(request);
+    };
 
-    return { categories, user, product }; // Ensure this returns an array
+    const { user, products, totalPages} = await productsController.FetchProducts({ request, page, search_term });
+
+    return json({ user, products, totalPages })
+
 }
 

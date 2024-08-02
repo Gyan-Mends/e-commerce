@@ -13,7 +13,7 @@ class LoginController {
         request: Request,
         email: string,
         password: string,
-        rememberMe: string
+        rememberMe: boolean | any
     }) {
         try {
             const userCheck = await Registration.findOne({ email });

@@ -5,7 +5,7 @@ import ErrorIcon from "./icons/ErrorIcon";
 export const errorToast = (message: string) => {
     return toast(
         (t) => (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 ">
                 <div className="flex gap-2">
                     <ErrorIcon className=" text-2xl text-danger" />
                     <span className="font-poppins text-slate-800">{message}</span>

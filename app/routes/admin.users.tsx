@@ -57,7 +57,7 @@ const Users = () => {
             {/* search */}
             {/* search */}
             <div className="flex z-0 justify-between gap-2 overflow-y-hidden">
-                <Toaster position="top-center" />
+                <Toaster position="top-right" />
                 <div>
                     <Input
                         size="lg"
@@ -264,7 +264,7 @@ const Users = () => {
                         />
 
 
-                        <input name="admin" value={user._id} type="hidden" />
+                        <input name="admin" value={user?._id} type="hidden" />
                         <input name="intent" value="update" type="hidden" />
                         <input name="id" value={dataValue?._id} type="hidden" />
 
@@ -272,7 +272,9 @@ const Users = () => {
                             <Button className="font-montserrat font-semibold" color="danger" variant="flat" onPress={onClose}>
                                 Close
                             </Button>
-                            <button type="submit" className="bg-primary-400 rounded-xl bg-opacity-20 text-primary text-sm font-montserrat font-semibold px-4">
+                            <button type="submit" className="bg-primary-400 rounded-xl bg-opacity-20 text-primary text-sm font-montserrat font-semibold px-4" onClick={() => {
+                                setIsEditModalOpened(false)
+                            }}>
                                 Submit
                             </button>
                         </div>

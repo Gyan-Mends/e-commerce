@@ -33,11 +33,18 @@ class UsersController {
         try {
             if (intent === "create") {
                 // checking if user exist
-                const UserCheck = await Registration.findOne({ email: email })
+                const UserCheck = await Registration.findOne({ email: email})
+                const phoneNumberCheck = await Registration.findOne({phone:phone})
 
                 if (UserCheck) {
                     return json({
                         message: "User with this email already exist",
+                        success: false,
+                        status: 500
+                    })
+                }else if(phoneNumberCheck){
+                    return json({
+                        message: "Phone number already exist",
                         success: false,
                         status: 500
                     })
@@ -275,9 +282,8 @@ class UsersController {
                 .limit(limit)
                 .exec();
     
-            const userCount = await Registration.countDocuments(searchFilter).exec();
     
-            return { user, users, userCount, totalPages };
+            return { user, users, totalPages };
         } catch (error: any) {
             return {
                 message: error.message,
