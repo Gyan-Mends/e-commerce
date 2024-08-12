@@ -3,9 +3,11 @@ import { ActionFunction, json, LoaderFunction, MetaFunction, redirect } from "@r
 import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react"
 import { useEffect, useState } from "react"
 import { Toaster } from "react-hot-toast"
+import BackIcon from "~/components/icons/BackIcon"
 import { DeleteIcon } from "~/components/icons/DeleteIcon"
 import { EditIcon } from "~/components/icons/EditIcon"
 import PlusIcon from "~/components/icons/PlusIcon"
+import RefreshIcon from "~/components/icons/RefreshIcon"
 import { SearchIcon } from "~/components/icons/SearchIcon"
 import ConfirmModal from "~/components/modal/confirmModal"
 import CreateModal from "~/components/modal/createModal"
@@ -58,7 +60,16 @@ const Users = () => {
             {/* search */}
             <div className="flex z-0 justify-between gap-2 overflow-y-hidden">
                 <Toaster position="top-right" />
-                <div>
+                <div className="flex items-center justify-center gap-2">
+                    <Button size="md" onClick={() => { 
+                        navigate(-1)
+                    }} color="primary" className="font-nunito text-sm border border-white/5 border-b-white dark:border-primary  dark:border-b-primary dak:text-priamry dark:bg-slate-950">
+                        <BackIcon className="h-[20px] w-[20px] dark:text-primary" />  Back
+                    </Button>
+
+                </div>
+                <div className="flex gap-4">
+
                     <Input
                         size="lg"
                         placeholder="Search user..."
@@ -69,11 +80,9 @@ const Users = () => {
                             }, 100);
                             return () => clearTimeout(timeoutId);
                         }} classNames={{
-                            inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5",
+                            inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border-white/5 border-b-primary",
                         }}
                     />
-                </div>
-                <div>
                     <Button size="lg" variant="flat" onClick={() => {
                         setIsCreateModalOpened(true)
                     }} color="primary" className="font-montserrat font-semibold text-md">
@@ -127,7 +136,7 @@ const Users = () => {
                     </TableRow>
                 ))}
             </NewCustomTable>
-            
+
             {/* confirm modal */}
             {/* confirm modal */}
             <ConfirmModal className="dark:bg-slate-900 border border-white/5" header="Confirm Delete" content="Are you sure to delete user?" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>

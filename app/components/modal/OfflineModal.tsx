@@ -41,7 +41,7 @@ const Offline = ({ children, className , redirectTo }:OfflineProps) => {
             // Redirect to the specified path after a delay
             const timer = setTimeout(() => {
                 navigate(redirectTo);
-            }, 2000); // Adjust the delay as needed
+            }, 3500); // Adjust the delay as needed
 
             return () => clearTimeout(timer); // Cleanup timeout
         } else {
@@ -74,7 +74,7 @@ const Offline = ({ children, className , redirectTo }:OfflineProps) => {
                     <Button
                         color="primary"
                         onClick={handleRefresh}
-                        className="border-l-4 border-white font-montserrat font-semibold rounded-l-2xl text-white py-2 px-4 bg-blue-500 hover:bg-blue-700">
+                        className="border-l-4 shadow-sm border-white font-montserrat font-semibold rounded-l-2xl text-white py-2 px-4 bg-blue-500 hover:bg-blue-700">
                         Refresh Page
                     </Button>
                     {isRefresh && (

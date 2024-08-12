@@ -3,8 +3,8 @@ import { Skeleton } from "@nextui-org/react";
 import AdminLayout from "~/layout/adminLayout";
 import EventIcon from '~/components/icons/EventsIcon';
 import { LoaderFunction, redirect } from '@remix-run/node';
-import {Calendar} from "@nextui-org/react";
-import {today, getLocalTimeZone} from "@internationalized/date";
+import { Calendar } from "@nextui-org/react";
+import { today, getLocalTimeZone } from "@internationalized/date";
 import { getSession } from '~/session';
 import usersController from '~/controllers/Users';
 import { useLoaderData } from '@remix-run/react';
@@ -20,19 +20,23 @@ import salesController from '~/controllers/sales';
 import { AdminDashboardSalesColumns, SalesColumns } from '~/components/table/columns';
 import ProfitIcon from '~/components/icons/ProfitIcon';
 import dashboardController from '~/controllers/dashboard';
+import NotificationIcon from '~/components/icons/NotificationIcon';
+import ProductIcon from '~/components/icons/ProductsIcon';
+import ArrowsIcon from '~/components/icons/ArrowsIcon';
 
 
 const Admin = () => {
     const [loading, setLoading] = useState(true);
-    const { userCount, supplierCount, productsCount, categoryCount,profit } = useLoaderData<{ userCount: string, supplierCount: string, productsCount: string, categoryCount: string ,profit:string}>()
+    const { userCount, supplierCount, productsCount, categoryCount, profit, allSales } = useLoaderData<{ userCount: string, supplierCount: string, productsCount: string, categoryCount: string, profit: string, allSales: SalesInterface }>()
     const { adminsales } = useLoaderData<{ adminsales: SalesInterface[] }>()
     const [rowsPerPage, setRowsPerPage] = useState(8)
+    const [isLoading, setIsLoading] = useState(false)
     const handleRowsPerPageChange = (newRowsPerPage: number) => {
         setRowsPerPage(newRowsPerPage)
     }
     useEffect(() => {
         const timer = setTimeout(() => {
-            setLoading(false);
+            setIsLoading(true);
         }, 1000);
         return () => clearTimeout(timer); // Cleanup the timer
     }, []);
@@ -40,228 +44,151 @@ const Admin = () => {
 
     return (
         <AdminLayout pageName="Dashboard">
-            <div className='lg:grid lg:grid-cols-3 gap-20 px-2'>
-                <div className='col-span-2'>
-                    {/* Events && category overview */}
-                    {loading ? (
-                        <div className='lg:grid lg:grid-cols-2 gap-10'>
-                            {skeletons.slice(0, 2).map((_, index) => (
-                                <Skeleton key={index} className="rounded-lg h-[85px] rounded-2xl transition-all duration-200" />
-                            ))}
-                        </div>
-                    ) : (
-                        // Sales && Refunds overview
-                        <div className='lg:grid lg:grid-cols-2 gap-10'>
-                            {/* events */}
-                            <div className="h-[85px] rounded-2xl transition-all duration-200 bg-white  shadow-sm  dark:bg-slate-900 border border-white/5 flex items-center justify-between px-4">
-                                <div className='flex '>
-                                    <div className='flex gap-4'>
-                                        {/* Other content here */}
-                                        <div className='bg-primary h-12 w-12 dark:bg-indigo-500 flex items-center justify-center p-2 rounded-xl shadow-md'>
-                                            <UsersGroup className="h-6 w-6  dark:text-white text-white" />
-                                        </div>
-                                        <div className='flex items-center text-white'>
-                                            <span>
-                                                <p className='text-black dark:text-white font-nunito text-lg'>{userCount}</p>
-                                                <p className='text-black dark:text-white font-montserrat font-semibold text-sm'>Users</p>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        {/* Other content here */}
-                                    </div>
-                                </div>
+            <div className='px-2'>
+                <Skeleton isLoaded={isLoading} className='rounded-xl mt-2'>
+                    <div className='py-4 px-10 bg-slate-50 shadow-sm rounded-xl border-b-2 border-b-primary  dark:bg-slate-900  flex justify-between mt-2'>
+                        <div className='flex gap-4'>
+                            <div className='w-12 h-12 bg-black rounded-full flex items-center justify-center'>
+                                <NotificationIcon className="h-[20px] w-[20px] text-white" />
                             </div>
-                            {/* category */}
-                            <div className="h-[85px] rounded-2xl transition-all duration-200 bg-white  shadow-sm  dark:bg-slate-900 border border-white/5 flex items-center justify-between px-4">
-                                <div className='flex '>
-                                    <div className='flex gap-4'>
-                                        {/* Other content here */}
-                                        <div className='bg-primary h-12 w-12 dark:bg-indigo-500 flex items-center justify-center p-2 rounded-xl shadow-md'>
-                                            <SupplierIcon className="h-6 w-6 dark:text-white text-white" />
-                                        </div>
-                                        <div className='flex items-center text-white'>
-                                            <span>
-                                                <p className='text-black dark:text-white font-nunito  text-lg'>{supplierCount}</p>
-                                                <p className='text-black dark:text-white font-montserrat font-semibold text-sm'>Suppliers</p>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        {/* Other content here */}
-                                    </div>
-                                </div>
+                            <div>
+                                <p className='font-nunito'>Notification Header</p>
+                                <p className='font-nunito text-sm'>We have observer a decline in your performance over the past two weeks</p>
                             </div>
                         </div>
-                    )}
+                        <div>
+                            <Button
+                                className="border-b-4 border-b-white font-nunito"
+                                color="primary"
+                            >
+                                View All
+                            </Button>
+                        </div>
+                    </div>
+                </Skeleton>
+            </div>
 
-
-                    {loading ? (
-                        <div className='lg:grid lg:grid-cols-2  mt-6 gap-10'>
-                            {skeletons.slice(0, 2).map((_, index) => (
-                                <Skeleton key={index} className="rounded-lg rounded-2xl h-[85px] transition-all duration-200" />
-                            ))}
+            <div className='mt-6 lg:grid lg:grid-cols-4 gap-4'>
+                <Skeleton isLoaded={isLoading} className='rounded-2xl'>
+                    <div className="rounded-2xl transition-all duration-200 bg-slate-50 border border-black/5  shadow-sm  dark:bg-slate-900 dark:border-white/5 py-2 px-4 flex flex-col gap-2">
+                        <div className='flex'>
+                            <p className='font-nunito'>Total Products</p>
+                            <p className='font-nunito'></p>
                         </div>
-                    ) : (
-                        <div className='lg:grid lg:grid-cols-2 mt-6 gap-10'>
-                            {/* Contestants */}
-                            <div className="h-[85px] rounded-2xl transition-all duration-200 bg-white  shadow-sm  dark:bg-slate-900 border border-white/5 flex items-center justify-between px-4">
-                                <div className='flex '>
-                                    <div className='flex gap-4'>
-                                        {/* Other content here */}
-                                        <div className='bg-primary dark:bg-indigo-500 flex items-center justify-center p-2 rounded-xl shadow-md'>
-                                            <EventIcon className="h-8 w-8 dark:text-white text-white" />
-                                        </div>
-                                        <div className='flex items-center text-white'>
-                                            <span>
-                                                <p className='text-black dark:text-white font-nunito text-lg'>{productsCount}</p>
-                                                <p className='text-black dark:text-white font-montserrat font-semibold text-sm'>Products</p>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        {/* Other content here */}
-                                    </div>
-                                </div>
+                        <div className='flex gap-2 items-center'>
+                            <div className='h-10 w-10 rounded-full shadow-sm bg-white flex items-center justify-center'>
+                                <ProductIcon className="h-[20px] w-[20px] text-primary" />
                             </div>
-                            {/* Edition */}
-                            <div className="h-[85px] rounded-2xl transition-all duration-200 bg-white  shadow-sm  dark:bg-slate-900 border border-white/5 flex items-center justify-between px-4">
-                                <div className='flex '>
-                                    <div className='flex gap-4'>
-                                        {/* Other content here */}
-                                        <div className='bg-primary dark:bg-indigo-500 flex items-center justify-center p-2 rounded-xl shadow-md'>
-                                            <EventIcon className="h-8 w-8 dark:text-white text-white" />
-                                        </div>
-                                        <div className='flex items-center text-white'>
-                                            <span>
-                                                <p className='text-black dark:text-white font-nunito text-lg'>{categoryCount}</p>
-                                                <p className='text-black dark:text-white font-montserrat font-semibold text-sm'>Category</p>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        {/* Other content here */}
-                                    </div>
-                                </div>
+                            <p className='font-nunito font-semibold  text-xl'>245</p>
+                        </div>
+                    </div>
+                </Skeleton>
+                <Skeleton isLoaded={isLoading} className='rounded-2xl'>
+                    <div className="rounded-2xl transition-all duration-200 bg-slate-50 border border-black/5 shadow-sm  dark:bg-slate-900 dark:border-white/5 py-2 px-4 flex flex-col gap-2">
+                        <div className='flex'>
+                            <p className='font-nunito'>Total Products</p>
+                            <p className='font-nunito'></p>
+                        </div>
+                        <div className='flex gap-2 items-center'>
+                            <div className='h-10 w-10 rounded-full shadow-sm bg-white flex items-center justify-center'>
+                                <ProductIcon className="h-[20px] w-[20px] text-primary" />
                             </div>
+                            <p className='font-nunito font-semibold  text-xl'>245</p>
                         </div>
-                    )}
-
-                    {/* Chart */}
-                    {/* Chart */}
-                    {loading ? (
-                        <div className=' mt-10 gap-10'>
-                            {skeletons.slice(0, 1).map((_, index) => (
-                                <Skeleton key={index} className="rounded-lg h-[55vh] transition-all duration-200" />
-                            ))}
+                    </div>
+                </Skeleton>
+                <Skeleton isLoaded={isLoading} className='rounded-2xl'>
+                    <div className="rounded-2xl transition-all duration-200 bg-slate-50 border border-black/5 shadow-sm  dark:bg-slate-900 dark:border-white/5 py-2 px-4 flex flex-col gap-2">
+                        <div className='flex'>
+                            <p className='font-nunito'>Total Products</p>
+                            <p className='font-nunito'></p>
                         </div>
-                    ) : (
-                        <div className='mt-10 gap-10'>
-                            <div className="h-[55vh] mt-4 lg:mt-0 md:mt-0 rounded-lg transition-all duration-200 bg-white shadow-lg dark:bg-slate-900 border border-white/5  px-4 py-4">
-                                <p className='font-montserrat font-semibold'>Recent Sales</p>
-                                <CustomTable rowsPerPage={rowsPerPage} onRowsPerPageChange={handleRowsPerPageChange} columns={AdminDashboardSalesColumns}>
-                                    {adminsales.map((sale: SalesInterface, index: number) => (
-                                        <TableRow key={index}>
-                                            <TableCell className="">
-                                                {sale.products.map((productDetail: SalesInterface, idx: number) => (
-                                                    <div className="" key={idx}>
-                                                        {/* Display the product name */}
-                                                        <div>{productDetail.product?.name}</div>
-                                                    </div>
-                                                ))}
-                                            </TableCell>
-                                            <TableCell className="">
-                                                {sale.products.map((productDetail: SalesInterface, idx: number) => (
-                                                    <div className="" key={idx}>
-                                                        {/* Display the product quantity */}
-                                                        <div>{productDetail.quantity}</div>
-                                                    </div>
-                                                ))}
-                                            </TableCell>
-                                            <TableCell className="">
-                                                {sale.attendant?.firstName} {sale.attendant?.middleName} {sale.attendant?.lastName}
-                                            </TableCell>
-                                            <TableCell className="">
-                                                GHC {sale.totalAmount}
-                                            </TableCell>
-                                            <TableCell className="">
-                                                GHC {sale.amountPaid}
-                                            </TableCell>
-                                            <TableCell className="">
-                                                GHC {sale.balance}
-                                            </TableCell>
-
-                                            <TableCell className="relative flex items-center gap-4">
-                                                <Button
-                                                    size="sm"
-                                                    color="success"
-                                                    variant="flat"
-                                                    onClick={() => {
-                                                        // setIsEditModalOpened(true);
-                                                        // setDataValue(sale);
-                                                    }}
-                                                >
-                                                    Refund
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    color="primary"
-                                                    variant="flat"
-                                                    onClick={() => {
-                                                        // const receipt = generateReceipt()
-                                                        // const printWindow = window.open('', '_blank', 'width=800,height=600');
-                                                        // printWindow?.document.write(receipt);
-                                                        // printWindow?.document.close();
-                                                        // printWindow?.print()
-                                                        // setDataValue(sale)
-                                                    }}
-                                                >
-                                                    Print
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </CustomTable>
+                        <div className='flex gap-2 items-center'>
+                            <div className='h-10 w-10 rounded-full shadow-sm bg-white flex items-center justify-center'>
+                                <ProductIcon className="h-[20px] w-[20px] text-primary" />
                             </div>
+                            <p className='font-nunito font-semibold  text-xl'>245</p>
                         </div>
-                    )}
+                    </div>
+                </Skeleton>
+                <Skeleton isLoaded={isLoading} className='rounded-2xl'>
+                    <div className="rounded-2xl transition-all duration-200 bg-slate-50 border border-black/5 shadow-sm  dark:bg-slate-900 dark:border-white/5 py-2 px-4 flex flex-col gap-2">
+                        <div className='flex'>
+                            <p className='font-nunito'>Total Products</p>
+                            <p className='font-nunito'></p>
+                        </div>
+                        <div className='flex gap-2 items-center'>
+                            <div className='h-10 w-10 rounded-full shadow-sm bg-white flex items-center justify-center'>
+                                <ProductIcon className="h-[20px] w-[20px] text-primary" />
+                            </div>
+                            <p className='font-nunito font-semibold  text-xl'>245</p>
+                        </div>
+                    </div>
+                </Skeleton>
+            </div>
+
+            <div className='mt-4 lg:grid lg:grid-cols-2 gap-4'>
+                {/* chart */}
+                <div>
+                    <Skeleton isLoaded={isLoading} className='rounded-xl mt-2'>
+                        <div className='h-[54vh] py-4 px-2 bg-slate-50 shadow-sm rounded-xl border border-black/5 dark:bg-slate-900 dark:border-white/5 flex justify-between mt-2'>
+                            <p className='font-nunito'>Graph</p>
+                        </div>
+                    </Skeleton>
                 </div>
 
-                {/* Recent events */}
-                {/* Recent events */}
-                {loading ? (
-                    <div className=''>
-                        {skeletons.slice(0, 1).map((_, index) => (
-                            <Skeleton key={index} className="rounded-lg h-[84vh] transition-all duration-200" />
-                        ))}
+                <div className='flex flex-col gap-2'>
+                    <div className='lg:grid lg:grid-cols-2 gap-6'>
+                        {/* Calender */}
+                        <div>
+                            <Skeleton isLoaded={isLoading} className='rounded-xl mt-2'>
+                                <div className='h-[25vh] py-4 px-10 bg-slate-50 shadow-sm rounded-xl border border-black/5  dark:bg-slate-900 dark:border-white/5 flex justify-between mt-2'>
+                                    {/* <Calendar
+                                    style={{ height: '100%', width: '100%' }}
+                                        aria-label="Date (Read Only)"
+                                        value={today(getLocalTimeZone())}
+                                        isReadOnly
+                                        classNames={{
+                                            headerWrapper: "dark:bg-slate-900",
+                                            header: "dark:bg-slate-900",
+                                            content: "dark:bg-slate-900 border border-white/5 shadow-md"
+                                        }}
+                                    /> */}
+                                </div>
+                            </Skeleton>
+                        </div>
+                        <div>
+                            <Skeleton isLoaded={isLoading} className='rounded-xl mt-2'>
+                                <div className='h-[25vh] py-4 px-10 bg-slate-50 shadow-sm rounded-xl border border-black/5  dark:bg-slate-900 dark:border-white/5 flex justify-between mt-2'>
+
+                                </div>
+                            </Skeleton>
+                        </div>
                     </div>
-                ) : (
                     <div>
-                        <div className='bg-white h-[39vh] mt-20 lg:mt-0 md:mt-0 dark:bg-slate-900 border border-white/5 shadow-lg  w-full rounded-xl px-4 py-4'>
-                            {/* Additional content or components */}
-                            <Calendar
-                                aria-label="Date (Read Only)"
-                                value={today(getLocalTimeZone())}
-                                isReadOnly
-                                classNames={{
-                                    headerWrapper: "dark:bg-slate-950",
-                                    header:"dark:bg-slate-950",
-                                    content: "dark:bg-slate-950 w-[21vw] border border-white/5 shadow-md"
-                                }}
-                            />
-                        </div>
-                        <div className='bg-white h-[39vh]  mt-10 dark:bg-slate-900 border border-white/5 shadow-lg  w-full rounded-xl px-4 py-4 relative'>
-                            {/* Additional content or components */}
-                            <p className='font-montserrat font-semibold'>Yearly Profit</p>
-                            <div className='absolute flex justify-end'>
-                                <ProfitIcon className="h-60 w-60 dark:opacity-10 opacity-50 text-gray-200 lg:ml-20 lg:mt-10 "/>
+                        <Skeleton isLoaded={isLoading} className='rounded-xl mt-2'>
+                            <div className='h-[26vh] py-2 px-4 bg-slate-50 shadow-sm rounded-xl border border-black/5  dark:bg-slate-900 dark:border-white/5 mt-2'>
+                                <p className='font-nunito'>Recent Sales</p>
+                                {allSales.map((sale: SalesInterface, index: number) => {
+                                    <div key={index} className='h-[17vh] mt-4 w-[18vw] border border-2 shadow-sm rounded-xl dark:border-white/5 p-2'>
+                                        <div className='flex justify-between'>
+                                            <span><p className='font-nunito text-sm'>{sale.product.name}</p></span>
+                                            <span className='h-6 w-20 bg-primary rounded-lg bg-opacity-30 font-nunito flex items-center justify-center text-xs'>Sold</span>
+                                        </div>
+                                        <div className='flex justify-between mt-2'>
+                                            <span><p className='font-nunito text-xs'>{sale.attendant.firstName+ " " + sale.attendant.lastName}</p></span>
+                                            <span className='font-nunito text-xs'>2 minutes ago</span>
+                                        </div>
+                                        <div className='flex justify-between mt-4'>
+                                            <span><p className='font-nunito text-xs h-12 border w-28 rounded-lg border-primary flex items-center justify-center text-primary dark:text-white'>{sale.quantity} Items <ArrowsIcon className="ml-2 h-4 w-4" /></p></span>
+                                            <span><p className='font-nunito text-xs text-white h-12 bg-primary w-28 rounded-lg flex items-center justify-center'>GHC {sale.totalAmount}</p></span>
+                                        </div>
+                                    </div>
+                                })}
                             </div>
-                            <div className=''>
-                               <p className='font-nunito mt-8 text-4xl text-primary'> <span className='text-black dark:text-white'> GHC </span>{profit}</p>
-                            </div>
-                        </div>
+                        </Skeleton>
                     </div>
-                )}
+                </div>
             </div>
         </AdminLayout>
     );
@@ -276,7 +203,7 @@ export const loader: LoaderFunction = async ({ request }) => {
         return redirect("/")
     }
 
-    const { 
+    const {
         adminsales,
         userCount,
         supplierCount,
@@ -284,7 +211,9 @@ export const loader: LoaderFunction = async ({ request }) => {
         profit,
         categoryCount
     } = await dashboardController.Dashboard();
-  
 
-    return { userCount, supplierCount, productsCount, categoryCount, adminsales,profit }
+    const { allSales } = await salesController.salesFetch({ request })
+
+
+    return { userCount, supplierCount, productsCount, categoryCount, adminsales, profit, allSales }
 }

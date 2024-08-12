@@ -168,7 +168,7 @@ const Sales = () => {
                     {/* product items */}
                     <div className="mt-4 lg:grid lg:grid-cols-4 gap-10 overflow-y-scroll scrollbar-thin dark:scrollbar-thin pr-8
                          h-[76vh] rounded-lg overflow-x-hidden">
-                        {filteredSuppliers.map((products: ProductInterface, index: number) => (
+                        {product.map((products: ProductInterface, index: number) => (
                             <div className="lg:w-[13vw] rounded-lg p-2 lg:h-[30vh] mt-4 dark:bg-slate-900 bg-white border border-white/5" key={index} onClick={() => {
                                 setIsEditModalOpened(true);
                                 setDataValue(products);
@@ -399,7 +399,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-    const { product, user } = await productsController.ProductFetch(request);
+    const { product, user } = await productsController.FetchProducts({request});
 
     const { carts, totalQuantity, totalPrice } = await cartController.FetchCart(request);
 

@@ -108,6 +108,10 @@ class SalesController {
       .populate("products.product")
       .populate("attendant")
       .exec();
+    const allSales = await Sales.find()
+      .populate("products.product")
+      .populate("attendant")
+      .exec();
       
     
 
@@ -125,7 +129,7 @@ class SalesController {
       }
     }).exec();
 
-    return { sales, salesCount,dailySales };
+    return {allSales, sales, salesCount,dailySales };
   }
   
 }

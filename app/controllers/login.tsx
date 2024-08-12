@@ -16,30 +16,49 @@ class LoginController {
         rememberMe: boolean | any
     }) {
         try {
-            const userCheck = await Registration.findOne({ email });
             const session = await getSession(request.headers.get("Cookie"));
 
-            if (userCheck && await bcrypt.compare(password, userCheck.password)) {
-                const cookie = await setSession(session, email, rememberMe === 'on');
-
-                if (userCheck.role === "admin") {
-                    return redirect("/admin", { headers: { "Set-Cookie": cookie } });
-                } else if (userCheck.role === "attendant") {
-                    return redirect("/attendant", { headers: { "Set-Cookie": cookie } });
-                } else {
-                    return json({
-                        message: "Invalid role selection",
-                        success: false
-                    });
-                }
-            } else {
-                return json({ message: "Invalid email or password", success: false }, { status: 400 });
+            // Check if email exists in the database
+            const userCheck = await Registration.findOne({ email });
+            if (!userCheck) {
+                return json({
+                    emailError: { email },
+                    emailErrorMessage:"Invalid email "
+                });
             }
+
+            // Check if the password matches the one in the database
+            const isPasswordValid = await bcrypt.compare(password, userCheck.password);
+            if (!isPasswordValid) {
+                return json({
+                    passwordError: { password },
+                    passwordErrorMessage:"Invalid password"
+                });
+            }
+
+            // If email and password are valid, handle the session and redirect
+            const cookie = await setSession(session, email, rememberMe === 'on');
+
+            if (userCheck.role === "admin") {
+                return redirect("/admin", { headers: { "Set-Cookie": cookie } });
+            } else if (userCheck.role === "attendant") {
+                return redirect("/attendant", { headers: { "Set-Cookie": cookie } });
+            } else {
+                return json({
+                    success: false,
+                    errors: { role: "Invalid role selection" }
+                });
+            }
+
         } catch (error) {
-            return json({ message: "Something went wrong, check your connection", success: false }, { status: 500 });
+            return json({
+                success: false,
+                message: "Something went wrong, check your connection"
+            }, { status: 500 });
         }
     }
 }
 
 const login = new LoginController();
 export default login;
+

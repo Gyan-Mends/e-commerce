@@ -33,8 +33,8 @@ class UsersController {
         try {
             if (intent === "create") {
                 // checking if user exist
-                const UserCheck = await Registration.findOne({ email: email})
-                const phoneNumberCheck = await Registration.findOne({phone:phone})
+                const UserCheck = await Registration.findOne({ email: email })
+                const phoneNumberCheck = await Registration.findOne({ phone: phone })
 
                 if (UserCheck) {
                     return json({
@@ -42,7 +42,7 @@ class UsersController {
                         success: false,
                         status: 500
                     })
-                }else if(phoneNumberCheck){
+                } else if (phoneNumberCheck) {
                     return json({
                         message: "Phone number already exist",
                         success: false,
@@ -201,19 +201,19 @@ class UsersController {
         }
     }
 
-    async  FetchUsers({
+    async FetchUsers({
         request,
         page,
         search_term,
-        limit = 9
+        limit = 9,
     }: {
-        request: Request,
+        request?: Request;
         page: number;
-        search_term: string;
+        search_term?: string;
         limit?: number;
-    }) {
-        const skipCount = (page - 1) * limit; // Calculate the number of documents to skip
-    
+    } = { page: 1 }) {
+        const skipCount = (page - 1) * (limit || 9); // Default limit to 9 if not provided
+
         // Define the search filter only once
         const searchFilter = search_term
             ? {
@@ -265,24 +265,23 @@ class UsersController {
                 ],
             }
             : {};
-    
+
         try {
-            // Get session and user information
-            const session = await getSession(request.headers.get("Cookie"));
-            const token = session.get("email");
-            const user = await Registration.findOne({ email: token });
-    
+            // Get session and user information if request is provided
+            const session = request ? await getSession(request.headers.get("Cookie")) : null;
+            const token = session?.get("email");
+            const user = token ? await Registration.findOne({ email: token }) : null;
+
             // Get total employee count and calculate total pages       
             const totalEmployeeCount = await Registration.countDocuments(searchFilter).exec();
-            const totalPages = Math.ceil(totalEmployeeCount / limit);
-    
+            const totalPages = Math.ceil(totalEmployeeCount / (limit || 9));
+
             // Find users with pagination and search filter
             const users = await Registration.find(searchFilter)
                 .skip(skipCount)
-                .limit(limit)
+                .limit(limit || 9)
                 .exec();
-    
-    
+
             return { user, users, totalPages };
         } catch (error: any) {
             return {
@@ -292,8 +291,9 @@ class UsersController {
             };
         }
     }
+
 }
-    
+
 
 const usersController = new UsersController
 export default usersController
