@@ -15,7 +15,7 @@ export const ProductColumns = [
 ]
 export const UserColumns = [
     { title: "Name", allowSort: true },
-    { title: "Password", allowSort: true },
+    { title: "Email", allowSort: true },
     { title: "Phone", allowSort: true },
     { title: "Role", allowSort: true },
     { title: "Action", allowSort: true }

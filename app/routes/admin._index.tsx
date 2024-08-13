@@ -172,11 +172,11 @@ const Admin = () => {
                                 {allSales.map((sale: SalesInterface, index: number) => {
                                     <div key={index} className='h-[17vh] mt-4 w-[18vw] border border-2 shadow-sm rounded-xl dark:border-white/5 p-2'>
                                         <div className='flex justify-between'>
-                                            <span><p className='font-nunito text-sm'>{sale.product.name}</p></span>
+                                            <span><p className='font-nunito text-sm'>{sale.product?.name}</p></span>
                                             <span className='h-6 w-20 bg-primary rounded-lg bg-opacity-30 font-nunito flex items-center justify-center text-xs'>Sold</span>
                                         </div>
                                         <div className='flex justify-between mt-2'>
-                                            <span><p className='font-nunito text-xs'>{sale.attendant.firstName+ " " + sale.attendant.lastName}</p></span>
+                                            <span><p className='font-nunito text-xs'>{sale.attendant?.firstName+ " " + sale.attendant?.lastName}</p></span>
                                             <span className='font-nunito text-xs'>2 minutes ago</span>
                                         </div>
                                         <div className='flex justify-between mt-4'>

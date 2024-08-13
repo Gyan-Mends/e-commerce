@@ -21,9 +21,10 @@ export default function CreateModal({ children, modalTitle,onOpenChange,classNam
         <ModalContent className={className}>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">{modalTitle}</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1 font-nunito">{modalTitle}</ModalHeader>
               <ModalBody>
                 {children(onClose)}
+                
               </ModalBody>
             </>
           )}

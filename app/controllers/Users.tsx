@@ -48,6 +48,8 @@ class UsersController {
                         success: false,
                         status: 500
                     })
+                }else if(phoneNumberCheck.){
+
                 } else {
                     const hashedPassword = await bcrypt.hash(password, 10) // hashing password
 
@@ -205,7 +207,7 @@ class UsersController {
         request,
         page,
         search_term,
-        limit = 9,
+        limit = 8,
     }: {
         request?: Request;
         page: number;

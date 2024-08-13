@@ -1,4 +1,4 @@
-import { Button, Input, Select, SelectItem, TableCell, TableRow, User } from "@nextui-org/react"
+import { Button, Input, Select, SelectItem, Skeleton, TableCell, TableRow, User } from "@nextui-org/react"
 import { ActionFunction, json, LoaderFunction, MetaFunction, redirect } from "@remix-run/node"
 import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react"
 import { useEffect, useState } from "react"
@@ -15,6 +15,7 @@ import EditModal from "~/components/modal/EditModal"
 import { UserColumns } from "~/components/table/columns"
 import NewCustomTable from "~/components/table/newTable"
 import { errorToast, successToast } from "~/components/toast"
+import CustomInput from "~/components/ui/CustomInput"
 import usersController from "~/controllers/Users"
 import { RegistrationInterface } from "~/interfaces/interface"
 import AdminLayout from "~/layout/adminLayout"
@@ -26,11 +27,20 @@ const Users = () => {
     const [isConfirmModalOpened, setIsConfirmModalOpened] = useState(false)
     const [isEditModalOpened, setIsEditModalOpened] = useState(false)
     const [dataValue, setDataValue] = useState<RegistrationInterface>()
+    const [isLoading, setIsLoading] = useState(false)
     const submit = useSubmit()
     const actionData = useActionData<any>()
     const navigate = useNavigate()
     const navigation = useNavigation()
-    const { user, users, totalPages } = useLoaderData<{ user: { _id: string }, users: RegistrationInterface[], totalPages: number }>()
+    const {
+        user,
+        users,
+        totalPages
+    } = useLoaderData<{
+        user: { _id: string },
+        users: RegistrationInterface[],
+        totalPages: number
+    }>()
 
     const handleCreateModalClosed = () => {
         setIsCreateModalOpened(false)
@@ -53,41 +63,56 @@ const Users = () => {
         }
     }, [actionData])
 
+    useEffect(() => {
+        const timeOut = setTimeout(() => {
+            setIsLoading(true)
+        }, 1000)
+        return () => clearTimeout(timeOut)
+    }, [])
+
 
     return (
         <AdminLayout pageName="Users Management">
-            {/* search */}
-            {/* search */}
             <div className="flex z-0 justify-between gap-2 overflow-y-hidden">
                 <Toaster position="top-right" />
                 <div className="flex items-center justify-center gap-2">
-                    <Button size="md" onClick={() => { 
-                        navigate(-1)
-                    }} color="primary" className="font-nunito text-sm border border-white/5 border-b-white dark:border-primary  dark:border-b-primary dak:text-priamry dark:bg-slate-950">
-                        <BackIcon className="h-[20px] w-[20px] dark:text-primary" />  Back
-                    </Button>
-
+                    {/* back */}
+                    {/* back */}
+                    <Skeleton isLoaded={isLoading} className="rounded-xl">
+                        <Button size="md" onClick={() => {
+                            navigate(-1)
+                        }} color="primary" className="font-nunito text-sm border border-white/5 border-b-white dark:border-primary  dark:border-b-primary dark:text-priamry dark:bg-slate-950">
+                            <BackIcon className="h-[20px] w-[20px] dark:text-primary" /><p className="dark:text-primary">Back</p>
+                        </Button>
+                    </Skeleton>
                 </div>
                 <div className="flex gap-4">
-
-                    <Input
-                        size="lg"
-                        placeholder="Search user..."
-                        startContent={<SearchIcon className="" />}
-                        onValueChange={(value) => {
-                            const timeoutId = setTimeout(() => {
-                                navigate(`?search_term=${value}`);
-                            }, 100);
-                            return () => clearTimeout(timeoutId);
-                        }} classNames={{
-                            inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border-white/5 border-b-primary",
-                        }}
-                    />
-                    <Button size="lg" variant="flat" onClick={() => {
-                        setIsCreateModalOpened(true)
-                    }} color="primary" className="font-montserrat font-semibold text-md">
-                        <PlusIcon className="h-6 w-6" />Create User
-                    </Button>
+                    {/* search */}
+                    {/* search */}
+                    <Skeleton isLoaded={isLoading} className="rounded-xl">
+                        <Input
+                            size="lg"
+                            placeholder="Search user..."
+                            startContent={<SearchIcon className="" />}
+                            onValueChange={(value) => {
+                                const timeoutId = setTimeout(() => {
+                                    navigate(`?search_term=${value}`);
+                                }, 100);
+                                return () => clearTimeout(timeoutId);
+                            }} classNames={{
+                                inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border-white/5 border-b-primary",
+                            }}
+                        />
+                    </Skeleton>
+                    {/* button to add new user */}
+                    {/* button to add new user */}
+                    <Skeleton isLoaded={isLoading} className="rounded-xl">
+                        <Button size="lg" variant="flat" onClick={() => {
+                            setIsCreateModalOpened(true)
+                        }} color="primary" className="font-montserrat font-semibold text-sm">
+                            <PlusIcon className="h-6 w-6" />Create User
+                        </Button>
+                    </Skeleton>
                 </div>
             </div>
 
@@ -169,8 +194,8 @@ const Users = () => {
                 onOpenChange={handleEditModalClosed}
             >
                 {(onClose) => (
-                    <Form method="post">
-                        <Input
+                    <Form method="post" className="flex flex-col gap-4">
+                        <CustomInput
                             label="First name"
                             isRequired
                             isClearable
@@ -179,13 +204,9 @@ const Users = () => {
                             defaultValue={dataValue?.firstName}
                             type="text"
                             labelPlacement="outside"
-                            classNames={{
-                                label: "font-nunito text-sm text-default-100",
-                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 "
-                            }}
                         />
                         <div className="flex gap-4">
-                            <Input
+                            <CustomInput
                                 label="Middle Name"
                                 name="middlename"
                                 placeholder=" "
@@ -193,12 +214,8 @@ const Users = () => {
                                 defaultValue={dataValue?.middleName}
                                 type="text"
                                 labelPlacement="outside"
-                                classNames={{
-                                    label: "font-nunito text-sm text-default-100",
-                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
-                                }}
                             />
-                            <Input
+                            <CustomInput
                                 label="Last Name"
                                 isRequired
                                 name="lastname"
@@ -207,13 +224,9 @@ const Users = () => {
                                 placeholder=" "
                                 type="text"
                                 labelPlacement="outside"
-                                classNames={{
-                                    label: "font-nunito text-sm text-default-100",
-                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
-                                }}
                             />
                         </div>
-                        <Input
+                        <CustomInput
                             label="Email"
                             isRequired
                             name="email"
@@ -222,42 +235,19 @@ const Users = () => {
                             placeholder=" "
                             type="text"
                             labelPlacement="outside"
-                            classNames={{
-                                label: "font-nunito text-sm text-default-100",
-                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
-                            }}
                         />
-                        <div className="flex gap-4 ">
-                            <Input
-                                label=" Phone"
-                                isRequired
-                                name="phone"
-                                defaultValue={dataValue?.phone}
-                                isClearable
-                                placeholder=" "
-                                type="text"
-                                labelPlacement="outside"
-                                classNames={{
-                                    label: "font-nunito text-sm text-default-100",
-                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
-                                }}
-                            />
-                            <Input
-                                label=" Password"
-                                isRequired
-                                name="password"
-                                placeholder=" "
-                                defaultValue={dataValue?.password}
-                                isReadOnly
-                                type="text"
-                                labelPlacement="outside"
-                                classNames={{
-                                    label: "font-nunito text-sm text-default-100",
-                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
-                                }}
-                            />
-                        </div>
-                        <Input
+                        <CustomInput
+                            label=" Phone"
+                            isRequired
+                            name="phone"
+                            defaultValue={dataValue?.phone}
+                            isClearable
+                            placeholder=" "
+                            type="text"
+                            labelPlacement="outside"
+                        />
+
+                        <CustomInput
                             label=" Role"
                             isRequired
                             name="role"
@@ -266,10 +256,6 @@ const Users = () => {
                             placeholder=" "
                             type="text"
                             labelPlacement="outside"
-                            classNames={{
-                                label: "font-nunito text-sm text-default-100",
-                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
-                            }}
                         />
 
 
@@ -299,8 +285,8 @@ const Users = () => {
                 onOpenChange={handleCreateModalClosed}
             >
                 {(onClose) => (
-                    <Form method="post">
-                        <Input
+                    <Form method="post" className="flex flex-col gap-4">
+                        <CustomInput
                             label="First name"
                             isRequired
                             isClearable
@@ -308,25 +294,18 @@ const Users = () => {
                             placeholder=" "
                             type="text"
                             labelPlacement="outside"
-                            classNames={{
-                                label: "font-nunito text-sm text-default-100",
-                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 "
-                            }}
                         />
                         <div className="flex gap-4">
-                            <Input
+                            <CustomInput
                                 label="Middle Name"
                                 name="middlename"
                                 placeholder=" "
                                 isClearable
                                 type="text"
                                 labelPlacement="outside"
-                                classNames={{
-                                    label: "font-nunito text-sm text-default-100",
-                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
-                                }}
+
                             />
-                            <Input
+                            <CustomInput
                                 label="Last Name"
                                 isRequired
                                 name="lastname"
@@ -334,13 +313,9 @@ const Users = () => {
                                 placeholder=" "
                                 type="text"
                                 labelPlacement="outside"
-                                classNames={{
-                                    label: "font-nunito text-sm text-default-100",
-                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
-                                }}
                             />
                         </div>
-                        <Input
+                        <CustomInput
                             label="Email"
                             isRequired
                             name="email"
@@ -348,13 +323,9 @@ const Users = () => {
                             placeholder=" "
                             type="text"
                             labelPlacement="outside"
-                            classNames={{
-                                label: "font-nunito text-sm text-default-100",
-                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
-                            }}
                         />
                         <div className="flex gap-4">
-                            <Input
+                            <CustomInput
                                 label=" Phone"
                                 isRequired
                                 name="phone"
@@ -362,12 +333,9 @@ const Users = () => {
                                 placeholder=" "
                                 type="text"
                                 labelPlacement="outside"
-                                classNames={{
-                                    label: "font-nunito text-sm text-default-100",
-                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
-                                }}
+
                             />
-                            <Input
+                            <CustomInput
                                 label=" Password"
                                 isRequired
                                 name="password"
@@ -375,13 +343,10 @@ const Users = () => {
                                 placeholder=" "
                                 type="text"
                                 labelPlacement="outside"
-                                classNames={{
-                                    label: "font-nunito text-sm text-default-100",
-                                    inputWrapper: "bg-white focus:dark:bg-slate-900 focus:bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
-                                }}
+
                             />
                         </div>
-                        <div className="mt-4">
+                        <div className="">
                             <Select
                                 label="Role"
                                 labelPlacement="outside"
@@ -391,7 +356,7 @@ const Users = () => {
                                 classNames={{
                                     label: "font-nunito text-sm text-default-100",
                                     popoverContent: "focus:dark:bg-slate-900 focus-bg-white bg-white shadow-sm dark:bg-slate-900 border border-white/5 font-nunito",
-                                    trigger: "focus:dark:bg-slate-900 focus:bg-white bg-white shadow-sm dark:bg-slate-900 border border-white/5 font-nunito mt-4"
+                                    trigger: "focus:dark:bg-slate-900 focus:bg-white bg-white shadow-sm dark:bg-slate-900 border border-white/5 font-nunito "
                                 }}
                             >
                                 {[
@@ -403,13 +368,13 @@ const Users = () => {
                             </Select>
                         </div>
 
-                        <div className=" mt-4">
+                        <div className=" ">
                             <label className="font-nunito block text-sm" htmlFor="">Image</label>
                             <input
                                 name="image"
                                 required
                                 placeholder=" "
-                                className="focus:dark:bg-slate-900 focus:bg-white font-nunito mt-2 rounded-lg h-10 w-[25vw] bg-white shadow-smx dark:bg-slate-900 border border-white/5"
+                                className="focus:dark:bg-slate-900 focus:bg-white font-nunito  rounded-lg h-10 w-[25vw] bg-white shadow-smx dark:bg-slate-900 border border-white/5"
                                 type="file"
                                 onChange={(event: any) => {
                                     const file = event.target.files[0];
@@ -522,6 +487,8 @@ export const loader: LoaderFunction = async ({ request }) => {
         page,
         search_term
     });
+
+    const mobileNumberApi = MTN_Mo
 
     return json({ user, users, totalPages });
 }
