@@ -3,6 +3,7 @@ import { ActionFunction, json, LoaderFunction, MetaFunction, redirect } from "@r
 import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react"
 import { useEffect, useState } from "react"
 import { Toaster } from "react-hot-toast"
+import { MTN_Mobile_Phone_Api } from "~/components/api/dotenv"
 import BackIcon from "~/components/icons/BackIcon"
 import { DeleteIcon } from "~/components/icons/DeleteIcon"
 import { EditIcon } from "~/components/icons/EditIcon"
@@ -30,6 +31,7 @@ const Users = () => {
     const [isLoading, setIsLoading] = useState(false)
     const submit = useSubmit()
     const actionData = useActionData<any>()
+    const {mobileNumberApi} = useLoaderData<typeof loader>()
     const navigate = useNavigate()
     const navigation = useNavigation()
     const {
@@ -270,7 +272,7 @@ const Users = () => {
                             <button type="submit" className="bg-primary-400 rounded-xl bg-opacity-20 text-primary text-sm font-montserrat font-semibold px-4" onClick={() => {
                                 setIsEditModalOpened(false)
                             }}>
-                                Submit
+                               Update
                             </button>
                         </div>
                     </Form>
@@ -389,7 +391,7 @@ const Users = () => {
                             />
                         </div>
 
-                        <input name="admin" value={user._id} type="hidden" />
+                        {/* <input name="admin" value={user?._id} type="hidden" /> */}
                         <input name="intent" value="create" type="hidden" />
                         <input name="base64Image" value={base64Image} type="hidden" />
 
@@ -488,7 +490,9 @@ export const loader: LoaderFunction = async ({ request }) => {
         search_term
     });
 
-    const mobileNumberApi = MTN_Mo
+    console.log(users);
+    
+    
 
     return json({ user, users, totalPages });
 }

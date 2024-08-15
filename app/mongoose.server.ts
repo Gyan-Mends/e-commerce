@@ -1,21 +1,21 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+dotenv.config();
 
 //connecting to the database 
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/pos");
+mongoose.connect(process.env.MONGODB_URI as string);
 
 //creating a new instance of the database connection
 const db = mongoose.connection;
 
-try {
-    //checking if the database is connected successful
-    db.once("open", () =>  {
-        console.log("db connected successful");
-    })
-} catch (error) {
-    db.on("error", () => {
-        console.log("Unable to connect to the database");
-        
-    })
-}
+//checking if the database is connected successfully
+db.once("open", () => {
+    console.log("db connected successfully");
+});
 
-export default mongoose
+//handling connection errors
+db.on("error", (error) => {
+    console.error("Unable to connect to the database:", error);
+});
+
+export default mongoose;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Button, Input, Textarea, TableRow, TableCell, Tooltip } from "@nextui-org/react";
+import { Button, Input, Textarea, TableRow, TableCell, Tooltip, Skeleton } from "@nextui-org/react";
 import { ActionFunction, LoaderFunction, json, redirect } from "@remix-run/node";
-import { Form, useActionData, useLoaderData, useSubmit } from "@remix-run/react";
+import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react";
 import { Toaster } from "react-hot-toast";
 import PlusIcon from "~/components/icons/PlusIcon";
 import { SearchIcon } from "~/components/icons/SearchIcon";
@@ -19,6 +19,8 @@ import { EditIcon } from "~/components/icons/EditIcon";
 import { DeleteIcon } from "~/components/icons/DeleteIcon";
 import { getSession } from "~/session";
 import usersController from "~/controllers/Users";
+import BackIcon from "~/components/icons/BackIcon";
+import NewCustomTable from "~/components/table/newTable";
 
 type SessionData = {
     sessionId: {
@@ -27,8 +29,7 @@ type SessionData = {
 };
 
 const Category = () => {
-    const { sessionId } = useLoaderData<SessionData>();
-    const { cats } = useLoaderData<{ cats: CategoryInterface[] }>()
+    const { categories, user, totalPages } = useLoaderData<{ categories: CategoryInterface[], user: { user: string }, totalPages: number }>()
     const actionData = useActionData<any>()
     const [rowsPerPage, setRowsPerPage] = useState(13);
     const submit = useSubmit()
@@ -37,14 +38,14 @@ const Category = () => {
     const [createModalOpened, setCreateModalOpened] = useState(false)
     const [viewModalOpened, setViewModalOpened] = useState(false)
     const [confirmModalOpened, setConfirmModalOpened] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+    const navigate = useNavigate()
+    const navigation = useNavigation()
 
 
     const handleRowsPerPageChange = (newRowsPerPage: number) => {
         setRowsPerPage(newRowsPerPage);
     };
-
-
-
     const handleEditModalClose = () => {
         setEditModalOpened(false);
     };
@@ -74,32 +75,70 @@ const Category = () => {
         }
     }, [actionData])
 
+    useEffect(() => {
+        const timeOut = setTimeout(() => {
+            setIsLoading(true)
+        }, 1000)
+
+        return () => clearTimeout(timeOut)
+    }, [])
+
     return (
         <AdminLayout pageName="Categories">
-            <div className="flex z-0 justify-between gap-2">
-                <Toaster position="top-center" />
-                <div>
-                    <Input
-                        size="lg"
-                        placeholder="Search product..."
-                        startContent={<SearchIcon className="" />}
-                        classNames={{
-                            inputWrapper: "dark:bg-slate-900 bg-white border border-white/5"
-                        }}
-                    />
+            <div className="flex z-0 justify-between gap-2 overflow-y-hidden">
+                <Toaster position="top-right" />
+                <div className="flex items-center justify-center gap-2">
+                    {/* back */}
+                    {/* back */}
+                    <Skeleton isLoaded={isLoading} className="rounded-xl">
+                        <Button size="md" onClick={() => {
+                            navigate(-1)
+                        }} color="primary" className="font-nunito text-sm border border-white/5 border-b-white dark:border-primary  dark:border-b-primary dark:text-priamry dark:bg-slate-950">
+                            <BackIcon className="h-[20px] w-[20px] dark:text-primary" /><p className="dark:text-primary">Back</p>
+                        </Button>
+                    </Skeleton>
                 </div>
-                <div>
-                    <Button variant="flat" onClick={() => {
-                        setCreateModalOpened(true)
-                    }} size="lg" color="primary" className=" font-montserrat font-semibold">
-                        <PlusIcon className="h-6 w-6" />Add Category
-                    </Button>
+                <div className="flex gap-4">
+                    {/* search */}
+                    {/* search */}
+                    <Skeleton isLoaded={isLoading} className="rounded-xl">
+                        <Input
+                            size="lg"
+                            placeholder="Search user..."
+                            startContent={<SearchIcon className="" />}
+                            onValueChange={(value) => {
+                                const timeoutId = setTimeout(() => {
+                                    navigate(`?search_term=${value}`);
+                                }, 100);
+                                return () => clearTimeout(timeoutId);
+                            }} classNames={{
+                                inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border-white/5 border-b-primary",
+                            }}
+                        />
+                    </Skeleton>
+                    {/* button to add new user */}
+                    {/* button to add new user */}
+                    <Skeleton isLoaded={isLoading} className="rounded-xl">
+                        <Button size="lg" variant="flat" onClick={() => {
+                            setCreateModalOpened(true)
+                        }} color="primary" className="font-montserrat font-semibold text-sm">
+                            <PlusIcon className="h-6 w-6" />Create User
+                        </Button>
+                    </Skeleton>
                 </div>
             </div>
 
             <div className="">
-                <CustomTable columns={CategoryColumns} rowsPerPage={rowsPerPage} onRowsPerPageChange={handleRowsPerPageChange}>
-                    {cats.map((categories: CategoryInterface, index: number) => (
+                <NewCustomTable
+                    columns={CategoryColumns}
+                    loadingState={navigation.state === "loading" ? "loading" : "idle"}
+                    totalPages={totalPages }
+                    page={1}
+                    setPage={(page) => {
+                        navigate(`?page= ${page}`)
+                    }}
+                >
+                    {categories.map((categories: CategoryInterface, index: number) => (
                         <TableRow key={index}>
                             <TableCell>{categories.name}</TableCell>
                             <TableCell>{categories.description}</TableCell>
@@ -121,7 +160,7 @@ const Category = () => {
                             </TableCell>
                         </TableRow>
                     ))}
-                </CustomTable>
+                </NewCustomTable>
             </div>
 
             <EditModal
@@ -227,7 +266,7 @@ const Category = () => {
                                 inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 "
                             }}
                         />
-                        <input hidden name="seller" value={sessionId._id} type="" />
+                        <input hidden name="seller" value={user._id} type="" />
                         <input hidden name="intent" value="create" type="" />
 
                         <Textarea
@@ -261,13 +300,18 @@ const Category = () => {
 export default Category;
 
 export const loader: LoaderFunction = async ({ request }) => {
+    const url = new URL(request.url);
+    const page = parseInt(url.searchParams.get("page") as string) || 1;
+    const search_term = url.searchParams.get("search_term") as string;
+
     const session = await getSession(request.headers.get("Cookie"));
     const token = session.get("email");
     if (!token) {
         return redirect("/")
     }
-    const { sessionId, cats } = await category.CategoryFetch(request);
-    return { sessionId, cats };
+
+    const { categories, user, totalPages } = await category.getCategories({ request, page, search_term })
+    return { categories, user, totalPages }
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -289,10 +333,10 @@ export const action: ActionFunction = async ({ request }) => {
                 const logout = await usersController.logout(intent)
                 return logout
             case "delete":
-                const deleteCat = await category.DeleteCat(intent,id)
+                const deleteCat = await category.DeleteCat(intent, id)
                 return deleteCat
             case "update":
-                const updateCat = await category.UpdateCat({ 
+                const updateCat = await category.UpdateCat({
                     intent,
                     id,
                     name,

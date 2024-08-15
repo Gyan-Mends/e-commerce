@@ -16,14 +16,14 @@ const CustomInput = ({
     isClearable,
     name,
     placeholder,
-    type, 
+    type,
     labelPlacement,
     defaultValue
 }: customInputProps) => {
     return (
         <div>
             <Input
-            defaultValue={defaultValue}
+                defaultValue={defaultValue}
                 label={label}
                 isRequired={isRequired}
                 isClearable={isClearable}
@@ -33,7 +33,7 @@ const CustomInput = ({
                 labelPlacement={labelPlacement}
                 classNames={{
                     label: "font-nunito text-sm text-default-100",
-                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 focus focus:bg-slate-900 hover:border-b-primary hover:transition-all hover:duration-300 hover:ease-in-out"
+                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 focus focus:bg-slate-900 hover:border-b-primary hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white"
                 }}
             />
         </div>

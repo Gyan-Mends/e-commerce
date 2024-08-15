@@ -96,6 +96,16 @@ const AdminLayout = ({ children, pageName }: UserLayoutProps) => {
                             </li>
                         </Skeleton>
                     </Link>
+                    <Link className="" to="/api">
+                        <Skeleton isLoaded={isLoading} className="rounded-lg ">
+                            <li className="hover:bg-primary-400 text-sm hover:bg-primary hover:text-primary hover:border-r-4 hover:border-r-white hover:text-white font-nunito p-1 rounded-lg hover:rounded-r-2xl flex items-center gap-2 transition-all duration-200 ease-in-out">
+                                <span className="w-10 h-10 bg-gray-50 shadow-sm rounded-xl flex items-center justify-center">
+                                    <UsersGroup className="text-primary text-lg" />
+                                </span>
+                                api
+                            </li>
+                        </Skeleton>
+                    </Link>
                     <Link className="" to="/admin/suppliers">
                         <Skeleton isLoaded={isLoading} className="rounded-lg ">
                             <li className="hover:bg-primary-400 text-sm hover:bg-primary hover:text-primary hover:border-r-4 hover:border-r-white hover:text-white font-nunito p-1 rounded-lg hover:rounded-r-2xl flex items-center gap-2 transition-all duration-300 ease-in-out">

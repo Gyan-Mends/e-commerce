@@ -1,8 +1,9 @@
-import { Button, Input, Select, SelectItem, TableCell, TableRow, Textarea, User } from "@nextui-org/react"
+import { Button, Input, Select, SelectItem, Skeleton, TableCell, TableRow, Textarea, User } from "@nextui-org/react"
 import { ActionFunction, LoaderFunction, json, redirect } from "@remix-run/node"
 import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react"
 import { useEffect, useState } from "react"
 import { Toaster } from "react-hot-toast"
+import BackIcon from "~/components/icons/BackIcon"
 import { DeleteIcon } from "~/components/icons/DeleteIcon"
 import { EditIcon } from "~/components/icons/EditIcon"
 import PlusIcon from "~/components/icons/PlusIcon"
@@ -16,6 +17,7 @@ import NewCustomTable from "~/components/table/newTable"
 import CustomTable from "~/components/table/table"
 import { errorToast, successToast } from "~/components/toast"
 import usersController from "~/controllers/Users"
+import category from "~/controllers/categoryController"
 import productsController from "~/controllers/productsController"
 import { CategoryInterface, ProductInterface } from "~/interfaces/interface"
 import AdminLayout from "~/layout/adminLayout"
@@ -31,6 +33,8 @@ const Products = () => {
     const [editModalOpened, setEditmOdalOpened] = useState(false)
     const [selectedProducts, setSelectedProducts] = useState<ProductInterface>()
     const [isConfirmedModalOpened, setIsConfirmedModalOpened] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+
     const submit = useSubmit()
     const navigate = useNavigate()
     const navigation = useNavigation()
@@ -48,35 +52,58 @@ const Products = () => {
         setIsConfirmedModalOpened(false)
     }
 
+    useEffect(() => {
+        const timeOut= setTimeout(() =>{
+            setIsLoading(true)
+        },1000)
+        return () => clearTimeout(timeOut)
+    },[])
+
 
 
 
     return (
         <AdminLayout pageName="Products">
-            <Toaster position="top-center" />
-            <div className="flex justify-between">
-                <div>
-                <Input
-                        size="lg"
-                        placeholder="Search user..."
-                        startContent={<SearchIcon className="" />}
-                        onValueChange={(value) => {
-                            const timeoutId = setTimeout(() => {
-                                navigate(`?search_term=${value}`);
-                            }, 100);
-                            return () => clearTimeout(timeoutId);
-                        }} classNames={{
-                            inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5",
-                        }}
-                    />
+            <div className="flex z-0 justify-between gap-2 overflow-y-hidden">
+                <Toaster position="top-right" />
+                <div className="flex items-center justify-center gap-2">
+                    {/* back */}
+                    {/* back */}
+                    <Skeleton isLoaded={isLoading} className="rounded-xl">
+                        <Button size="md" onClick={() => {
+                            navigate(-1)
+                        }} color="primary" className="font-nunito text-sm border border-white/5 border-b-white dark:border-primary  dark:border-b-primary dark:text-priamry dark:bg-slate-950">
+                            <BackIcon className="h-[20px] w-[20px] dark:text-primary" /><p className="dark:text-primary">Back</p>
+                        </Button>
+                    </Skeleton>
                 </div>
-                <div>
-                    <Button onClick={() => {
-                        setCreateModalOpened(true)
-                    }} size="lg" color="primary" variant="flat" className=" font-montserrat font-semibold">
-                        <PlusIcon className="h-6 w-6" />Add Product
-                    </Button>
-
+                <div className="flex gap-4">
+                    {/* search */}
+                    {/* search */}
+                    <Skeleton isLoaded={isLoading} className="rounded-xl">
+                        <Input
+                            size="lg"
+                            placeholder="Search user..."
+                            startContent={<SearchIcon className="" />}
+                            onValueChange={(value) => {
+                                const timeoutId = setTimeout(() => {
+                                    navigate(`?search_term=${value}`);
+                                }, 100);
+                                return () => clearTimeout(timeoutId);
+                            }} classNames={{
+                                inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border-white/5 border-b-primary",
+                            }}
+                        />
+                    </Skeleton>
+                    {/* button to add new user */}
+                    {/* button to add new user */}
+                    <Skeleton isLoaded={isLoading} className="rounded-xl">
+                        <Button size="lg" variant="flat" onClick={() => {
+                            setCreateModalOpened(true)
+                        }} color="primary" className="font-montserrat font-semibold text-sm">
+                            <PlusIcon className="h-6 w-6" />Add Product
+                        </Button>
+                    </Skeleton>
                 </div>
             </div>
 
@@ -537,9 +564,10 @@ export const loader: LoaderFunction = async ({ request }) => {
         return redirect("/")
     };
 
-    const { user, products, totalPages} = await productsController.FetchProducts({ request, page, search_term });
+    const { user, products, totalPages } = await productsController.FetchProducts({ request, page, search_term });
+    const {categories} = await category.CategoryFetch()
 
-    return json({ user, products, totalPages })
+    return json({ user, products, totalPages, categories })
 
 }
 

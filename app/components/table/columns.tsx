@@ -1,16 +1,16 @@
 export const CategoryColumns = [
-    { key: "name", label: "Name" },
-    { key: "description", label: "Description" },
+    { title: "Name", allowSort: true },
+    { title: "Description", allowSort: true },
     { key: "action", label: "Action" },
 ];
 
 export const ProductColumns = [
-    { title: "Name" , allowSort: true},
-    { title: "Category" , allowSort: true},
-    { title: "Cost Price" , allowSort: true},
-    { title: "Selling Price" , allowSort: true},
-    { title: "Quantity" , allowSort: true},
-    { title: "Low Stock" , allowSort: true},
+    { title: "Name", allowSort: true },
+    { title: "Category", allowSort: true },
+    { title: "Cost Price", allowSort: true },
+    { title: "Selling Price", allowSort: true },
+    { title: "Quantity", allowSort: true },
+    { title: "Low Stock", allowSort: true },
     { title: "Action", allowSort: true }
 ]
 export const UserColumns = [

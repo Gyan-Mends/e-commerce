@@ -1,8 +1,9 @@
-import { Button, Input, Select, SelectItem, TableCell, TableRow, User } from "@nextui-org/react"
+import { Button, Input, Select, SelectItem, Skeleton, TableCell, TableRow, User } from "@nextui-org/react"
 import { ActionFunction, json, LoaderFunction, MetaFunction, redirect } from "@remix-run/node"
 import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react"
 import { useEffect, useState } from "react"
 import { Toaster } from "react-hot-toast"
+import BackIcon from "~/components/icons/BackIcon"
 import { DeleteIcon } from "~/components/icons/DeleteIcon"
 import { EditIcon } from "~/components/icons/EditIcon"
 import PlusIcon from "~/components/icons/PlusIcon"
@@ -14,6 +15,7 @@ import { SuppliersColumns, UserColumns } from "~/components/table/columns"
 import NewCustomTable from "~/components/table/newTable"
 import CustomTable from "~/components/table/table"
 import { errorToast, successToast } from "~/components/toast"
+import CustomInput from "~/components/ui/CustomInput"
 import suppliersController from "~/controllers/Suppliers"
 import usersController from "~/controllers/Users"
 import { RegistrationInterface, SuppliersInterface } from "~/interfaces/interface"
@@ -26,11 +28,19 @@ const Suppliers = () => {
     const [isConfirmModalOpened, setIsConfirmModalOpened] = useState(false)
     const [isEditModalOpened, setIsEditModalOpened] = useState(false)
     const [dataValue, setDataValue] = useState<SuppliersInterface>()
+    const [isLoading, setIsLoading] = useState(false)
     const submit = useSubmit()
     const actionData = useActionData<any>()
     const { user, suppliers, totalPages } = useLoaderData<{ user: { _id: string }, suppliers: SuppliersInterface[], totalPages: number }>()
     const navigate = useNavigate()
     const navigation = useNavigation()
+
+    useEffect(() => {
+        const timeOut = setTimeout(() => {
+            setIsLoading(true)
+        },1000)
+        return () => clearTimeout(timeOut)
+    }, [])
 
     const handleCreateModalClosed = () => {
         setIsCreateModalOpened(false)
@@ -56,29 +66,46 @@ const Suppliers = () => {
 
     return (
         <AdminLayout pageName="Supliers Management">
-            <div className="flex z-0 justify-between gap-2">
-                <Toaster position="top-center" />
-                <div>
-                    <Input
-                        size="lg"
-                        placeholder="Search product..."
-                        startContent={<SearchIcon className="" />}
-                        onValueChange={(value) => {
-                            const timeout = setTimeout(() => {
-                                navigate(`?search_term= ${value}`)
-                            }, 100)
-                        }}
-                        classNames={{
-                            inputWrapper: "dark:bg-slate-900 bg-white shadow-sm border border-white/5",
-                        }}
-                    />
+            <div className="flex z-0 justify-between gap-2 overflow-y-hidden">
+                <Toaster position="top-right" />
+                <div className="flex items-center justify-center gap-2">
+                    {/* back */}
+                    {/* back */}
+                    <Skeleton isLoaded={isLoading} className="rounded-xl">
+                        <Button size="md" onClick={() => {
+                            navigate(-1)
+                        }} color="primary" className="font-nunito text-sm border border-white/5 border-b-white dark:border-primary  dark:border-b-primary dark:text-priamry dark:bg-slate-950">
+                            <BackIcon className="h-[20px] w-[20px] dark:text-primary" /><p className="dark:text-primary">Back</p>
+                        </Button>
+                    </Skeleton>
                 </div>
-                <div>
-                    <Button variant="flat" size="lg" onClick={() => {
-                        setIsCreateModalOpened(true)
-                    }} color="primary" className=" font-monserrat font-semibold">
-                        <PlusIcon className="h-6 w-6" />Create Supplier
-                    </Button>
+                <div className="flex gap-4">
+                    {/* search */}
+                    {/* search */}
+                    <Skeleton isLoaded={isLoading} className="rounded-xl">
+                        <Input
+                            size="lg"
+                            placeholder="Search user..."
+                            startContent={<SearchIcon className="" />}
+                            onValueChange={(value) => {
+                                const timeoutId = setTimeout(() => {
+                                    navigate(`?search_term=${value}`);
+                                }, 100);
+                                return () => clearTimeout(timeoutId);
+                            }} classNames={{
+                                inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border-white/5 border-b-primary",
+                            }}
+                        />
+                    </Skeleton>
+                    {/* button to add new user */}
+                    {/* button to add new user */}
+                    <Skeleton isLoaded={isLoading} className="rounded-xl">
+                        <Button size="lg" variant="flat" onClick={() => {
+                            setIsCreateModalOpened(true)
+                        }} color="primary" className="font-montserrat font-semibold text-sm">
+                            <PlusIcon className="h-6 w-6" />Create User
+                        </Button>
+                    </Skeleton>
                 </div>
             </div>
 
@@ -233,7 +260,7 @@ const Suppliers = () => {
                                 Close
                             </Button>
                             <button type="submit" className="bg-primary-400 rounded-xl bg-opacity-20 text-primary text-sm font-nunito px-4">
-                                Submit
+                                Update
                             </button>
                         </div>
                     </Form>
@@ -248,8 +275,8 @@ const Suppliers = () => {
                 onOpenChange={handleCreateModalClosed}
             >
                 {(onClose) => (
-                    <Form method="post">
-                        <Input
+                    <Form method="post" className="flex flex-col gap-4">
+                        <CustomInput
                             label="First name"
                             isRequired
                             isClearable
@@ -257,23 +284,17 @@ const Suppliers = () => {
                             placeholder=" "
                             type="text"
                             labelPlacement="outside"
-                            classNames={{
-                                inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
-                            }}
                         />
                         <div className="flex gap-4">
-                            <Input
+                            <CustomInput
                                 label="Middle Name"
                                 name="middlename"
                                 placeholder=" "
                                 isClearable
                                 type="text"
                                 labelPlacement="outside"
-                                classNames={{
-                                    inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
-                                }}
                             />
-                            <Input
+                            <CustomInput
                                 label="Last Name"
                                 isRequired
                                 name="lastname"
@@ -281,12 +302,10 @@ const Suppliers = () => {
                                 placeholder=" "
                                 type="text"
                                 labelPlacement="outside"
-                                classNames={{
-                                    inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
-                                }}
+                                
                             />
                         </div>
-                        <Input
+                        <CustomInput
                             label="Email"
                             isRequired
                             name="email"
@@ -294,12 +313,9 @@ const Suppliers = () => {
                             placeholder=" "
                             type="text"
                             labelPlacement="outside"
-                            classNames={{
-                                inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
-                            }}
                         />
-                        <div className="flex gap-4">
-                            <Input
+                     
+                            <CustomInput
                                 label=" Phone"
                                 isRequired
                                 name="phone"
@@ -307,11 +323,8 @@ const Suppliers = () => {
                                 placeholder=" "
                                 type="text"
                                 labelPlacement="outside"
-                                classNames={{
-                                    inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
-                                }}
                             />
-                        </div>
+
 
 
                         <input name="admin" value={user._id} type="hidden" />
