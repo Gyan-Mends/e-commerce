@@ -1,7 +1,7 @@
 export const CategoryColumns = [
     { title: "Name", allowSort: true },
     { title: "Description", allowSort: true },
-    { key: "action", label: "Action" },
+    { title: "action", label: "Action" },
 ];
 
 export const ProductColumns = [

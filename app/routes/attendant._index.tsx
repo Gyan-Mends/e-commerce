@@ -160,9 +160,10 @@ export const loader: LoaderFunction = async ({ request }) => {
         return redirect("/login")
     }
 
-    const { user } = await usersController.FetchUsers({ request })
-    const { salesCount } = await salesController.salesFetch({ request })
-    const { dailySales } = await salesController.salesFetch({ request });
+    // const { user } = await usersController.FetchUsers({ request })
+    // const { salesCount } = await salesController.salesFetch({ request })
+    // const { dailySales } = await salesController.salesFetch({ request });
 
-    return { user, salesCount,dailySales }
+    // return { user, salesCount,dailySales }
+    return true
 }

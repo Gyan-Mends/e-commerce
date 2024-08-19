@@ -1,4 +1,5 @@
 import { json } from "@remix-run/node";
+import { RegistrationInterface, SalesInterface } from "~/interfaces/interface";
 import Cart from "~/modal/cart";
 import Registration from "~/modal/registration";
 import Sales from "~/modal/sales";
@@ -100,39 +101,87 @@ class SalesController {
     }
   }
 
-  async salesFetch({ request }: { request: Request }) {
-    const session = await getSession(request.headers.get("Cookie"));
-    const token = session.get("email");
-    const user = await Registration.findOne({ email: token });
-    const sales = await Sales.find({ attendant: user?._id })
-      .populate("products.product")
-      .populate("attendant")
-      .exec();
-    const allSales = await Sales.find()
-      .populate("products.product")
-      .populate("attendant")
-      .exec();
-      
-    
+  async  getSales({
+    request,
+    page,
+    search_term,
+    limit = 9
+}: {
+    request?: Request,
+    page?: number | any;
+    search_term?: string;
+    limit?: number;
+}):Promise<{
+    user: RegistrationInterface[],
+    sales:SalesInterface[],
+    totalPages: number
+} | any> {
+    const skipCount = (page - 1) * limit; // Calculate the number of documents to skip
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Define the search filter only once
+    const searchFilter = search_term
+        ? {
+            $or: [
+                {
+                    name: {
+                        $regex: new RegExp(
+                            search_term
+                                .split(" ")
+                                .map((term) => `(?=.*${term})`)
+                                .join(""),
+                            "i"
+                        ),
+                    },
+                },
+               
+            ],
+        }
+        : {};
 
-    const salesCount = await Sales.countDocuments({
-      createdAt: {
-        $gte: today
-      }
-    }).exec();
-    const dailySales = await Sales.find({
-      createdAt: {
-        $gte: today
-      }
-    }).exec();
+    try {
+        // Get session and user information
+        const session = await getSession(request.headers.get("Cookie"));
+        const token = session.get("email");
+        const user = await Registration.findOne({ email: token });
 
-    return {allSales, sales, salesCount,dailySales };
-  }
+        // Get total employee count and calculate total pages       
+        const totalProductsCount = await Sales.countDocuments(searchFilter).exec();
+        const totalPages = Math.ceil(totalProductsCount / limit);
+
+        // Find users with pagination and search filter
+        const sales = await Sales.find(searchFilter)
+            .populate("category")
+            .skip(skipCount)
+            .limit(limit)
+            .exec();
+
+
+        return { user, sales, totalPages };
+    } catch (error: any) {
+        return {
+            message: error.message,
+            success: false,
+            status: 500
+        };
+    }
+}
   
 }
 
 const salesController = new SalesController();
 export default salesController;
+
+
+// const today = new Date();
+//     today.setHours(0, 0, 0, 0);
+
+//     const salesCount = await Sales.countDocuments({
+//       createdAt: {
+//         $gte: today
+//       }
+//     }).exec();
+//     const dailySales = await Sales.find({
+//       createdAt: {
+//         $gte: today
+//       }
+//     }).exec();

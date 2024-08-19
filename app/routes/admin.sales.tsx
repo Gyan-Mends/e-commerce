@@ -18,9 +18,8 @@ import { getSession } from "~/session"
 
 const Sales = () => {
     const [rowsPerPage, setRowsPerPage] = useState(8)
-    const { adminsales } = useLoaderData<{ adminsales: SalesInterface[] }>()
+    const { sales } = useLoaderData<{ sales: SalesInterface[] }>()
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredSales, setFilteredSales] = useState(adminsales);
     const [isEditModalOpened, setIsEditModalOpened] = useState(false)
     const [dataValue, setDataValue] = useState<SalesInterface>()
     const actionData = useActionData<any>()
@@ -87,18 +86,7 @@ const Sales = () => {
     return receipt
    }
 
-    useEffect(() => {
-        const filtered = adminsales.filter(sale => {
-            const lowerCaseQuery = searchQuery.toLowerCase();
-            return (
-                sale._id.toLowerCase().includes(lowerCaseQuery)||
-                sale.attendant.lastName.toLowerCase().includes(lowerCaseQuery)||
-                sale.attendant.firstName.toLowerCase().includes(lowerCaseQuery)||
-                sale.attendant.middleName.toLowerCase().includes(lowerCaseQuery)
-            );
-        });
-        setFilteredSales(filtered);
-    }, [searchQuery, adminsales]);
+    
     useEffect(() => {
         if (actionData) {
             if (actionData.success) {
@@ -135,26 +123,16 @@ const Sales = () => {
             </div>
 
             <CustomTable columns={SalesColumns} rowsPerPage={rowsPerPage} onRowsPerPageChange={handleRowsPerPageChange}>
-                {filteredSales.map((sale: SalesInterface, index: number) => (
+                {sales.map((sale: SalesInterface, index: number) => (
                     <TableRow key={index}>
                         <TableCell className="">
                             {sale._id}
                         </TableCell>
                         <TableCell className="">
-                            {sale.products.map((productDetail: SalesInterface, idx: number) => (
-                                <div className="" key={idx}>
-                                    {/* Display the product name */}
-                                    <div>{productDetail.product?.name}</div>
-                                </div>
-                            ))}
+                            flk
                         </TableCell>
                         <TableCell className="">
-                            {sale.products.map((productDetail: SalesInterface, idx: number) => (
-                                <div className="" key={idx}>
-                                    {/* Display the product quantity */}
-                                    <div>{productDetail.quantity}</div>
-                                </div>
-                            ))}
+                            nksn
                         </TableCell>
                         <TableCell className="">
                             {sale.attendant?.firstName} {sale?.attendant?.middleName} {sale.attendant?.lastName}
@@ -353,12 +331,19 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
+    const url = new URL(request.url)
+     const page = parseInt(url.searchParams.get("page") as string) || 1;
+    const search_term = url.searchParams.get("search_term") as string
     const session = await getSession(request.headers.get("Cookie"));
     const token = session.get("email");
     if(!token){
         return redirect("/")
     }
-    const { adminsales } = await salesController.salesFetch({ request });
+    const { sales } = await salesController.getSales({
+        request,
+        page,
+        search_term
+    });
 
-    return { adminsales }
+    return { sales }
 }

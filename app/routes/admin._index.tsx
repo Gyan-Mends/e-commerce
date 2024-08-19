@@ -27,7 +27,7 @@ import ArrowsIcon from '~/components/icons/ArrowsIcon';
 
 const Admin = () => {
     const [loading, setLoading] = useState(true);
-    const { userCount, supplierCount, productsCount, categoryCount, profit, allSales } = useLoaderData<{ userCount: string, supplierCount: string, productsCount: string, categoryCount: string, profit: string, allSales: SalesInterface }>()
+    const { userCount, supplierCount, productsCount, categoryCount, profit, allSales } = useLoaderData<{ userCount: string, supplierCount: string, productsCount: string, categoryCount: string, profit: string, sales: SalesInterface }>()
     const { adminsales } = useLoaderData<{ adminsales: SalesInterface[] }>()
     const [rowsPerPage, setRowsPerPage] = useState(8)
     const [isLoading, setIsLoading] = useState(false)
@@ -169,7 +169,7 @@ const Admin = () => {
                         <Skeleton isLoaded={isLoading} className='rounded-xl mt-2'>
                             <div className='h-[26vh] py-2 px-4 bg-slate-50 shadow-sm rounded-xl border border-black/5  dark:bg-slate-900 dark:border-white/5 mt-2'>
                                 <p className='font-nunito'>Recent Sales</p>
-                                {allSales.map((sale: SalesInterface, index: number) => {
+                                {sales.map((sale: SalesInterface, index: number) => {
                                     <div key={index} className='h-[17vh] mt-4 w-[18vw] border border-2 shadow-sm rounded-xl dark:border-white/5 p-2'>
                                         <div className='flex justify-between'>
                                             <span><p className='font-nunito text-sm'>{sale.product?.name}</p></span>
@@ -212,8 +212,8 @@ export const loader: LoaderFunction = async ({ request }) => {
         categoryCount
     } = await dashboardController.Dashboard();
 
-    const { allSales } = await salesController.salesFetch({ request })
+    const { sales } = await salesController.getSales({ request })
 
 
-    return { userCount, supplierCount, productsCount, categoryCount, adminsales, profit, allSales }
+    return { userCount, supplierCount, productsCount, categoryCount, adminsales, profit, sales }
 }

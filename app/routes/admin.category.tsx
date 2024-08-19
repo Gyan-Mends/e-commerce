@@ -29,7 +29,7 @@ type SessionData = {
 };
 
 const Category = () => {
-    const { categories, user, totalPages } = useLoaderData<{ categories: CategoryInterface[], user: { user: string }, totalPages: number }>()
+    const { categories, user, totalPages } = useLoaderData<{ categories: CategoryInterface[], user: { user: string }, totalPages: number  | any }>()
     const actionData = useActionData<any>()
     const [rowsPerPage, setRowsPerPage] = useState(13);
     const submit = useSubmit()
@@ -122,7 +122,7 @@ const Category = () => {
                         <Button size="lg" variant="flat" onClick={() => {
                             setCreateModalOpened(true)
                         }} color="primary" className="font-montserrat font-semibold text-sm">
-                            <PlusIcon className="h-6 w-6" />Create User
+                            <PlusIcon className="h-6 w-6" />Add Supplier
                         </Button>
                     </Skeleton>
                 </div>
@@ -130,14 +130,13 @@ const Category = () => {
 
             <div className="">
                 <NewCustomTable
-                    columns={CategoryColumns}
-                    loadingState={navigation.state === "loading" ? "loading" : "idle"}
-                    totalPages={totalPages }
-                    page={1}
-                    setPage={(page) => {
-                        navigate(`?page= ${page}`)
-                    }}
-                >
+                     columns={CategoryColumns}
+                     loadingState={navigation.state === "loading" ? "loading" : "idle"}
+                     totalPages={totalPages}
+                     page={1}
+                     setPage={(page) => (
+                         navigate(`?page=${page}`)
+                     )}>
                     {categories.map((categories: CategoryInterface, index: number) => (
                         <TableRow key={index}>
                             <TableCell>{categories.name}</TableCell>
@@ -183,7 +182,7 @@ const Category = () => {
                                 inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 "
                             }}
                         />
-                        <input name="seller" value={sessionId._id} type="hidden" />
+                        <input name="seller" value={user?._id} type="hidden" />
                         <input name="intent" value="update" type="hidden" />
                         <input name="id" value={selectedCategory?._id} type="hidden" />
 
@@ -266,7 +265,7 @@ const Category = () => {
                                 inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 "
                             }}
                         />
-                        <input hidden name="seller" value={user._id} type="" />
+                        <input hidden name="seller" value={user?._id} type="" />
                         <input hidden name="intent" value="create" type="" />
 
                         <Textarea

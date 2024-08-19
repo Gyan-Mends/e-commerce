@@ -9,6 +9,7 @@ interface customInputProps {
     type?: string
     labelPlacement?: string
     defaultValue?: string
+    endContent?: string
 }
 const CustomInput = ({
     label,
@@ -18,11 +19,13 @@ const CustomInput = ({
     placeholder,
     type,
     labelPlacement,
-    defaultValue
+    defaultValue,
+    endContent
 }: customInputProps) => {
     return (
         <div>
             <Input
+                endContent={endContent}
                 defaultValue={defaultValue}
                 label={label}
                 isRequired={isRequired}

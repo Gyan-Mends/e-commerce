@@ -215,11 +215,12 @@ class ProductsController {
             const user = await Registration.findOne({ email: token });
     
             // Get total employee count and calculate total pages       
-            const totalEmployeeCount = await Product.countDocuments(searchFilter).exec();
-            const totalPages = Math.ceil(totalEmployeeCount / limit);
+            const totalProductsCount = await Product.countDocuments(searchFilter).exec();
+            const totalPages = Math.ceil(totalProductsCount / limit);
     
             // Find users with pagination and search filter
             const products = await Product.find(searchFilter)
+                .populate("category")
                 .skip(skipCount)
                 .limit(limit)
                 .exec();

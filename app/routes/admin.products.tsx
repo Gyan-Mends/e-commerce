@@ -34,7 +34,6 @@ const Products = () => {
     const [selectedProducts, setSelectedProducts] = useState<ProductInterface>()
     const [isConfirmedModalOpened, setIsConfirmedModalOpened] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-
     const submit = useSubmit()
     const navigate = useNavigate()
     const navigation = useNavigation()
@@ -58,6 +57,16 @@ const Products = () => {
         },1000)
         return () => clearTimeout(timeOut)
     },[])
+
+    useEffect(() => {
+        if(actionData){
+            if(actionData.success){
+                successToast(actionData.message)
+            }else{
+                errorToast(actionData.message)
+            }
+        }
+    }, [actionData])
 
 
 
@@ -565,7 +574,11 @@ export const loader: LoaderFunction = async ({ request }) => {
     };
 
     const { user, products, totalPages } = await productsController.FetchProducts({ request, page, search_term });
-    const {categories} = await category.CategoryFetch()
+    const {categories} = await category.getCategories({
+        page,
+        request,
+        search_term
+    })
 
     return json({ user, products, totalPages, categories })
 
