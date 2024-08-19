@@ -2,10 +2,13 @@ import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@
 import { ReactNode } from "react";
 interface CustomDropDownInterface {
     children?: ReactNode | any
+    name:string
+    
 }
 
 const CustomDropDown = ({
-    children
+    children,
+    name
 }:CustomDropDownInterface) => {
     return (
         <Dropdown>
@@ -13,7 +16,7 @@ const CustomDropDown = ({
                 <Button
                     variant="bordered"
                 >
-                    Open Menu
+                   {name}
                 </Button>
             </DropdownTrigger>
             <DropdownMenu aria-label="Static Actions">

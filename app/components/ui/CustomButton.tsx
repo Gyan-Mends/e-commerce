@@ -3,7 +3,7 @@ import { Button } from "@nextui-org/react";
 
 interface CustomButtonInterface {
     name?: ReactNode
-    onClick: string | any
+    onClick?: string | any
     className?: string
 }
 
