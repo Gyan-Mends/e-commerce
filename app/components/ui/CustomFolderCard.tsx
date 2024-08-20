@@ -5,12 +5,12 @@ interface CustomFolderCardInterface {
     children?: ReactNode,
     className?: string,
     title?: string
-    image?:string
-    header?:string
+    image?: string
+    header?: string
     description?: string
 }
 
-const CustomCard= ({
+const CustomFolderCard = ({
     children,
     className,
     title,
@@ -28,22 +28,18 @@ const CustomCard= ({
     }, [])
     return (
         <Skeleton className="rounded-2xl" isLoaded={loading}>
-            <div className="flex justify-between items-center p-2 shadow-sm rounded-2xl border">
-                <div className="flex gap-4">
-                    <div className=" h-12 w-12 rounded-lg bg-slate-200 p-1">
-                        <img className="h-10 w-10" src={image} alt="image" />
-                    </div>
-                    <div className="">
-                        <p>{header}</p>
-                        <p>{description}</p>
-                    </div>
+            <div className="flex flex-col gap-6  p-2 shadow-sm rounded-2xl border">
+                <div className=" h-12 w-12 rounded-lg bg-slate-200 p-1">
+                    <img className="h-10 w-10" src={image} alt="image" />
                 </div>
-                <div>
-                    <p>hsh</p>
+                <div className="">
+                    <p>Header</p>
+                    <p>description</p>
                 </div>
+
             </div>
         </Skeleton>
     )
 }
 
-export default CustomCard
+export default CustomFolderCard

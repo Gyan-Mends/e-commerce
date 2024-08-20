@@ -1,7 +1,7 @@
 import { Skeleton } from "@nextui-org/react"
 import { ReactNode, useEffect, useState } from "react"
 
-interface CustomFolderCardInterface {
+interface CustomFileCardInterface {
     children?: ReactNode,
     className?: string,
     title?: string
@@ -10,7 +10,7 @@ interface CustomFolderCardInterface {
     description?: string
 }
 
-const CustomCard= ({
+const CustomFileCard = ({
     children,
     className,
     title,
@@ -18,7 +18,7 @@ const CustomCard= ({
     header,
     description
 
-}: CustomFolderCardInterface) => {
+}: CustomFileCardInterface) => {
     const [loading, setLoading] = useState(false)
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -46,4 +46,4 @@ const CustomCard= ({
     )
 }
 
-export default CustomCard
+export default CustomFileCard

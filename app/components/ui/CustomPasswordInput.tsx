@@ -1,7 +1,8 @@
-import { Input } from "@nextui-org/react"
-import { EyeSlashFilledIcon } from "../icons/EyeFilled"
-import { EyeFilledIcon } from "../icons/EyeSlash"
-import { useState } from "react";
+import { Input } from "@nextui-org/react";
+import React, { useState } from "react";
+import { EyeIcon } from "../icons/EyeIcon";
+import { EyeFilledIcon } from "../icons/EyeSlash";
+
 
 interface CustomPasswordInterface{
     className?: string
@@ -46,7 +47,7 @@ const CustomPasswordInput = ({
                         onClick={handleVisibility}
                     >
                         {isVisible ? (
-                            <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                            <EyeIcon className="text-2xl text-default-400 pointer-events-none" />
                         ) : (
                             <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
                         )}
