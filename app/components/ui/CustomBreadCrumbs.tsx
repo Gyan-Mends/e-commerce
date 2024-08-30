@@ -2,6 +2,7 @@ import React, { ReactNode } from "react";
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import UserIcon from "../icons/UserIcon";
 import CartIcon from "../icons/CartIcon";
+import FolderIcon from "../icons/FolderIcon";
 interface CustomBreadCrumbsInterface {
     children?: ReactNode
 }
@@ -11,7 +12,7 @@ const CustomBreadCrumbs = ({
 }: CustomBreadCrumbsInterface) => {
     return (
         <Breadcrumbs className="flex">
-            <BreadcrumbItem><CartIcon className="" /></BreadcrumbItem>
+            <BreadcrumbItem><FolderIcon className="" /></BreadcrumbItem>
             {children}
         </Breadcrumbs>
     );

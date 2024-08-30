@@ -1,5 +1,7 @@
 import { Skeleton } from "@nextui-org/react"
 import { ReactNode, useEffect, useState } from "react"
+import FileIcon from "../icons/FileIcon"
+import DotsIcon from "../icons/DotIcons"
 
 interface CustomFileCardInterface {
     children?: ReactNode,
@@ -27,11 +29,11 @@ const CustomFileCard = ({
         return () => clearTimeout(timer)
     }, [])
     return (
-        <Skeleton className="rounded-2xl" isLoaded={loading}>
-            <div className="flex justify-between items-center p-2 shadow-sm rounded-2xl border">
+        <Skeleton className="rounded-2xl w-80" isLoaded={loading}>
+            <div className="flex justify-between items-center p-2 shadow-sm rounded-2xl border bg-white ">
                 <div className="flex gap-4">
-                    <div className=" h-12 w-12 rounded-lg bg-slate-200 p-1">
-                        <img className="h-10 w-10" src={image} alt="image" />
+                    <div className=" h-12 w-12 rounded-lg bg-slate-200 p-1 flex items-center center justify-center">
+                        <FileIcon className="text-primary " />
                     </div>
                     <div className="">
                         <p>{header}</p>
@@ -39,7 +41,7 @@ const CustomFileCard = ({
                     </div>
                 </div>
                 <div>
-                    <p>hsh</p>
+                    <p><DotsIcon className="" /></p>
                 </div>
             </div>
         </Skeleton>

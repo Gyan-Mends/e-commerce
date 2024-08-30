@@ -1,29 +1,35 @@
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
-import { ReactNode } from "react";
+import { ReactNode, Children } from "react";
+import { ChevronDownIcon } from "../icons/ArrowDown";
+
 interface CustomDropDownInterface {
-    children?: ReactNode | any
-    name:string
-    
+    children?: ReactNode | any;
+    name?: string;
 }
 
 const CustomDropDown = ({
     children,
-    name
-}:CustomDropDownInterface) => {
+    name,
+}: CustomDropDownInterface) => {
     return (
         <Dropdown>
             <DropdownTrigger>
                 <Button
-                    variant="bordered"
+                    className="font-montserrat font-bold"
+                    color="primary"
                 >
-                   {name}
+                    <ChevronDownIcon /> {name}
                 </Button>
             </DropdownTrigger>
             <DropdownMenu aria-label="Static Actions">
-              <DropdownItem>{children}</DropdownItem>
+                {Children?.map(children, (child) => (
+                    <DropdownItem className="font-nunito">
+                        {child}
+                    </DropdownItem>
+                ))}
             </DropdownMenu>
         </Dropdown>
     );
-}
+};
 
-export default CustomDropDown
+export default CustomDropDown;

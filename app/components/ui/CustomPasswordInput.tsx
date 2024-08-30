@@ -38,7 +38,7 @@ const CustomPasswordInput = ({
                 placeholder={placeholder}
                 classNames={{
                     label: "font-nunito text-sm",
-                    inputWrapper: `hover:border-primary text-sm font-nunito  border-b-2  `
+                    inputWrapper: `hover:border-primary text-sm font-nunito border-b-2  max-w-sm bg-white hover:bg-white dark:bg-slate-900 dark:border-white/5`
                 }}
 
                 endContent={

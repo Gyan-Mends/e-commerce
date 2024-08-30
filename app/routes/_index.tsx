@@ -1,49 +1,216 @@
-import { Button } from "@nextui-org/react";
-import { useNavigate } from "@remix-run/react";
-import { useEffect, useState } from "react";
-import LoaderIcon from "~/components/icons/LoaderIcon";
-import OfflineIcon from "~/components/icons/OfflineIcon";
-import landingPageIllustration from "~/components/illustration/landingPageIllustration.jpg";
-import landingPageLogo from "~/components/illustration/landingPageLogo.png";
-import Offline from "~/components/modal/OfflineModal";
+import { Button, image } from "@nextui-org/react";
+import PublicLayout from "~/layout/PublicLayout";
+import headphone from "../components/illustration/headphone.png";
+import handsfree from "../components/illustration/Mask-Group-5-1.png";
+import watch from "../components/illustration/clay-apple-watch-mockup-07.png";
+import laptop from "../components/illustration/Laptop.png";
+import console from "../components/illustration/NicePng_ps4-png_193822.png";
+import reality from "../components/illustration/man-wearing-virtual-reality-headset-at-home-D7AYCTV-2.png";
+import speaker from "../components/illustration/P6YUXW1.png";
+import headset from "../components/illustration/headset.png";
+import ShippingIcon from "~/components/icons/ShippingIcon";
+import P1 from "~/components/illustration/p1.jpg";
 
-const LandingPage = () => {
+
+const Home = () => {
+    const sections = [
+        {
+            bgColor: 'bg-gradient-to-l from-[#191919] via-[#191919] to-[#191919]',
+            title: 'Enjoy',
+            subtitle: 'With',
+            textColor: "text-white",
+            mainText: 'EARPHONE',
+            mainTextColor: 'text-[#4c4c4c]',
+            buttonColor: 'bg-[#f42c37]',
+            buttonTextColor: 'text-white',
+            image: handsfree,
+            colSpan: 'col-span-1',
+        },
+        {
+            bgColor: 'bg-[#fcb900]',
+            title: 'New',
+            subtitle: 'Wear',
+            textColor: "text-white",
+            mainText: 'GADGET',
+            mainTextColor: 'text-yellow-300',
+            buttonColor: 'bg-white',
+            buttonTextColor: 'text-[#fcb900]',
+            image: watch,
+            colSpan: 'col-span-1',
+        },
+        {
+            bgColor: 'bg-[#f42c37]',
+            title: 'Trend',
+            subtitle: 'Devices',
+            textColor: "text-white",
+            mainText: 'LAPTOPS',
+            mainTextColor: 'text-red-300',
+            buttonColor: 'bg-white',
+            buttonTextColor: 'text-[#f42c37]',
+            image: laptop,
+            colSpan: 'col-span-2',
+        },
+        {
+            bgColor: 'bg-gradient-to-l from-[#cfcfcf] via-[#cfcfcf] to-[#cfcfcf]',
+            title: 'Best',
+            subtitle: 'Gaming',
+            textColor: "text-black",
+            mainText: 'Console',
+            mainTextColor: 'text-white',
+            buttonColor: 'bg-[#f42c37]',
+            buttonTextColor: 'text-white',
+            image: console,
+            colSpan: 'col-span-2',
+        },
+        {
+            bgColor: 'bg-[#00d084]',
+            title: 'Enjoy',
+            subtitle: 'Playing',
+            mainText: 'Game',
+            textColor: "text-white",
+            mainTextColor: 'text-green-300',
+            buttonColor: 'bg-white',
+            buttonTextColor: 'text-[#00d084]',
+            image: reality,
+            colSpan: 'col-span-1',
+        },
+        {
+            bgColor: 'bg-primary',
+            title: 'New',
+            subtitle: 'Amazon',
+            mainText: 'Speaker',
+            textColor: "text-white",
+            mainTextColor: 'text-primary-300',
+            buttonColor: 'bg-white',
+            buttonTextColor: 'text-primary',
+            image: speaker,
+            colSpan: 'col-span-1',
+        },
+
+    ];
+
+    const Products = [
+        {
+            name: "Beats",
+            image: P1,
+            price: "$9"
+
+        }
+    ]
+
     return (
-        <Offline redirectTo="/login" className="h-[100vh]">
-            {/* Background image */}
-            <div className="w-full h-[100vh] relative">
-                <img
-                    className="w-full h-[100vh] object-cover"
-                    src={landingPageIllustration}
-                    alt="Landing Page Illustration"
-                />
-            </div>
+        <PublicLayout>
+            <section>
+                <div className="lg:h-[100vh] bg-gradient-to-l from-gray-100 via-[#cfcfcf] to-[#cfcfcf] rounded-2xl w-full flex flex-col lg:pl-40 lg:pr-10 justify-center gap-2 mt-4 shadow-sm relative overflow-hidden">
+                    <p className="font-nunito text-4xl font-bold">Beats solo</p>
+                    <p className="font-montserrat text-8xl font-bold">Wireless</p>
+                    <p className="font-montserrat text-[170px] font-bold text-white/80">HEADPHONE</p>
+                    <Button className="lg:w-60 lg:h-14 bg-[#f42c37] rounded-full text-white font-nunito text-lg">
+                        Shop By Category
+                    </Button>
 
-            {/* Overlay content */}
-            <div className="w-full h-[100vh] backdrop-blur absolute top-0 left-0 bg-black bg-opacity-40 flex flex-col items-center justify-center gap-4">
-                <div className="rounded-xl shadow-sm w-60 h-60 bg-white">
-                    <img
-                        className="w-60 h-60 rounded-xl"
-                        src={landingPageLogo}
-                        alt="Landing Page logo"
-                    />
+                    <section className="flex flex-col self-end lg:px-10 w-1/3">
+                        <p className="font-nunito font-bold text-lg">Description</p>
+                        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Laudantium laborum eligendi aliquam expedita odit illo ducimus earum ipsa facilis dolorem. Corporis dolores nobis voluptates perspiciatis ea eveniet facilis debitis rerum!</p>
+                    </section>
+
+                    <div className="absolute flex items-center justify-center overflow-hidden">
+                        <img src={headphone} alt="" className="max-w-full max-h-full object-contain" />
+                    </div>
                 </div>
-                <div>
-                    <p className="font-nunito font-semibold text-2xl">
-                        Point Of Sales
-                    </p>
+            </section>
+
+            <section className="lg:grid lg:grid-cols-4 gap-10 mt-10">
+                {sections.map((section, index) => (
+                    <div
+                        key={index}
+                        className={`${section.bgColor} h-[50vh] rounded-2xl flex flex-col shadow-sm justify-center px-4 relative ${section.colSpan} overflow-hidden`}
+                    >
+                        <p className={`font-nunito ${section.textColor}`}>{section.title}</p>
+                        <p className={`font-nunito ${section.textColor}`}>{section.subtitle}</p>
+                        <p className={`font-montserrat font-bold text-[40px] ${section.mainTextColor}`}>{section.mainText}</p>
+                        <Button
+                            className={`lg:w-24 ${section.buttonColor} rounded-full ${section.buttonTextColor} font-nunito text-lg`}
+                        >
+                            Browse
+                        </Button>
+                        <div className="absolute bottom-0 right-0 overflow-hidden">
+                            <img src={section.image} alt={section.mainText} className="max-w-full max-h-full object-contain" />
+                        </div>
+                    </div>
+                ))}
+            </section>
+
+            <section className="lg:grid lg:grid-cols-4 mt-10">
+                <div className="flex items-center justify-center gap-4">
+                    <ShippingIcon className="text-danger" />
+                    <span>
+                        <p className="font-nunito text-lg font-bold">Free Shipping</p>
+                        <p className="font-nunito text-lg text-gray-500">Free Shipping on all others</p>
+                    </span>
                 </div>
-                <div>
-                    <LoaderIcon className="text-white w-10 h-10" />
+                <div className="flex items-center justify-center gap-4">
+                    <ShippingIcon className="text-danger" />
+                    <span>
+                        <p className="font-nunito text-lg font-bold">Money Guarantee</p>
+                        <p className="font-nunito text-lg text-gray-500">30 Day Money Back</p>
+                    </span>
                 </div>
-                <div>
-                    <p className="font-nunito font-semibold">
-                        Welcome To Our Store
-                    </p>
+                <div className="flex items-center justify-center gap-4">
+                    <ShippingIcon className="text-danger" />
+                    <span>
+                        <p className="font-nunito text-lg font-bold">Online Support 24/7
+                        </p>
+                        <p className="font-nunito text-lg text-gray-500">Technical Support 24/7
+                        </p>
+                    </span>
                 </div>
-            </div>
-        </Offline>
+                <div className="flex items-center justify-center gap-4">
+                    <ShippingIcon className="text-danger" />
+                    <span>
+                        <p className="font-nunito text-lg font-bold">Secure Payment
+                        </p>
+                        <p className="font-nunito text-lg text-gray-500">All Cards Accepted
+                        </p>
+                    </span>
+                </div>
+            </section>
+
+            <section className="py-60">
+                <div className="w-full h-[70vh] rounded-2xl bg-[#f42c37] px-60 flex justify-between py-20 text-white relative overflow-hidden">
+                    <div>
+                        <p className="font-nunito">20% OFF</p>
+                        <p className="font-montserrat font-bold text-[70px]">FINE</p>
+                        <p className="font-montserrat font-bold text-[70px] -mt-6">SMILE</p>
+                        <p className="font-nunito">15TH Nov to 30 Dec</p>
+                    </div>
+                    <div>
+                        <p className="font-nunito">Best Solo Air</p>
+                        <p className="font-nunito font-bold text-[70px]">Summer Sales</p>
+                        <p className="font-nunito">Company that grew from 300 to 450 employees last month</p>
+                        <Button className="mt-4 text-lg font-nunito bg-white">
+                            Shop
+                        </Button>
+                    </div>
+
+                    <div className="absolute inset-0 bottom-0">
+                        <img src={headset} className="" />
+                    </div>
+                </div>
+            </section>
+
+
+            <section className=" mt-10">
+                <p className="font-nunito font-bold text-center text-[40px]"> Best Seller Products</p>
+
+                {Products.map((product, index) => (
+                    <div key={index}>
+
+                    </div>
+                ))}
+            </section>
+        </PublicLayout>
     );
 };
 
-export default LandingPage;
+export default Home;

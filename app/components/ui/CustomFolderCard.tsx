@@ -1,5 +1,6 @@
 import { Skeleton } from "@nextui-org/react"
 import { ReactNode, useEffect, useState } from "react"
+import FolderIcon from "../icons/FolderIcon"
 
 interface CustomFolderCardInterface {
     children?: ReactNode,
@@ -27,14 +28,14 @@ const CustomFolderCard = ({
         return () => clearTimeout(timer)
     }, [])
     return (
-        <Skeleton className="rounded-2xl" isLoaded={loading}>
-            <div className="flex flex-col gap-6  p-2 shadow-sm rounded-2xl border">
-                <div className=" h-12 w-12 rounded-lg bg-slate-200 p-1">
-                    <img className="h-10 w-10" src={image} alt="image" />
+        <Skeleton className="rounded-2xl w-40" isLoaded={loading}>
+            <div className={className}>
+                <div className="  p-1">
+                   <FolderIcon className="" />
                 </div>
                 <div className="">
-                    <p>Header</p>
-                    <p>description</p>
+                    <p className="font-poppins">Header</p>
+                    <p className="font-nunito">description</p>
                 </div>
 
             </div>

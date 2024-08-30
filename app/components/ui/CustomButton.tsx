@@ -14,7 +14,7 @@ export default function CustomButton({
 }: CustomButtonInterface) {
     return (
         <Button
-            className={className}
+            className="font-montserrat font-bold"
             onClick={onClick}
             color="primary">
             {name}
