@@ -10,6 +10,11 @@ import speaker from "../components/illustration/P6YUXW1.png";
 import headset from "../components/illustration/headset.png";
 import ShippingIcon from "~/components/icons/ShippingIcon";
 import P1 from "~/components/illustration/p1.jpg";
+import watch1 from "~/components/illustration/watch.png";
+import news from "~/components/illustration/news.jpg";
+import InstagramIcon from "~/components/icons/InstgramIcon";
+import TwiterIcon from "~/components/icons/TwiterIcon";
+import WhatsappIcon from "~/components/icons/WhatsappIcon";
 
 
 const Home = () => {
@@ -92,10 +97,53 @@ const Home = () => {
     const Products = [
         {
             name: "Beats",
+            image: headset,
+            price: "$9"
+
+        },
+        {
+            name: "Beats",
             image: P1,
             price: "$9"
 
+        },
+        {
+            name: "Beats",
+            image: speaker,
+            price: "$9"
+
+        },
+        {
+            name: "Beats",
+            image: P1,
+            price: "$9"
+
+        },
+        {
+            name: "Beats",
+            image: laptop,
+            price: "$9"
+
+        },
+        {
+            name: "Beats",
+            image: watch,
+            price: "$9"
+
+        },
+        {
+            name: "Beats",
+            image: watch,
+            price: "$9"
+
+        },
+        {
+            name: "Beats",
+            image: handsfree,
+            price: "$9"
+
         }
+
     ]
 
     return (
@@ -193,22 +241,93 @@ const Home = () => {
                         </Button>
                     </div>
 
-                    <div className="absolute inset-0 bottom-0">
+                    <div className="absolute lg:-mt-40 lg:-ml-40">
                         <img src={headset} className="" />
                     </div>
                 </div>
             </section>
 
 
-            <section className=" mt-10">
+            <section className=" ">
                 <p className="font-nunito font-bold text-center text-[40px]"> Best Seller Products</p>
 
-                {Products.map((product, index) => (
-                    <div key={index}>
-
-                    </div>
-                ))}
+                <div className="lg:grid lg:grid-cols-4 gap-12 mt-20">
+                    {Products.map((product, index) => (
+                        <div className="">
+                            <div key={index} className=" w-full h-60 rounded-xl flex items-center jUstIfy-center  bg-gradient-to-l from-[#cfcfcf] via-[#cfcfcf] to-[#cfcfcf] overflow-y-hidden" >
+                                <img src={product.image} alt="" />
+                            </div>
+                            <p className="mt-2 font-nunito">{product.name}</p>
+                            <p className="mt-2 font-nunito">{product.price}</p>
+                        </div>
+                    ))}
+                </div>
             </section>
+
+            <section className="py-60">
+                <div className="w-full h-[70vh] rounded-2xl bg-[#00d084] px-60 flex justify-between py-20 text-white relative overflow-hidden">
+                    <div>
+                        <p className="font-nunito">20% OFF</p>
+                        <p className="font-montserrat font-bold text-[70px]">FINE</p>
+                        <p className="font-montserrat font-bold text-[70px] -mt-6">SMILE</p>
+                        <p className="font-nunito">15TH Nov to 30 Dec</p>
+                    </div>
+                    <div>
+                        <p className="font-nunito">Best Solo Air</p>
+                        <p className="font-nunito font-bold text-[70px]">Summer Sales</p>
+                        <p className="font-nunito">Company that grew from 300 to 450 employees last month</p>
+                        <Button className="mt-4 text-lg font-nunito bg-white">
+                            Shop
+                        </Button>
+                    </div>
+
+                    <div className="absolute lg:-mt-40 lg:-ml-10">
+                        <img src={watch1} className="" />
+                    </div>
+                </div>
+            </section>
+
+            <section className="">
+                <p className="font-montserrat font-bold text-center text-[40px]">Recent News</p>
+                <div className="lg:grid lg:grid-cols-3 gap-10 mt-10">
+                    <div className="mt-4">
+                        <img className="h-60  rounded-xl" src={news} alt="" />
+                        <span className="flex gap-8 mt-4">
+                            <p className="font-nunito text-gray-600">October 5, 2019</p>
+                            <p className="font-nunito text-gray-600">By Mends</p>
+                        </span>
+                        <p className="mt-4 font-nunito font-bold text-xl">How to choose perfect gadget</p>
+                        <p className="mt-4 font-nunito">
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum sequi placeat accusamus vitae. Tempora debitis iusto mollitia cupiditate reiciendis quae, tenetur accusamus quasi aspernatur dolore, expedita aut corporis nemo maxime?
+                        </p>
+                    </div>
+
+                    <div className="mt-4">
+                        <img className="h-60  rounded-xl" src={news} alt="" />
+                        <span className="flex gap-8 mt-4">
+                            <p className="font-nunito text-gray-600">October 5, 2019</p>
+                            <p className="font-nunito text-gray-600">By Mends</p>
+                        </span>
+                        <p className="mt-4 font-nunito font-bold text-xl">How to choose perfect gadget</p>
+                        <p className="mt-4 font-nunito">
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum sequi placeat accusamus vitae. Tempora debitis iusto mollitia cupiditate reiciendis quae, tenetur accusamus quasi aspernatur dolore, expedita aut corporis nemo maxime?
+                        </p>
+                    </div>
+                    <div className="mt-4">
+                        <img className="h-60  rounded-xl" src={news} alt="" />
+                        <span className="flex gap-8 mt-4">
+                            <p className="font-nunito text-gray-600">October 5, 2019</p>
+                            <p className="font-nunito text-gray-600">By Mends</p>
+                        </span>
+                        <p className="mt-4 font-nunito font-bold text-xl">How to choose perfect gadget</p>
+                        <p className="mt-4 font-nunito">
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum sequi placeat accusamus vitae. Tempora debitis iusto mollitia cupiditate reiciendis quae, tenetur accusamus quasi aspernatur dolore, expedita aut corporis nemo maxime?
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+
         </PublicLayout>
     );
 };
