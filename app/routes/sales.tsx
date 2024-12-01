@@ -187,11 +187,11 @@ const Sales = () => {
                 ))}
             </CustomTable>
 
-            <EditModal modalTitle="Refund" className="dark:bg-slate-950 bg-gray-200 border border-white/5" onOpenChange={handleEditModalClosed} isOpen={isEditModalOpened}>
+            {/* <EditModal modalTitle="Refund" className="dark:bg-slate-950 bg-gray-200 border border-white/5" onOpenChange={handleEditModalClosed} isOpen={isEditModalOpened}>
                 {(onClose) => (
                     <div className="grid grid-cols-2 gap-4">
                         {
-                            dataValue?.products?.map((product: ProductInterface, index: number) => (
+                            dataValue?.sales?.map((product: ProductInterface, index: number) => (
                                 <div key={index}>
                                     <div className="dark:bg-slate-900 bg-white rounded-xl flex flex-col gap-2 border border-white/5 w-40 p-2">
                                         <img className="w-40 h-20 rounded-xl" src={product?.product?.image} alt="" />
@@ -211,7 +211,7 @@ const Sales = () => {
                         }
                     </div>
                 )}
-            </EditModal>
+            </EditModal> */}
 
             <ConfirmModal className="dark:slate-900" header="Confirm Remove" content="Are you sure to refund item? " isOpen={isConfirmModalOpened} onOpenChange={handleConfirmedModalClosed}>
                 <div className="flex gap-4">

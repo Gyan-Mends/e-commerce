@@ -1,6 +1,7 @@
 import { json } from "@remix-run/node";
 import { RegistrationInterface, SalesInterface } from "~/interfaces/interface";
 import Cart from "~/modal/cart";
+import Product from "~/modal/products";
 import Registration from "~/modal/registration";
 import Sales from "~/modal/sales";
 import { getSession } from "~/session";
@@ -50,7 +51,6 @@ class SalesController {
               productsArray.push({ product: prod, quantity });
             }
 
-            console.log("Products array after loop:", productsArray);
 
             const sales = new Sales({
               products: productsArray,
@@ -63,6 +63,14 @@ class SalesController {
             const addSales = await sales.save();
             if (addSales) {
               const emptyCart = await Cart.deleteMany({ attendant: user });
+
+              // Update the product quantity in the inventory
+              const productInInventory = await Product.findById(product);
+              if (productInInventory) {
+                const newQuantity = productInInventory.quantity - Number(quantity);
+                await Product.findByIdAndUpdate(product, { quantity: newQuantity });
+              }
+
               if (emptyCart) {
                 return json({
                   message: "Sales made successfully",

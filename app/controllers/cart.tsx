@@ -44,11 +44,11 @@ class CartController {
                             })
                             if (updatedeCart) {
                                 // Update the product quantity in the inventory
-                                const productInInventory = await Product.findById(product);
-                                if (productInInventory) {
-                                    const newQuantity = productInInventory.quantity - Number(quantity);
-                                    await Product.findByIdAndUpdate(product, { quantity: newQuantity });
-                                }
+                                // const productInInventory = await Product.findById(product);
+                                // if (productInInventory) {
+                                //     const newQuantity = productInInventory.quantity - Number(quantity);
+                                //     await Product.findByIdAndUpdate(product, { quantity: newQuantity });
+                                // }
 
                                 return json({
                                     message: "Cart item updated",
@@ -70,11 +70,11 @@ class CartController {
 
                             if (addToCart) {
                                 // Update the product quantity in the inventory
-                                const productInInventory = await Product.findById(product);
-                                if (productInInventory) {
-                                    const newQuantity = productInInventory.quantity - Number(quantity);
-                                    await Product.findByIdAndUpdate(product, { quantity: newQuantity });
-                                }
+                                // const productInInventory = await Product.findById(product);
+                                // if (productInInventory) {
+                                //     const newQuantity = productInInventory.quantity - Number(quantity);
+                                //     await Product.findByIdAndUpdate(product, { quantity: newQuantity });
+                                // }
 
                                 return json({
                                     message: "Item added to cart",
@@ -115,18 +115,18 @@ class CartController {
                 const productId = cartItem.product;
                 const quantityToAddBack = Number(cartItem.quantity);
 
-                // Update the product quantity
-                const product = await Product.findById(productId);
-                if (product) {
-                    product.quantity += quantityToAddBack;
-                    await product.save();
-                }
+                // // Update the product quantity
+                // const product = await Product.findById(productId);
+                // if (product) {
+                //     product.quantity += quantityToAddBack;
+                //     await product.save();
+                // }
 
                 // Delete the cart item
                 const deleteUser = await Cart.findByIdAndDelete(id);
                 if (deleteUser) {
                     return json({
-                        message: "Item deleted successfully and product quantity updated",
+                        message: "Cart item deleted successfully",
                         success: true,
                         status: 200,
                     });

@@ -3,12 +3,10 @@ import { ActionFunction, json, LoaderFunction, MetaFunction, redirect } from "@r
 import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react"
 import { useEffect, useState } from "react"
 import { Toaster } from "react-hot-toast"
-import { MTN_Mobile_Phone_Api } from "~/components/api/dotenv"
 import BackIcon from "~/components/icons/BackIcon"
 import { DeleteIcon } from "~/components/icons/DeleteIcon"
 import { EditIcon } from "~/components/icons/EditIcon"
 import PlusIcon from "~/components/icons/PlusIcon"
-import RefreshIcon from "~/components/icons/RefreshIcon"
 import { SearchIcon } from "~/components/icons/SearchIcon"
 import ConfirmModal from "~/components/modal/confirmModal"
 import CreateModal from "~/components/modal/createModal"
@@ -80,20 +78,17 @@ const Users = () => {
                 <div className="flex items-center justify-center gap-2">
                     {/* back */}
                     {/* back */}
-                    <Skeleton isLoaded={isLoading} className="rounded-xl">
-                        <Button size="md" onClick={() => {
+                    <Button size="sm" onClick={() => {
                             navigate(-1)
-                        }} color="primary" className="font-nunito text-sm border border-white/5 border-b-white dark:border-primary  dark:border-b-primary dark:text-priamry dark:bg-slate-950">
-                            <BackIcon className="h-[20px] w-[20px] dark:text-primary" /><p className="dark:text-primary">Back</p>
-                        </Button>
-                    </Skeleton>
+                    }} color="primary" className="font-nunito text-sm  border-b-white dark:border-primary  dark:text-white dark:bg-[#333]">
+                        <BackIcon className="h-[20px] w-[20px] dark:text-success" /><p >Back</p>
+                    </Button>
                 </div>
                 <div className="flex gap-4">
                     {/* search */}
                     {/* search */}
-                    <Skeleton isLoaded={isLoading} className="rounded-xl">
                         <Input
-                            size="lg"
+                        size="sm"
                             placeholder="Search user..."
                             startContent={<SearchIcon className="" />}
                             onValueChange={(value) => {
@@ -102,19 +97,19 @@ const Users = () => {
                                 }, 100);
                                 return () => clearTimeout(timeoutId);
                             }} classNames={{
-                                inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border-white/5 border-b-primary",
+                                inputWrapper: "bg-white shadow-sm text-sm font-nunito dark:bg-[#333] border border-white/5 ",
                             }}
-                        />
-                    </Skeleton>
+                    />
                     {/* button to add new user */}
                     {/* button to add new user */}
-                    <Skeleton isLoaded={isLoading} className="rounded-xl">
-                        <Button size="lg" variant="flat" onClick={() => {
+                    <Button size="sm"
+                        variant="flat"
+                        onClick={() => {
                             setIsCreateModalOpened(true)
-                        }} color="primary" className="font-montserrat font-semibold text-sm">
-                            <PlusIcon className="h-6 w-6" />Create User
-                        </Button>
-                    </Skeleton>
+                        }}
+                        className="font-nunito dark:bg-[#333]  text-sm px-8">
+                        Create User
+                    </Button>
                 </div>
             </div>
 
@@ -128,7 +123,7 @@ const Users = () => {
                 setPage={(page) => (
                     navigate(`?page=${page}`)
                 )}>
-                {users.map((user: RegistrationInterface, index: number) => (
+                {users?.map((user, index: number) => (
                     <TableRow key={index}>
                         <TableCell className="text-xs">
                             <p className="!text-xs">
@@ -166,9 +161,9 @@ const Users = () => {
 
             {/* confirm modal */}
             {/* confirm modal */}
-            <ConfirmModal className="dark:bg-slate-900 border border-white/5" header="Confirm Delete" content="Are you sure to delete user?" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
+            <ConfirmModal className="dark:bg-[#333] border border-white/5" header="Confirm Delete" content="Are you sure to delete user?" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
                 <div className="flex gap-4">
-                    <Button color="primary" variant="flat" className="font-montserrat font-semibold" size="sm" onPress={handleConfirmModalClosed}>
+                    <Button color="success" variant="flat" className="font-montserrat font-semibold" size="sm" onPress={handleConfirmModalClosed}>
                         No
                     </Button>
                     <Button color="danger" variant="flat" className="font-montserrat font-semibold " size="sm" onClick={() => {
@@ -190,7 +185,7 @@ const Users = () => {
             {/* Create Modal */}
             {/* Create Modal */}
             <EditModal
-                className="bg-gray-200 dark:bg-slate-950 "
+                className="bg-gray-200 dark:bg-[#333] "
                 modalTitle="Update user details"
                 isOpen={isEditModalOpened}
                 onOpenChange={handleEditModalClosed}
@@ -206,6 +201,7 @@ const Users = () => {
                             defaultValue={dataValue?.firstName}
                             type="text"
                             labelPlacement="outside"
+                            className=""
                         />
                         <div className="flex gap-4">
                             <CustomInput
@@ -216,6 +212,7 @@ const Users = () => {
                                 defaultValue={dataValue?.middleName}
                                 type="text"
                                 labelPlacement="outside"
+                                className=""
                             />
                             <CustomInput
                                 label="Last Name"
@@ -226,6 +223,7 @@ const Users = () => {
                                 placeholder=" "
                                 type="text"
                                 labelPlacement="outside"
+                                className=""
                             />
                         </div>
                         <CustomInput
@@ -237,6 +235,7 @@ const Users = () => {
                             placeholder=" "
                             type="text"
                             labelPlacement="outside"
+                            className=""
                         />
                         <CustomInput
                             label=" Phone"
@@ -266,14 +265,14 @@ const Users = () => {
                         <input name="id" value={dataValue?._id} type="hidden" />
 
                         <div className="flex justify-end gap-2 mt-10 ">
-                            <Button className="font-montserrat font-semibold" color="danger" variant="flat" onPress={onClose}>
+                            <Button className="font-montserrat font-semibold" color="danger" size="sm" variant="flat" onPress={onClose}>
                                 Close
                             </Button>
-                            <button type="submit" className="bg-primary-400 rounded-xl bg-opacity-20 text-primary text-sm font-montserrat font-semibold px-4" onClick={() => {
+                            <Button size="sm" type="submit" color="success" className="  bg-opacity-20 text-success text-sm font-montserrat font-semibold px-4" onClick={() => {
                                 setIsEditModalOpened(false)
                             }}>
                                Update
-                            </button>
+                            </Button>
                         </div>
                     </Form>
                 )}
@@ -281,7 +280,7 @@ const Users = () => {
 
             {/* Create Modal */}
             <CreateModal
-                className="bg-gray-200 dark:bg-slate-950"
+                className="bg-gray-200 dark:bg-[#333]"
                 modalTitle="Create New User"
                 isOpen={isCreateModalOpened}
                 onOpenChange={handleCreateModalClosed}
@@ -357,8 +356,8 @@ const Users = () => {
                                 name="role"
                                 classNames={{
                                     label: "font-nunito text-sm text-default-100",
-                                    popoverContent: "focus:dark:bg-slate-900 focus-bg-white bg-white shadow-sm dark:bg-slate-900 border border-white/5 font-nunito",
-                                    trigger: "focus:dark:bg-slate-900 focus:bg-white bg-white shadow-sm dark:bg-slate-900 border border-white/5 font-nunito "
+                                    popoverContent: "focus:dark:bg-[#333] focus-bg-white bg-white shadow-sm dark:bg-[#333] border border-white/5 font-nunito",
+                                    trigger: "bg-white shadow-sm dark:bg-[#333]  border border-white/30 focus:bg-[#333]  focus focus:bg-[#333] hover:border-b-primary hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-sm   "
                                 }}
                             >
                                 {[
@@ -376,7 +375,7 @@ const Users = () => {
                                 name="image"
                                 required
                                 placeholder=" "
-                                className="focus:dark:bg-slate-900 focus:bg-white font-nunito  rounded-lg h-10 w-[25vw] bg-white shadow-smx dark:bg-slate-900 border border-white/5"
+                                className="bg-white shadow-sm dark:bg-[#333]  border border-white/30 focus:bg-[#333]  focus focus:bg-[#333] hover:border-b-primary hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-sm   h-10 w-[25vw] rounded-xl"
                                 type="file"
                                 onChange={(event: any) => {
                                     const file = event.target.files[0];
@@ -491,8 +490,8 @@ export const loader: LoaderFunction = async ({ request }) => {
     });
 
     console.log(users);
-    
-    
+
+
 
     return json({ user, users, totalPages });
 }

@@ -15,14 +15,14 @@ export default function ConfirmModal({isOpen,onOpenChange,children,content,heade
   return (
     <>
       <Modal className={className} isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent>
+        <ModalContent className="dark:bg-[#333]">
           {(onClose) => (
             <>
               <ModalHeader className="flex items-center justify-center gap-1 font-montserrat font-semibold text-2xl text-danger">{header}</ModalHeader>
               <ModalBody className="flex items-center justify-center">
                 <p className="font-nunito text-md">{content}</p>
               </ModalBody>
-              <ModalFooter className="flex items-center justify-center">
+              <ModalFooter className="flex items-center justify-center ">
                 {children}
               </ModalFooter>
             </>

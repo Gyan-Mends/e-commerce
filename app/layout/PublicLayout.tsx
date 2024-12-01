@@ -54,16 +54,16 @@ const PublicLayout = ({ children }: { children: ReactNode }) => {
                         <img src={logo} alt="" />
                     </NavbarItem>
                     <NavbarItem className="flex gap-10 ml-10">
-                        <Link className="font-poppins" to="">
+                        <Link className="font-poppins" to="/">
                             Home
                         </Link>
-                        <Link className="font-poppins" to="">
+                        <Link className="font-poppins" to="/shop">
                             Shop
                         </Link>
-                        <Link className="font-poppins" to="">
+                        <Link className="font-poppins" to="/about">
                             About
                         </Link>
-                        <Link className="font-poppins" to="">
+                        <Link className="font-poppins" to="/contact">
                             Contact
                         </Link>
                     </NavbarItem>
@@ -71,7 +71,7 @@ const PublicLayout = ({ children }: { children: ReactNode }) => {
 
                 <NavbarContent className="lg:-mr-60 flex gap-2 lg:gap-8" justify="end">
                     <NavbarItem>
-                        <Link className="font-nunito" to="">
+                        <Link className="font-nunito" to="/login">
                             Login
                         </Link>
                     </NavbarItem>

@@ -18,7 +18,7 @@ export default function EditModal({ children, modalTitle,  className, isOpen, on
         placement="center"
         className={className}
       >
-        <ModalContent>
+        <ModalContent className=" dark:bg-[#333]">
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">{modalTitle}</ModalHeader>

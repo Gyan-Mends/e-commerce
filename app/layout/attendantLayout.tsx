@@ -1,5 +1,6 @@
 import { User } from "@nextui-org/react";
-import { Link } from "@remix-run/react";
+import { LoaderFunction } from "@remix-run/node";
+import { Link, useLoaderData } from "@remix-run/react";
 import { useTheme } from "next-themes";
 import { ReactNode, useState } from "react";
 import CloseIcon from "~/components/icons/CloseIcon";
@@ -9,6 +10,8 @@ import MoonIcon from "~/components/icons/MoonIcon";
 import NavTogglerIcon from "~/components/icons/NavTogglerIcon";
 import SunIcon from "~/components/icons/SunIcon";
 import logo from "~/components/illustration/logo.png"
+import productsController from "~/controllers/productsController";
+import { RegistrationInterface } from "~/interfaces/interface";
 
 interface UserLayoutProps {
     children: ReactNode;
@@ -18,7 +21,9 @@ interface UserLayoutProps {
 const AttendantLayout = ({ children, pageName }: UserLayoutProps) => {
     const { theme, setTheme } = useTheme();
     const [desktopNav, setDesktopNav] = useState(true);
-    const [mobileNavOpen, setMobileNavOpen] = useState(false); // Hide mobile nav by default
+    const [mobileNavOpen, setMobileNavOpen] = useState(false);
+    const { user } = useLoaderData<{ user: RegistrationInterface[] }>();
+
 
     const desktopNavToggle = () => {
         setDesktopNav(!desktopNav);
@@ -29,53 +34,40 @@ const AttendantLayout = ({ children, pageName }: UserLayoutProps) => {
     };
 
     return (
-        <div className={`h-[100vh]  transition duration-500 ${theme === "light" ? "bg-gray-200" : "bg-slate-950"}`}>
+        <div className={`  transition duration-500 ${theme === "light" ? " " : "dark:bg-[#191919]"}`}>
             {/* Desktop Side Navigation Bar */}
-            <div className={`h-full hidden lg:block md:block w-64 bg-primary text-white fixed transition-transform duration-500 p-6 ${desktopNav ? "transform-none" : "-translate-x-full"}`}>
+            <div className={`h-full hidden lg:block md:block w-64 dark:bg-[#333] text-white fixed transition-transform duration-500 p-6 ${desktopNav ? "transform-none" : "-translate-x-full"}`}>
                 {/* logo */}
                 <div className="flex items-center gap-2">
                     <div>
                     </div>
-                    <div className="font-montserrat text-2xl font-semibold">Point of Sales</div>
+                    <div className="font-nunito text-2xl font-semibold">Best <span className="text-success">Way</span></div>
                 </div>
                 {/* profile */}
                 <div className="font-nunito mt-10">
                     <User
-                        name="Jane Doe"
-                        description="Product Designer"
+                        name={`${user.firstName} ${user.middleName} ${user.lastName}`}
+                        description={user.role === "attendant" ? "Attendant" : " "}
                         avatarProps={{
-                            src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
+                            src: user.image || "https://i.pravatar.cc/150?u=default" // Fallback to placeholder if no image is provided
                         }}
                     ></User>
+
                 </div>
                 {/* Side Nav Content */}
                 <ul className="mt-10">
                     <Link className="" to="/attendant">
-                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-nunito text-md p-2 rounded-lg flex items-center gap-2">
+                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-success font-nunito text-md p-2 rounded-lg flex items-center gap-2">
                             <DashboardIcon className="text-md" />
                             Dashboard
                         </li>
                     </Link>
                     <Link className="" to="/attendant/sales">
-                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-nunito text-md p-2 rounded-lg flex items-center gap-2">
+                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-success font-nunito text-md p-2 rounded-lg flex items-center gap-2">
                             <DashboardIcon className="text-md" />
                             Sales Point
                         </li>
-                    </Link>
-                    <Link className="" to="/sales">
-                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-nunito text-md p-2 rounded-lg flex items-center gap-2">
-                            <DashboardIcon className="text-md" />
-                            Sales 
-                        </li>
-                    </Link>
-                    <Link className="" to="/attendant/sales">
-                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-nunito text-md p-2 rounded-lg flex items-center gap-2">
-                            <DashboardIcon className="text-md" />
-                            Refund
-                        </li>
-                    </Link>
-                   
-
+                    </Link> 
                 </ul>
             </div>
 
@@ -106,13 +98,13 @@ const AttendantLayout = ({ children, pageName }: UserLayoutProps) => {
                 {/* Side Nav Content */}
                 <ul className="mt-10">
                     <Link className="" to="/user">
-                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-nunito p-2 rounded-lg flex items-center gap-2">
+                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-success font-nunito p-2 rounded-lg flex items-center gap-2">
                             <DashboardIcon className="h-4 w-4" />
                             Dashboard
                         </li>
                     </Link>
                     <Link className="" to="/user/ticket">
-                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-primary font-nunito p-2 rounded-lg flex items-center gap-2">
+                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-success font-nunito p-2 rounded-lg flex items-center gap-2">
                             {/* <TicketIcon className="h-4 w-4" /> */}
                             Tickets
                         </li>
@@ -124,16 +116,16 @@ const AttendantLayout = ({ children, pageName }: UserLayoutProps) => {
             {/* Page Content */}
             <div className={`p-4 transition-all duration-500 overflow-x-hidden z-1 ${desktopNav ? "lg:ml-64 md:ml-64" : ""}`}>
                 {/* Top Nav */}
-                <div className="h-14 rounded-2xl w-full bg-primary px-6 flex items-center justify-between">
+                <div className="h-14 rounded-2xl w-full bg-[#333] px-6 flex items-center justify-between">
                     {/* Overview */}
                     <div className="flex items-center gap-2 lg:gap-4">
                         {/* Mobile Nav Toggle */}
                         <button onClick={mobileNavToggle} className="block md:hidden lg:hidden">
-                            <NavTogglerIcon className="text-white" />
+                            <NavTogglerIcon className="text-success" />
                         </button>
                         {/* Desktop Nav Toggle */}
                         <button onClick={desktopNavToggle} className="hidden md:block lg:block">
-                            <NavTogglerIcon className="text-white" />
+                            <NavTogglerIcon className="text-success" />
                         </button>
                         <p className="font-nunito text-2xl text-white">{pageName}</p>
                     </div>
@@ -164,3 +156,16 @@ const AttendantLayout = ({ children, pageName }: UserLayoutProps) => {
 };
 
 export default AttendantLayout;
+
+export const loader: LoaderFunction = async ({ request }) => {
+    const url = new URL(request.url);
+    const page = parseInt(url.searchParams.get("page") as string) || 1;
+    const search_term = url.searchParams.get("search_term") as string
+
+    const { user } = await productsController.FetchProducts({
+        request,
+        page,
+        search_term
+    });
+
+}

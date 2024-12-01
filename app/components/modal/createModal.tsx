@@ -17,8 +17,9 @@ export default function CreateModal({ children, modalTitle,onOpenChange,classNam
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         placement="center"
+        className={className}
       >
-        <ModalContent className={className}>
+        <ModalContent className="dark:bg-[#333]">
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1 font-nunito">{modalTitle}</ModalHeader>

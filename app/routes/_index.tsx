@@ -15,6 +15,7 @@ import news from "~/components/illustration/news.jpg";
 import InstagramIcon from "~/components/icons/InstgramIcon";
 import TwiterIcon from "~/components/icons/TwiterIcon";
 import WhatsappIcon from "~/components/icons/WhatsappIcon";
+import { Link } from "@remix-run/react";
 
 
 const Home = () => {
@@ -153,9 +154,11 @@ const Home = () => {
                     <p className="font-nunito text-4xl font-bold">Beats solo</p>
                     <p className="font-montserrat text-8xl font-bold">Wireless</p>
                     <p className="font-montserrat text-[170px] font-bold text-white/80">HEADPHONE</p>
-                    <Button className="lg:w-60 lg:h-14 bg-[#f42c37] rounded-full text-white font-nunito text-lg">
-                        Shop By Category
-                    </Button>
+                    <Link to="/shop">
+                        <button className="lg:w-60 lg:h-14 bg-[#f42c37] rounded-full text-white font-nunito text-lg inset-0">
+                            Shop By Category
+                        </button>
+                    </Link>
 
                     <section className="flex flex-col self-end lg:px-10 w-1/3">
                         <p className="font-nunito font-bold text-lg">Description</p>

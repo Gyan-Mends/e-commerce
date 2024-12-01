@@ -24,25 +24,25 @@
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #020617;
+  background: #191919;
 }
 
   /* Custom scrollbar styles */
   .scrollbar-thin::-webkit-scrollbar {
-    width: 2px;
+    width: 1px;
     border-radius: 10px;
   }
   
   .scrollbar-thin::-webkit-scrollbar-track {
-    background: #E5E7EB;
+    background: #191919;
   }
   
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: #E5E7EB;
+    background: #191919;
   }
   
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: #E5E7EB;
+    background: #191919;
   }
 
   

@@ -212,9 +212,8 @@ class UsersController {
         search_term?: string;
         limit?: number;
     } = { page: 1 }) {
-        const skipCount = (page - 1) * (limit || 9); // Default limit to 9 if not provided
+        const skipCount = (page - 1) * (limit); 
 
-        // Define the search filter only once
         const searchFilter = search_term
             ? {
                 $or: [

@@ -71,20 +71,17 @@ const Suppliers = () => {
                 <div className="flex items-center justify-center gap-2">
                     {/* back */}
                     {/* back */}
-                    <Skeleton isLoaded={isLoading} className="rounded-xl">
-                        <Button size="md" onClick={() => {
+                    <Button size="sm" onClick={() => {
                             navigate(-1)
-                        }} color="primary" className="font-nunito text-sm border border-white/5 border-b-white dark:border-primary  dark:border-b-primary dark:text-priamry dark:bg-slate-950">
-                            <BackIcon className="h-[20px] w-[20px] dark:text-primary" /><p className="dark:text-primary">Back</p>
-                        </Button>
-                    </Skeleton>
+                    }} color="primary" className="font-nunito text-sm  border-b-white dark:border-primary  dark:text-white dark:bg-[#333]">
+                        <BackIcon className="h-[20px] w-[20px] dark:text-success" /><p >Back</p>
+                    </Button>
                 </div>
                 <div className="flex gap-4">
                     {/* search */}
                     {/* search */}
-                    <Skeleton isLoaded={isLoading} className="rounded-xl">
                         <Input
-                            size="lg"
+                        size="sm"
                             placeholder="Search user..."
                             startContent={<SearchIcon className="" />}
                             onValueChange={(value) => {
@@ -93,19 +90,19 @@ const Suppliers = () => {
                                 }, 100);
                                 return () => clearTimeout(timeoutId);
                             }} classNames={{
-                                inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border-white/5 border-b-primary",
+                                inputWrapper: "bg-white shadow-sm text-sm font-nunito dark:bg-[#333] border border-white/5 ",
                             }}
-                        />
-                    </Skeleton>
+                    />
                     {/* button to add new user */}
                     {/* button to add new user */}
-                    <Skeleton isLoaded={isLoading} className="rounded-xl">
-                        <Button size="lg" variant="flat" onClick={() => {
+                    <Button size="sm"
+                        variant="flat"
+                        onClick={() => {
                             setIsCreateModalOpened(true)
-                        }} color="primary" className="font-montserrat font-semibold text-sm">
-                            <PlusIcon className="h-6 w-6" />Create User
-                        </Button>
-                    </Skeleton>
+                        }}
+                        className="font-nunito dark:bg-[#333]  text-sm px-8">
+                        <PlusIcon className="" /> Create Supplier
+                    </Button>
                 </div>
             </div>
 
@@ -151,7 +148,8 @@ const Suppliers = () => {
                     </TableRow>
                 ))}
             </NewCustomTable>
-            <ConfirmModal content="Are you sure to delete supplier?" header="Cnfirm Delete" className="dark:bg-slate-900 border border-white/5" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
+
+            <ConfirmModal content="Are you sure to delete supplier?" header="Cnfirm Delete" className="border border-white/5" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
                 <div className="flex gap-4">
                     <Button size="sm" color="primary" variant="flat" className="font-montserrat font-semibold" onPress={handleConfirmModalClosed}>
                         No
@@ -171,6 +169,7 @@ const Suppliers = () => {
                     </Button>
                 </div>
             </ConfirmModal>
+
             {/* Create Modal */}
             <EditModal
                 className="dark:bg-slate-950 border border-white/5 bg-gray-200"
@@ -269,7 +268,7 @@ const Suppliers = () => {
 
             {/* Create Modal */}
             <CreateModal
-                className="dark:bg-slate-950 border border-white/5 bg-gray-200"
+                className="bg-gray-200 dark:bg-[#333]"
                 modalTitle="Create New User"
                 isOpen={isCreateModalOpened}
                 onOpenChange={handleCreateModalClosed}
@@ -331,12 +330,12 @@ const Suppliers = () => {
                         <input name="intent" value="create" type="hidden" />
 
                         <div className="flex justify-end gap-2 mt-10 font-nunito">
-                            <Button color="danger" variant="flat" onPress={onClose}>
+                            <Button size="sm" color="danger" variant="flat" onPress={onClose}>
                                 Close
                             </Button>
-                            <button type="submit" className="bg-primary-400 rounded-xl bg-opacity-20 text-primary text-sm font-nunito px-4">
+                            <Button color="success" size="sm" type="submit" className="rounded-xl bg-opacity-20 text-success text-sm font-nunito px-4">
                                 Submit
-                            </button>
+                            </Button>
                         </div>
                     </Form>
                 )}
