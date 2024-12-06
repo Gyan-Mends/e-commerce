@@ -71,7 +71,7 @@ const PublicLayout = ({ children }: { children: ReactNode }) => {
 
                 <NavbarContent className="lg:-mr-60 flex gap-2 lg:gap-8" justify="end">
                     <NavbarItem>
-                        <Link className="font-nunito" to="/login">
+                        <Link className="font-nunito" to="/">
                             Login
                         </Link>
                     </NavbarItem>

@@ -1,6 +1,6 @@
-import { User } from "@nextui-org/react";
-import { LoaderFunction } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User } from "@nextui-org/react";
+import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
+import { Link, useLoaderData, useSubmit } from "@remix-run/react";
 import { useTheme } from "next-themes";
 import { ReactNode, useState } from "react";
 import CloseIcon from "~/components/icons/CloseIcon";
@@ -10,6 +10,9 @@ import MoonIcon from "~/components/icons/MoonIcon";
 import NavTogglerIcon from "~/components/icons/NavTogglerIcon";
 import SunIcon from "~/components/icons/SunIcon";
 import logo from "~/components/illustration/logo.png"
+import ConfirmModal from "~/components/modal/confirmModal";
+import adminDashboardController from "~/controllers/AdminDashBoardController";
+import attendanceDashboardController from "~/controllers/AttendanceDashBoardController";
 import productsController from "~/controllers/productsController";
 import { RegistrationInterface } from "~/interfaces/interface";
 
@@ -23,6 +26,13 @@ const AttendantLayout = ({ children, pageName }: UserLayoutProps) => {
     const [desktopNav, setDesktopNav] = useState(true);
     const [mobileNavOpen, setMobileNavOpen] = useState(false);
     const { user } = useLoaderData<{ user: RegistrationInterface[] }>();
+    const [isLogoutConfirmModalOpened, setIsLogoutConfirmModalOpened] = useState(false)
+    const submit = useSubmit()
+
+    const handleConfirmModalClosed = () => {
+        setIsLogoutConfirmModalOpened(false);
+    };
+
 
 
     const desktopNavToggle = () => {
@@ -34,7 +44,7 @@ const AttendantLayout = ({ children, pageName }: UserLayoutProps) => {
     };
 
     return (
-        <div className={`  transition duration-500 ${theme === "light" ? " " : "dark:bg-[#191919]"}`}>
+        <div className={`!bg-[100vh]  transition duration-500 ${theme === "light" ? " " : "dark:bg-[#191919]"}`}>
             {/* Desktop Side Navigation Bar */}
             <div className={`h-full hidden lg:block md:block w-64 dark:bg-[#333] text-white fixed transition-transform duration-500 p-6 ${desktopNav ? "transform-none" : "-translate-x-full"}`}>
                 {/* logo */}
@@ -45,13 +55,13 @@ const AttendantLayout = ({ children, pageName }: UserLayoutProps) => {
                 </div>
                 {/* profile */}
                 <div className="font-nunito mt-10">
-                    <User
+                    {/* <User
                         name={`${user.firstName} ${user.middleName} ${user.lastName}`}
                         description={user.role === "attendant" ? "Attendant" : " "}
                         avatarProps={{
-                            src: user.image || "https://i.pravatar.cc/150?u=default" // Fallback to placeholder if no image is provided
+                            src: user.image || "https://i.pravatar.cc/150?u=default"
                         }}
-                    ></User>
+                    ></User> */}
 
                 </div>
                 {/* Side Nav Content */}
@@ -72,7 +82,7 @@ const AttendantLayout = ({ children, pageName }: UserLayoutProps) => {
             </div>
 
             {/* Mobile Side Navigation Bar */}
-            <div className={`h-full lg:hidden z-10  absolute md:hidden w-64 bg-primary bg-opacity-40  text-white backdrop-blur transition-transform duration-500 p-6 ${mobileNavOpen ? "transform-none" : "-translate-x-full"}`}>
+            <div className={`h-[full] lg:hidden z-10  absolute md:hidden w-64 bg-primary bg-opacity-40  text-white backdrop-blur transition-transform duration-500 p-6 ${mobileNavOpen ? "transform-none" : "-translate-x-full"}`}>
                 {/* Side Nav Content */}
                 <button onClick={mobileNavToggle} className="block md:hidden ml-auto lg:hidden">
                     <CloseIcon className="text-danger-300" />
@@ -132,16 +142,34 @@ const AttendantLayout = ({ children, pageName }: UserLayoutProps) => {
 
                     {/* Mode Switch and Logout */}
                     <div className="flex gap-4">
-                        <button>
-                            <LogoutIcon className="text-danger-300" />
-                        </button>
-                        <button onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
-                            {theme === "light" ? (
-                                <SunIcon className="text-white" />
-                            ) : (
-                                <MoonIcon className="text-slate-950" />
-                            )}
-                        </button>
+                        <Dropdown placement="bottom-start">
+                            <DropdownTrigger>
+                                <User
+                                    name={`${user.firstName} ${user.middleName} ${user.lastName}`}
+                                    description={user.role === "attendant" ? "Attendant" : " Admin"}
+                                    avatarProps={{
+                                        src: user.image || "https://i.pravatar.cc/150?u=default"
+                                    }}
+                                ></User>
+
+                            </DropdownTrigger>
+                            <DropdownMenu aria-label="User Actions" variant="flat">
+                                <DropdownItem key="profile" className="h-14 gap-2">
+                                    <p className="font-bold">{user.firstName}</p>
+                                    <p className="font-bold">{user.email}</p>
+                                </DropdownItem>
+                                <DropdownItem
+                                    key="logout"
+                                    color="danger"
+                                    className="flex"
+                                    onClick={() => {
+                                        setIsLogoutConfirmModalOpened(true)
+                                    }}
+                                >
+                                    Logout
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
                     </div>
 
                 </div>
@@ -151,6 +179,24 @@ const AttendantLayout = ({ children, pageName }: UserLayoutProps) => {
                     {children}
                 </div>
             </div>
+
+            <ConfirmModal className="dark:bg-slate-950 border border-white/5" header="Confirm Logout" content="Are you sure to logout?" isOpen={isLogoutConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
+                <div className="flex gap-4">
+                    <Button color="primary" variant="flat" className="font-montserrat font-semibold" size="sm" onPress={handleConfirmModalClosed}>
+                        No
+                    </Button>
+                    <Button color="danger" variant="flat" className="font-montserrat font-semibold " size="sm" onClick={() => {
+                        setIsLogoutConfirmModalOpened(false)
+                        submit({
+                            intent: "logout",
+                        }, {
+                            method: "post"
+                        })
+                    }} >
+                        Yes
+                    </Button>
+                </div>
+            </ConfirmModal>
         </div>
     );
 };
@@ -168,4 +214,24 @@ export const loader: LoaderFunction = async ({ request }) => {
         search_term
     });
 
+    return json({ user })
+
+}
+
+export const action: ActionFunction = async ({ request }) => {
+    const formData = await request.formData();
+    const intent = formData.get("intent") as string;
+
+    switch (intent) {
+        case "logout":
+            const logout = await attendanceDashboardController.logout(intent)
+            return logout
+
+        default:
+            return json({
+                message: "Bad request",
+                success: false,
+                status: 500
+            })
+    }
 }

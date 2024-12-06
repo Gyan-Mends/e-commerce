@@ -206,7 +206,7 @@ const Sales = () => {
                                     <div className="w-full h-full flex justify-center items-center ">
                                         <div>
                                             <img src={emptyCart} className="h-60 w-60" alt="" />
-                                            <p className="font-nunito text-2xl mt-4">No Cart Item Found</p>
+                                            <p className="font-nunito text-2xl">No Cart Item Found</p>
                                         </div>
                                     </div>
 
@@ -369,6 +369,7 @@ const Sales = () => {
                             <input type="hidden" name="quantity" value={quantity} />
                             <input type="hidden" name="attendant" value={user?._id} />
                             <input type="hidden" name="product" value={dataValue?._id} />
+                            <input type="" name="costprice" value={dataValue?.costPrice} />
                             <input type="hidden" name="price" value={dataValue?.price * quantity} />
                             <input type="hidden" name="intent" value="addToCart" />
                             <p className="text-2xl font-nunito">{dataValue?.name}</p>
@@ -408,6 +409,7 @@ export const action: ActionFunction = async ({ request }) => {
     const formData = await request.formData();
     const quantity = formData.get("quantity") as string;
     const product = formData.get("product") as string;
+    const costprice = formData.get("costprice") as string;
     const attendant = formData.get("attendant") as string;
     const price = formData.get("price") as string;
     const intent = formData.get("intent") as string;
@@ -417,16 +419,7 @@ export const action: ActionFunction = async ({ request }) => {
     const totalAmount = formData.get("totalAmount") as string;
 
     switch (intent) {
-        case "addToCart":
-            const cart = await cartController.AddToCart({
-                request,
-                intent,
-                quantity,
-                product,
-                attendant,
-                price,
-            });
-            return cart;
+
 
         case "addCartToSales":
             const addSales = await salesController.AddCartToSales({
@@ -438,8 +431,21 @@ export const action: ActionFunction = async ({ request }) => {
                 totalAmount,
                 amountPaid,
                 balance,
+                costprice,
+                price
             });
             return addSales;
+
+        case "addToCart":
+            const cart = await cartController.AddToCart({
+                request,
+                intent,
+                quantity,
+                product,
+                attendant,
+                price,
+            });
+            return cart;
 
         case "delete":
             const deleteItem = await cartController.DeleteItem({ id, intent, product, quantity });
@@ -461,6 +467,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     });
 
     const { carts, totalQuantity, totalPrice } = await cartController.FetchCart(request);
+    console.log(user);
 
 
     return { products, user, carts, totalQuantity, totalPrice };

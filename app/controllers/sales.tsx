@@ -15,16 +15,20 @@ class SalesController {
     amountPaid,
     balance,
     quantity,
+    costprice,
+    price,
     product,
   }: {
     intent: string;
     request: Request;
     product: string;
+      costprice: string;
     attendant: string;
     totalAmount: string;
     amountPaid: string;
     balance: string;
     quantity: string;
+      price: string;
   }) {
     if (intent === "addCartToSales") {
       try {
@@ -48,8 +52,18 @@ class SalesController {
 
             for (const item of cartItems) {
               const { product: prod, quantity } = item;
-              productsArray.push({ product: prod, quantity });
+
+              if (prod) {
+                const { price, costprice } = prod;
+                productsArray.push({
+                  product: prod,
+                  quantity,
+                  price,
+                  costprice,
+                });
+              }
             }
+
 
 
             const sales = new Sales({
@@ -58,6 +72,7 @@ class SalesController {
               totalAmount,
               amountPaid,
               balance,
+
             });
 
             const addSales = await sales.save();

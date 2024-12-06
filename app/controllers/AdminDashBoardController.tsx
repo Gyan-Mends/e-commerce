@@ -1,0 +1,116 @@
+import { redirect } from "@remix-run/node";
+import moment from "moment"; // Install moment.js for date manipulation
+import Category from "~/modal/category";
+import Product from "~/modal/products";
+import Registration from "~/modal/registration";
+import Sales from "~/modal/sales";
+import Suppliers from "~/modal/suppliers";
+import { commitSession, getSession } from "~/session";
+
+class AdminDashboardController {
+    async getSales({
+        request,
+        page = 1,
+        limit = 8,
+    }: {
+        request?: Request;
+        page?: number;
+        limit?: number;
+    }) {
+        try {
+            const session = await getSession(request.headers.get("Cookie"));
+            const token = session.get("email");
+            const user = await Registration.findOne({ email: token });
+            const productCount = await Product.countDocuments();
+            const usersCount = await Registration.countDocuments();
+            const suppliersCount = await Suppliers.countDocuments();
+            const categoryCount = await Category.countDocuments();
+
+            // Get paginated sales
+            const sales = await Sales.find()
+                .populate("attendant")
+                .sort({ createdAt: -1 })
+                .skip((page - 1) * limit)
+                .limit(limit)
+                .exec();
+
+            // Define date ranges
+            const today = moment().startOf("day").toDate();
+            const thisWeek = moment().startOf("week").toDate();
+            const thisMonth = moment().startOf("month").toDate();
+            const thisYear = moment().startOf("year").toDate();
+            const oneYearAgo = moment().subtract(1, "year").startOf("day").toDate();
+
+            // Aggregations for date ranges
+            const dailySales = await Sales.aggregate([
+                { $match: { createdAt: { $gte: today } } },
+                { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } },
+            ]);
+
+            const weeklySales = await Sales.aggregate([
+                { $match: { createdAt: { $gte: thisWeek } } },
+                { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } },
+            ]);
+
+            const monthlySales = await Sales.aggregate([
+                { $match: { createdAt: { $gte: thisMonth } } },
+                { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } },
+            ]);
+
+            const yearlySales = await Sales.aggregate([
+                { $match: { createdAt: { $gte: thisYear } } },
+                { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } },
+            ]);
+
+            const olderSales = await Sales.aggregate([
+                { $match: { createdAt: { $lt: oneYearAgo } } },
+                { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } },
+            ]);
+
+            // Extract totals
+            const dailyTotal = dailySales[0]?.total || 0;
+            const weeklyTotal = weeklySales[0]?.total || 0;
+            const monthlyTotal = monthlySales[0]?.total || 0;
+            const yearlyTotal = yearlySales[0]?.total || 0;
+            const olderTotal = olderSales[0]?.total || 0;
+
+            // Overall total
+            const totalSalesAmount = await Sales.aggregate([
+                { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } },
+            ]);
+            const totalAmount = totalSalesAmount[0]?.total || 0;
+
+            return {
+                productCount,
+                usersCount,
+                suppliersCount,
+                categoryCount,
+                sales,
+                user,
+                totalAmount,
+                dailyTotal,
+                weeklyTotal,
+                monthlyTotal,
+                yearlyTotal,
+                olderTotal,
+            };
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
+    async logout(intent: string) {
+        if (intent === "logout") {
+            const session = await getSession();
+
+            return redirect("/", {
+                headers: {
+                    "Set-Cookie": await commitSession(session),
+                },
+            });
+        }
+    }
+}
+
+const adminDashboardController = new AdminDashboardController();
+export default adminDashboardController;

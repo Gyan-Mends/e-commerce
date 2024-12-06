@@ -40,77 +40,77 @@ const Sales = () => {
         setIsEditModalOpened(false)
     }
     
-    const generateReceipt = () => {
-        let receipt = `
-    <div className="flex justify-between">
-        <div className="text-default-500 font-nunito text-sm">
-            <p>Receipt No</p>
-            <p>${dataValue?._id}</p>
-        </div>
-        <div className="font-nunito text-default-500 text-sm">
-            <p>Attendant</p>
-            <p>${dataValue?.attendant.firstName} ${dataValue?.attendant.middleName} ${dataValue?.attendant.lastName}</p>
-        </div>
-    </div>
+    //     const generateReceipt = () => {
+    //         let receipt = `
+    //     <div className="flex justify-between">
+    //         <div className="text-default-500 font-nunito text-sm">
+    //             <p>Receipt No</p>
+    //             <p>${dataValue?._id}</p>
+    //         </div>
+    //         <div className="font-nunito text-default-500 text-sm">
+    //             <p>Attendant</p>
+    //             <p>${dataValue?.attendant.firstName} ${dataValue?.attendant.middleName} ${dataValue?.attendant.lastName}</p>
+    //         </div>
+    //     </div>
 
-    <p className="mt-6 font-nunito text-md font-semibold">Product Details</p>
-    <div className="flex justify-between mt-2 text-md text-default-500">
-        <div>
-            <p className="font-nunito font-semibold">Products</p>
-            ${dataValue.products.map((productDetail: SalesInterface, idx: number) => `
-                <div key=${idx}>
-                    <p>${productDetail.product?.name}</p>
-                </div>
-            `).join('')}
-        </div>
-        <div>
-            <p className="font-nunito font-semibold">Quantities</p>
-            ${dataValue.products.map((productDetail: SalesInterface, idx: number) => `
-                <div key=${idx}>
-                    <p>${productDetail.quantity}</p>
-                </div>
-            `).join('')}
-        </div>
-    </div>
+    //     <p className="mt-6 font-nunito text-md font-semibold">Product Details</p>
+    //     <div className="flex justify-between mt-2 text-md text-default-500">
+    //         <div>
+    //             <p className="font-nunito font-semibold">Products</p>
+    //             ${dataValue.products.map((productDetail: SalesInterface, idx: number) => `
+    //                 <div key=${idx}>
+    //                     <p>${productDetail.product?.name}</p>
+    //                 </div>
+    //             `).join('')}
+    //         </div>
+    //         <div>
+    //             <p className="font-nunito font-semibold">Quantities</p>
+    //             ${dataValue.products.map((productDetail: SalesInterface, idx: number) => `
+    //                 <div key=${idx}>
+    //                     <p>${productDetail.quantity}</p>
+    //                 </div>
+    //             `).join('')}
+    //         </div>
+    //     </div>
 
-    <p className="mt-10 font-nunito text-md font-semibold">Payment Details</p>
-    <div className="flex justify-between mt-2">
-        <div className="text-default-500 text-md">
-            <p className="font-nunito font-semibold">Total Amount</p>
-            <p className="font-nunito text-sm">GHC ${dataValue?.totalAmount}</p>
-        </div>
-        <div className="text-default-500 text-md">
-            <p className="font-nunito font-semibold">Amount Paid</p>
-            <p className="font-nunito text-sm">GHC ${dataValue?.amountPaid}</p>
-        </div>
-        <div className="text-default-500 text-md">
-            <p className="font-nunito font-semibold">Balance</p>
-            <p className="font-nunito text-sm">GHC ${dataValue?.balance}</p>
-        </div>
-    </div>
-`;
+    //     <p className="mt-10 font-nunito text-md font-semibold">Payment Details</p>
+    //     <div className="flex justify-between mt-2">
+    //         <div className="text-default-500 text-md">
+    //             <p className="font-nunito font-semibold">Total Amount</p>
+    //             <p className="font-nunito text-sm">GHC ${dataValue?.totalAmount}</p>
+    //         </div>
+    //         <div className="text-default-500 text-md">
+    //             <p className="font-nunito font-semibold">Amount Paid</p>
+    //             <p className="font-nunito text-sm">GHC ${dataValue?.amountPaid}</p>
+    //         </div>
+    //         <div className="text-default-500 text-md">
+    //             <p className="font-nunito font-semibold">Balance</p>
+    //             <p className="font-nunito text-sm">GHC ${dataValue?.balance}</p>
+    //         </div>
+    //     </div>
+    // `;
 
-        return receipt
-    }
+    //         return receipt
+    //     }
 
-    useEffect(() => {
-        const filtered = sales.filter(sale => {
-            const lowerCaseQuery = searchQuery.toLowerCase();
-            return (
-                sale._id.toLowerCase().includes(lowerCaseQuery)
-            );
-        });
-        setFilteredSales(filtered);
-    }, [searchQuery, sales]);
-    useEffect(() => {
-        if (actionData) {
-            if (actionData.success) {
-                successToast(actionData.message)
-            } else {
-                errorToast(actionData.message)
-            }
-        }
-    }, [actionData])
+    // useEffect(() => {
+    //     const filtered = sales.filter(sale => {
+    //         const lowerCaseQuery = searchQuery.toLowerCase();
+    //         return (
+    //             sale._id.toLowerCase().includes(lowerCaseQuery)
+    //         );
+    //     });
+    //     setFilteredSales(filtered);
+    // }, [searchQuery, sales]);
+    // useEffect(() => {
+    //     if (actionData) {
+    //         if (actionData.success) {
+    //             successToast(actionData.message)
+    //         } else {
+    //             errorToast(actionData.message)
+    //         }
+    //     }
+    // }, [actionData])
 
     return (
         <AttendantLayout pageName="Sales Managemwent">
@@ -137,7 +137,7 @@ const Sales = () => {
             </div>
 
             <CustomTable columns={SalesColumns} rowsPerPage={rowsPerPage} onRowsPerPageChange={handleRowsPerPageChange}>
-                {filteredSales.map((sale: SalesInterface, index: number) => (
+                {sales.map((sale: SalesInterface, index: number) => (
                     <TableRow key={index}>
                         <TableCell className="">
                             {sale._id}
@@ -167,7 +167,7 @@ const Sales = () => {
                             >
                                 Refund
                             </Button>
-                            <Button
+                            {/* <Button
                                 size="sm"
                                 color="success"
                                 variant="flat"
@@ -181,11 +181,13 @@ const Sales = () => {
                                 }}
                             >
                                 Print
-                            </Button>
+                            </Button> */}
                         </TableCell>
                     </TableRow>
                 ))}
             </CustomTable>
+
+
 
             {/* <EditModal modalTitle="Refund" className="dark:bg-slate-950 bg-gray-200 border border-white/5" onOpenChange={handleEditModalClosed} isOpen={isEditModalOpened}>
                 {(onClose) => (
@@ -267,7 +269,9 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
-    const { sales } = await salesController.salesFetch({ request });
+    const { sales } = await salesController.getSales({ request });
 
+    console.log(sales);
     return { sales }
+
 }

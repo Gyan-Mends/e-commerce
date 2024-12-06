@@ -300,7 +300,7 @@
 
 
 import { Avatar, Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input, User } from "@nextui-org/react";
-import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
+import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
 import { Link, useLoaderData, useNavigation, useSubmit } from "@remix-run/react";
 import { useTheme } from "next-themes";
 // import useTheme from "next-theme/dist/useTheme";
@@ -318,7 +318,14 @@ import SunIcon from "~/components/icons/SunIcon";
 import SupplierIcon from "~/components/icons/SupplierIcon";
 import UsersGroup from "~/components/icons/UsersGroup";
 import logo from "~/components/illustration/logo.png"
+import cat from "~/components/illustration/categorization.png"
 import ConfirmModal from "~/components/modal/confirmModal";
+import adminDashboardController from "~/controllers/AdminDashBoardController";
+import productsController from "~/controllers/productsController";
+import restocking from "~/controllers/restocking";
+import { RegistrationInterface } from "~/interfaces/interface";
+import { getSession } from "~/session";
+import CatIcon from "~/components/icons/CatIcon";
 
 interface UserLayoutProps {
     children?: ReactNode;
@@ -332,6 +339,10 @@ const AdminLayout = ({ children, pageName }: UserLayoutProps) => {
     const [isLogoutConfirmModalOpened, setIsLogoutConfirmModalOpened] = useState(false)
     const submit = useSubmit()
     const [isLoading, setIsLoading] = useState(false)
+    const { user } = useLoaderData<{
+        user: RegistrationInterface[];
+    }>();
+
     // const { theme, setTheme } = useTheme()
 
     // const { user } = useLoaderData<{ user: { user: string } }>()
@@ -356,61 +367,11 @@ const AdminLayout = ({ children, pageName }: UserLayoutProps) => {
 
     return (
         <div className=" bg-[#191919] h-[100vh] w-full p-8 overflow-y-hidden">
-            <div className="flex justify-between">
+            <div className="flex justify-between ">
                 <div>
                     <p className="font-nunito text-2xl font-bold text-white">
                         Best <span className="text-success">Way</span>
                     </p>
-                </div>
-
-                <div className="flex gap-3 items-center justify-center">
-
-                    <div className="w-20 h-12 rounded-full border border-white/5 flex items-center justify-center">
-                        <NotificationIcon className="text-white" />
-                    </div>
-                    <div className="w-20 h-12 rounded-full border border-white/5 flex items-center justify-center">
-                        <SunIcon className="text-white h-6 w-6" />
-                    </div>
-
-                    <div className=" w-full">
-                        <Dropdown placement="bottom-start">
-                            <DropdownTrigger>
-                                <User
-                                    as="button"
-                                    avatarProps={{
-                                        isBordered: true,
-                                        src: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
-                                    }}
-                                    className="transition-transform text-white font-nunito"
-                                    description="@tonyreichert"
-                                    name="Tony Reichert"
-                                />
-                            </DropdownTrigger>
-                            <DropdownMenu aria-label="User Actions" variant="flat">
-                                <DropdownItem key="profile" className="h-14 gap-2">
-                                    <p className="font-bold">Signed in as</p>
-                                    <p className="font-bold">@tonyreichert</p>
-                                </DropdownItem>
-                                <DropdownItem key="settings">
-                                    My Settings
-                                </DropdownItem>
-                                <DropdownItem key="team_settings">Team Settings</DropdownItem>
-                                <DropdownItem key="analytics">
-                                    Analytics
-                                </DropdownItem>
-                                <DropdownItem key="system">System</DropdownItem>
-                                <DropdownItem key="configurations">Configurations</DropdownItem>
-                                <DropdownItem key="help_and_feedback">
-                                    Help & Feedback
-                                </DropdownItem>
-                                <DropdownItem key="logout" color="danger">
-                                    Log Out
-                                </DropdownItem>
-                            </DropdownMenu>
-                        </Dropdown>
-                    </div>
-
-
                 </div>
             </div>
 
@@ -449,7 +410,7 @@ const AdminLayout = ({ children, pageName }: UserLayoutProps) => {
                     <ul className=" pl-2 flex flex-col gap-2">
                         <Link className="" to="/admin/category">
                             <li className="text-md hover:bg-success  hover:border-r-4 hover:border-r-white hover:bg-opacity-50 hover:text-white font-nunito p-1 rounded-lg hover:rounded-r-lg flex items-center gap-2 transition-all duration-300 ease-in-out text-gray-200">
-                                <SupplierIcon className="text-success h-5 w-5 hover:text-white" />
+                                <CatIcon className="text-green-600 h-5 w-5 hover:text-white" />
                                 Category
                             </li>
                         </Link>
@@ -459,6 +420,22 @@ const AdminLayout = ({ children, pageName }: UserLayoutProps) => {
                             <li className="text-md hover:bg-success  hover:border-r-4 hover:border-r-white hover:bg-opacity-50 hover:text-white font-nunito p-1 rounded-lg hover:rounded-r-lg flex items-center gap-2 transition-all duration-300 ease-in-out text-gray-200">
                                 <ProductIcon className="text-success h-5 w-5 hover:text-white" />
                                 Products
+                            </li>
+                        </Link>
+                    </ul>
+                    <ul className=" pl-2 flex flex-col gap-2">
+                        <Link className="" to="/admin/restocking">
+                            <li className="text-md hover:bg-success  hover:border-r-4 hover:border-r-white hover:bg-opacity-50 hover:text-white font-nunito p-1 rounded-lg hover:rounded-r-lg flex items-center gap-2 transition-all duration-300 ease-in-out text-gray-200">
+                                <ProductIcon className="text-success h-5 w-5 hover:text-white" />
+                                Restocking
+                            </li>
+                        </Link>
+                    </ul>
+                    <ul className=" pl-2 flex flex-col gap-2">
+                        <Link className="" to="/admin/sales">
+                            <li className="text-md hover:bg-success  hover:border-r-4 hover:border-r-white hover:bg-opacity-50 hover:text-white font-nunito p-1 rounded-lg hover:rounded-r-lg flex items-center gap-2 transition-all duration-300 ease-in-out text-gray-200">
+                                <ProductIcon className="text-success h-5 w-5 hover:text-white" />
+                                Sales
                             </li>
                         </Link>
                     </ul>
@@ -510,9 +487,65 @@ const AdminLayout = ({ children, pageName }: UserLayoutProps) => {
             <div className={`h-full p-4 transition-all duration-500 overflow-x-hidden  z-1 ${desktopNav ? "lg:ml-64 md:ml-64" : ""}`}>
                 {/* Main Content */}
                 <div className="">
+                    <div className="flex gap-3 items-center justify-center bg-[#333] h-16 rounded-xl  px-10 ">
+
+                        <div className="flex justify-between items-center w-full">
+                            <div>
+                                <p className="text-white text-xl">{pageName}</p>
+                            </div>
+                            <Dropdown placement="bottom-start">
+                                <DropdownTrigger>
+                                    <User
+                                        name={`${user.firstName} ${user.middleName} ${user.lastName}`}
+                                        description={user.role === "attendant" ? "Attendant" : " Admin"}
+                                        avatarProps={{
+                                            src: user.image || "https://i.pravatar.cc/150?u=default"
+                                        }}
+                                    ></User>
+
+                                </DropdownTrigger>
+                                <DropdownMenu aria-label="User Actions" variant="flat">
+                                    <DropdownItem key="profile" className="h-14 gap-2">
+                                        <p className="font-bold">{user.firstName}</p>
+                                        <p className="font-bold">{user.email}</p>
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        key="logout"
+                                        color="danger"
+                                        className="flex"
+                                        onClick={() => {
+                                            setIsLogoutConfirmModalOpened(true)
+                                        }}
+                                    >
+                                        Logout
+                                    </DropdownItem>
+                                </DropdownMenu>
+                            </Dropdown>
+                        </div>
+
+
+                    </div>
                     {children}
                 </div>
             </div>
+
+            <ConfirmModal className="dark:bg-slate-950 border border-white/5" header="Confirm Logout" content="Are you sure to logout?" isOpen={isLogoutConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
+                <div className="flex gap-4">
+                    <Button color="primary" variant="flat" className="font-montserrat font-semibold" size="sm" onPress={handleConfirmModalClosed}>
+                        No
+                    </Button>
+                    <Button color="danger" variant="flat" className="font-montserrat font-semibold " size="sm" onClick={() => {
+                        setIsLogoutConfirmModalOpened(false)
+                        submit({
+                            intent: "logout",
+                        }, {
+                            method: "post"
+                        })
+                    }} >
+                        Yes
+                    </Button>
+                </div>
+            </ConfirmModal>
 
         </div>
     );
@@ -520,27 +553,48 @@ const AdminLayout = ({ children, pageName }: UserLayoutProps) => {
 
 export default AdminLayout;
 
-// export const action: ActionFunction = async ({ request }) => {
-//     const formData = await request.formData();
-//     const intent = formData.get("intent") as string;
+export const action: ActionFunction = async ({ request }) => {
+    const formData = await request.formData();
+    const intent = formData.get("intent") as string;
 
-//     switch (intent) {
-//         case "logout":
-//             const logout = await usersController.logout(intent)
-//             return logout
+    switch (intent) {
+        case "logout":
+            const logout = await adminDashboardController.logout(intent)
+            return logout
 
-//         default:
-//             return json({
-//                 message: "Bad request",
-//                 success: false,
-//                 status: 500
-//             })
-//     }
-// }
+        default:
+            return json({
+                message: "Bad request",
+                success: false,
+                status: 500
+            })
+    }
+}
+export const loader: LoaderFunction = async ({ request }) => {
+    const url = new URL(request.url);
+    const page = parseInt(url.searchParams.get("page") as string) || 1;
+    const search_term = url.searchParams.get("search_term") || "";
+    const low_stock = url.searchParams.get("low_stock") === "true"; // Check for 'low_stock' query parameter
 
-// export const loader: LoaderFunction = async () => {
-//     const { user } = await usersController.FetchUsers()
+    const session = await getSession(request.headers.get("Cookie"));
+    const token = session.get("email");
+    if (!token) return redirect("/");
+    const { user } = await productsController.FetchProducts({
+        request,
+        page,
+        search_term
+    });
 
-//     return { user }
-// }
+
+    const { totalProductsCount } = await restocking.FetchProducts({
+        request,
+        page,
+        search_term,
+        limit: 10, // Adjust limit as needed
+        low_stock, // Pass the low_stock flag
+    });
+
+    return json({ totalProductsCount, user });
+};
+
 

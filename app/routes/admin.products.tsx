@@ -73,25 +73,22 @@ const Products = () => {
 
     return (
         <AdminLayout pageName="Products">
-            <div className="flex z-0 justify-between gap-2 overflow-y-hidden">
+            <div className="flex z-0 mt-6 justify-between gap-2 overflow-y-hidden">
                 <Toaster position="top-right" />
                 <div className="flex items-center justify-center gap-2">
                     {/* back */}
                     {/* back */}
-                    <Skeleton isLoaded={isLoading} className="rounded-xl">
-                        <Button size="md" onClick={() => {
+                    <Button size="sm" onClick={() => {
                             navigate(-1)
-                        }} color="primary" className="font-nunito text-sm border border-white/5 border-b-white dark:border-primary  dark:border-b-primary dark:text-priamry dark:bg-slate-950">
-                            <BackIcon className="h-[20px] w-[20px] dark:text-primary" /><p className="dark:text-primary">Back</p>
-                        </Button>
-                    </Skeleton>
+                    }} color="primary" className="font-nunito text-sm  border-b-white dark:border-primary  dark:text-white dark:bg-[#333]">
+                        <BackIcon className="h-[20px] w-[20px] dark:text-success" /><p >Back</p>
+                    </Button>
                 </div>
                 <div className="flex gap-4">
                     {/* search */}
                     {/* search */}
-                    <Skeleton isLoaded={isLoading} className="rounded-xl">
                         <Input
-                            size="lg"
+                        size="sm"
                             placeholder="Search user..."
                             startContent={<SearchIcon className="" />}
                             onValueChange={(value) => {
@@ -100,19 +97,19 @@ const Products = () => {
                                 }, 100);
                                 return () => clearTimeout(timeoutId);
                             }} classNames={{
-                                inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border-white/5 border-b-primary",
+                                inputWrapper: "bg-white shadow-sm text-sm font-nunito dark:bg-[#333] border border-white/5 ",
                             }}
-                        />
-                    </Skeleton>
+                    />
                     {/* button to add new user */}
                     {/* button to add new user */}
-                    <Skeleton isLoaded={isLoading} className="rounded-xl">
-                        <Button size="lg" variant="flat" onClick={() => {
+                    <Button size="sm"
+                        variant="flat"
+                        onClick={() => {
                             setCreateModalOpened(true)
-                        }} color="primary" className="font-montserrat font-semibold text-sm">
-                            <PlusIcon className="h-6 w-6" />Add Product
-                        </Button>
-                    </Skeleton>
+                        }}
+                        className="font-nunito dark:bg-[#333]  text-sm px-8">
+                        <PlusIcon className="" /> Add Product
+                    </Button>
                 </div>
             </div>
 
@@ -175,10 +172,10 @@ const Products = () => {
                             labelPlacement="outside"
                             classNames={{
                                 label: "font-nunito text-sm text-default-100",
-                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 "
+                                inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-white/30 focus:bg-[#333] "
                             }}
                         />
-                        <div className="flex gap-10">
+                        <div className="flex gap-10 mt-4">
 
                             <Input
                                 label="Cost Price(GHC)"
@@ -191,7 +188,7 @@ const Products = () => {
                                 labelPlacement="outside"
                                 classNames={{
                                     label: "font-nunito text-sm text-default-100",
-                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
+                                    inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-white/30 focus:bg-[#333] "
                                 }}
                             />
                             <Input
@@ -204,7 +201,7 @@ const Products = () => {
                                 labelPlacement="outside"
                                 classNames={{
                                     label: "font-nunito text-sm text-default-100",
-                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
+                                    inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-white/30 focus:bg-[#333] "
                                 }}
                             />
                         </div>
@@ -218,8 +215,8 @@ const Products = () => {
                                 className="mt-4"
                                 name="category"
                                 classNames={{
-                                    trigger: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4",
-                                    popoverContent: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 "
+                                    trigger: "bg-white shadow-sm dark:bg-[#333] border border-white/30 focus:bg-[#333] mt-4",
+                                    popoverContent: "bg-white shadow-sm dark:bg-[#191919] border border-white/5 focus:bg-slate-900 "
                                 }}
 
                             >
@@ -232,7 +229,7 @@ const Products = () => {
                             </Select>
                         </div>
 
-                        <div className="flex gap-10">
+                        <div className="flex gap-10 mt-4">
                             <Input
                                 label="Quantity"
                                 name="quantity"
@@ -244,7 +241,7 @@ const Products = () => {
                                 labelPlacement="outside"
                                 classNames={{
                                     label: "font-nunito text-sm text-default-100",
-                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
+                                    inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-white/30 focus:bg-[#333] "
                                 }}
                             />
                             <Input
@@ -258,7 +255,7 @@ const Products = () => {
                                 labelPlacement="outside"
                                 classNames={{
                                     label: "font-nunito text-sm text-default-100",
-                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
+                                    inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-white/30 focus:bg-[#333] "
                                 }}
                             />
                         </div>
@@ -269,7 +266,7 @@ const Products = () => {
                                 name="image"
                                 required
                                 placeholder=" "
-                                className="bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900  w-full h-10 rounded-lg"
+                                className="bg-white shadow-sm dark:bg-[#333] border border-white/30 focus:bg-[#333]  w-full h-10 rounded-lg"
                                 type="file"
                                 onChange={(event: any) => {
                                     const file = event.target.files[0];
@@ -293,7 +290,7 @@ const Products = () => {
                             name="description"
                             className="mt-4 font-nunito text-sm"
                             classNames={{
-                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 "
+                                inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-white/30 focus:bg-[#333] "
                             }}
                         />
                         <input name="intent" value="create" type="hidden" />
@@ -342,10 +339,10 @@ const Products = () => {
                             labelPlacement="outside"
                             classNames={{
                                 label: "font-nunito text-sm text-default-100",
-                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
+                                inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-white/30 focus:bg-[#333] "
                             }}
                         />
-                        <div className="flex gap-10">
+                        <div className="flex gap-10 mt-4">
 
                             <Input
                                 label="Cost Price(GHC)"
@@ -359,7 +356,7 @@ const Products = () => {
                                 labelPlacement="outside"
                                 classNames={{
                                     label: "font-nunito text-sm text-default-100",
-                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
+                                    inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-white/30 focus:bg-[#333] "
                                 }}
                             />
                             <Input
@@ -373,7 +370,7 @@ const Products = () => {
                                 labelPlacement="outside"
                                 classNames={{
                                     label: "font-nunito text-sm text-default-100",
-                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
+                                    inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-white/30 focus:bg-[#333] "
                                 }}
                             />
                         </div>
@@ -387,8 +384,8 @@ const Products = () => {
                                 className="mt-4"
                                 name="category"
                                 classNames={{
-                                    trigger: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 ",
-                                    popoverContent: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 "
+                                    trigger: "bg-white shadow-sm dark:bg-[#333] border border-white/30 focus:bg-[#333] ",
+                                    popoverContent: "bg-white shadow-sm dark:bg-[#191919] border border-white/5 focus:bg-[#333] "
                                 }}
 
                             >
@@ -401,7 +398,7 @@ const Products = () => {
                             </Select>
                         </div>
 
-                        <div className="flex gap-10">
+                        <div className="flex gap-10 mt-4">
                             {/* image */}
                             <Input
                                 label="Quantity"
@@ -415,7 +412,7 @@ const Products = () => {
                                 labelPlacement="outside"
                                 classNames={{
                                     label: "font-nunito text-sm text-default-100",
-                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
+                                    inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-white/30 focus:bg-[#333] "
                                 }}
                             />
                             <Input
@@ -430,18 +427,18 @@ const Products = () => {
                                 labelPlacement="outside"
                                 classNames={{
                                     label: "font-nunito text-sm text-default-100",
-                                    inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 mt-4"
+                                    inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-white/30 focus:bg-[#333] "
                                 }}
                             />
                         </div>
 
-                        <div className="pt-2">
+                        <div className="pt-2 mt-4">
                             <label className="font-nunito " htmlFor="">Image</label>
                             <input
                                 name="image"
                                 required
                                 placeholder=" "
-                                className="bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900  w-full h-12 rounded-lg"
+                                className="bg-white shadow-sm dark:bg-[#333] border border-white/30 focus:bg-[#333] w-full h-12 rounded-lg"
                                 type="file"
 
                                 onChange={(event: any) => {
@@ -467,7 +464,7 @@ const Products = () => {
                             className="mt-4 font-nunito text-sm"
                             defaultValue={selectedProducts?.description}
                             classNames={{
-                                inputWrapper: "bg-white shadow-sm dark:bg-slate-900 border border-white/5 focus:bg-slate-900 "
+                                inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-white/30 focus:bg-[#333] "
                             }}
                         />
                         <input name="intent" value="updateProduct" type="hidden" />
@@ -579,6 +576,7 @@ export const loader: LoaderFunction = async ({ request }) => {
         request,
         search_term
     })
+
 
     return json({ user, products, totalPages, categories })
 

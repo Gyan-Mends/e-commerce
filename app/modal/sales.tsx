@@ -12,6 +12,9 @@ const SalesSchema = new mongoose.Schema({
     quantity:{
         type:Number,
         required:true
+    },
+    costPrice: {
+      type: Number,
     }
   }],
   attendant: {

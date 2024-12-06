@@ -66,7 +66,7 @@ const Suppliers = () => {
 
     return (
         <AdminLayout pageName="Supliers Management">
-            <div className="flex z-0 justify-between gap-2 overflow-y-hidden">
+            <div className="flex z-0 mt-6 justify-between gap-2 overflow-y-hidden">
                 <Toaster position="top-right" />
                 <div className="flex items-center justify-center gap-2">
                     {/* back */}
@@ -172,7 +172,7 @@ const Suppliers = () => {
 
             {/* Create Modal */}
             <EditModal
-                className="dark:bg-slate-950 border border-white/5 bg-gray-200"
+                className="border border-white/5 bg-gray-200"
                 modalTitle="Update user details"
                 isOpen={isEditModalOpened}
                 onOpenChange={handleEditModalClosed}
@@ -189,7 +189,7 @@ const Suppliers = () => {
                             type="text"
                             labelPlacement="outside"
                             classNames={{
-                                inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
+                                inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-[#333] border border border-white/30 mt-4",
                             }}
                         />
                         <div className="flex gap-4">
@@ -202,7 +202,7 @@ const Suppliers = () => {
                                 type="text"
                                 labelPlacement="outside"
                                 classNames={{
-                                    inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
+                                    inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-[#333] border border border-white/30 mt-4",
                                 }}
                             />
                             <Input
@@ -215,7 +215,7 @@ const Suppliers = () => {
                                 type="text"
                                 labelPlacement="outside"
                                 classNames={{
-                                    inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
+                                    inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-[#333] border border border-white/30 mt-4",
                                 }}
                             />
                         </div>
@@ -229,7 +229,7 @@ const Suppliers = () => {
                             type="text"
                             labelPlacement="outside"
                             classNames={{
-                                inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
+                                inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-[#333] border border border-white/30 mt-4",
                             }}
                         />
                         <div className="flex gap-4">
@@ -243,7 +243,7 @@ const Suppliers = () => {
                                 type="text"
                                 labelPlacement="outside"
                                 classNames={{
-                                    inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-slate-900 border border border-white/5 mt-4",
+                                    inputWrapper: "bg-white shadow-sm text-xs font-nunito dark:bg-[#333] border border border-white/30 mt-4",
                                 }}
                             />
 

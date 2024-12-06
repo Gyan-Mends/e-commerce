@@ -73,7 +73,7 @@ const Users = () => {
 
     return (
         <AdminLayout pageName="Users Management">
-            <div className="flex z-0 justify-between gap-2 overflow-y-hidden">
+            <div className="flex z-0 mt-6 justify-between gap-2 overflow-y-hidden">
                 <Toaster position="top-right" />
                 <div className="flex items-center justify-center gap-2">
                     {/* back */}

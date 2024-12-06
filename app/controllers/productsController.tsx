@@ -41,7 +41,7 @@ class ProductsController {
                     costPrice
                 })
 
-                if (low_stock >= quantity) {
+                if (Number(low_stock) >= Number(quantity)) {
                     return json({ message: "Low stock must be less than quantity", success: false }, { status: 400 })
                 } else if (price < costPrice) {
                     return json({ message: "Runnig at loss, selling price must be equal to or more than cost price", success: false }, { status: 400 })
@@ -214,7 +214,7 @@ class ProductsController {
             const token = session.get("email");
             const user = await Registration.findOne({ email: token });
     
-            // Get total employee count and calculate total pages       
+
             const totalProductsCount = await Product.countDocuments(searchFilter).exec();
             const totalPages = Math.ceil(totalProductsCount / limit);
     

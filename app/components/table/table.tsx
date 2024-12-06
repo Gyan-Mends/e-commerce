@@ -26,8 +26,8 @@ export default function CustomTable({ columns, children, rowsPerPage, onRowsPerP
             <Table className="mt-6 " aria-label="Example table with custom cells"
                 classNames={{
                     wrapper:
-                        "dark:bg-slate-900 vertical-scrollbar horizontal-scrollbar shadow-none bg-white rounded-2xl dark:border border-white/5",
-                    th: "dark:bg-slate-800",
+                        "dark:bg-[#333] vertical-scrollbar horizontal-scrollbar shadow-none bg-white rounded-2xl dark:border border-white/5",
+                    th: "dark:bg-[#191919]",
                     td: "font-nunito text-xs text-slate-500 dark:text-slate-200 ",
                 }}
             >

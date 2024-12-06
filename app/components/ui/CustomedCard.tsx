@@ -3,7 +3,7 @@ import ProductIcon from "../icons/ProductsIcon";
 
 type Prop = {
     title?: string;
-    total?: string;
+    total?: number;
     icon?: ReactNode
 };
 
@@ -16,7 +16,7 @@ const CustomedCard = ({ title, total, icon }: Prop) => {
             </div>
             <div className="flex gap-2 items-center">
                 {icon}
-                <p className="font-nunito font-semibold text-xl text-white">{total}</p>
+                <p className="font-nunito font-semibold text-md text-white">{total}</p>
             </div>
         </div>
     );

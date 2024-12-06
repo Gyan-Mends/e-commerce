@@ -42,16 +42,23 @@ export interface ProductInterface {
     description: string
     seller: string
 }
+export interface RestockInterface {
+    _id: string,
+    quantity: number,
+    description: string
+}
 export interface CartInterface {
     _id: string,
-    product: string,
-    attendant: string,
+    name: string,
     quantity: string,
-    price: string,
+    new_stock: string,
+    user: string,
+    product: string
 }
 export interface SalesInterface {
     _id:string
     product: ProductInterface;
+    costPrice: ProductInterface;
     quantity: number;
     attendant: RegistrationInterface;
     totalAmount: string;

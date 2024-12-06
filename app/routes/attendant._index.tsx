@@ -1,97 +1,101 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import AdminLayout from "~/layout/adminLayout";
-import { LoaderFunction, redirect } from '@remix-run/node';
-import { getSession } from '~/session';
-import ProductIcon from '~/components/icons/ProductsIcon';
-import CustomedCard from '~/components/ui/CustomedCard';
-import Attendant from '~/layout/attendantLayout';
-import productsController from '~/controllers/productsController';
-
+import { json, LoaderFunction } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import { Button, Calendar, TableCell, TableRow } from "@nextui-org/react";
+import Attendant from "~/layout/attendantLayout";
+import attendanceDashboardController from "~/controllers/AttendanceDashBoardController";
+import CustomedCard from "~/components/ui/CustomedCard";
+import ProductIcon from "~/components/icons/ProductsIcon";
+import CustomTable from "~/components/table/table";
+import { SalesColumns } from "~/components/table/columns";
+import { SalesInterface } from "~/interfaces/interface";
+import { today, getLocalTimeZone } from "@internationalized/date";
+import productsController from "~/controllers/productsController";
 
 
 const Admin = () => {
-    const [loading, setLoading] = useState(true);
+    const { sales, counts } = useLoaderData<{
+        sales: SalesInterface[];
+        counts: { daily: number; weekly: number; monthly: number; yearly: number };
+    }>();
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [isLoading, setIsLoading] = useState(true);
 
-
-    const [rowsPerPage, setRowsPerPage] = useState(8)
-    const [isLoading, setIsLoading] = useState(false)
     const handleRowsPerPageChange = (newRowsPerPage: number) => {
-        setRowsPerPage(newRowsPerPage)
-    }
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setIsLoading(true);
-        }, 1000);
-        return () => clearTimeout(timer); 
-    }, []);
+        setRowsPerPage(newRowsPerPage);
+    };
 
+    useEffect(() => {
+        const timer = setTimeout(() => setIsLoading(false), 1000);
+        return () => clearTimeout(timer);
+    }, []);
 
     return (
         <Attendant pageName="Dashboard">
-            <div className='mt-6 lg:grid lg:grid-cols-4 gap-4'>
+            {/* Statistics Cards */}
+            <div className="mt-6 lg:grid lg:grid-cols-4 gap-4">
                 <CustomedCard
-                    title='Total Product'
-                    total='445'
-                    icon={
-                        <ProductIcon className="h-[20px] w-[20px] text-success" />
-                    }
+                    title="Daily Sales"
+                    total={counts.daily}
+                    icon={<ProductIcon className="h-[20px] w-[20px] text-success" />}
                 />
                 <CustomedCard
-                    title='Total Product'
-                    total='445'
-                    icon={
-                        <ProductIcon className="h-[20px] w-[20px] text-success" />
-                    }
+                    title="Weekly Sales"
+                    total={counts.weekly}
+                    icon={<ProductIcon className="h-[20px] w-[20px] text-success" />}
                 />
                 <CustomedCard
-                    title='Total Product'
-                    total='445'
-                    icon={
-                        <ProductIcon className="h-[20px] w-[20px] text-success" />
-                    }
+                    title="Monthly Sales"
+                    total={counts.monthly}
+                    icon={<ProductIcon className="h-[20px] w-[20px] text-success" />}
                 />
                 <CustomedCard
-                    title='Total Product'
-                    total='445'
-                    icon={
-                        <ProductIcon className="h-[20px] w-[20px] text-success" />
-                    }
+                    title="Yearly Sales"
+                    total={counts.yearly}
+                    icon={<ProductIcon className="h-[20px] w-[20px] text-success" />}
                 />
             </div>
 
-            <div className='mt-4 lg:grid lg:grid-cols-2 gap-4'>
-                {/* chart */}
-                <div>
-                    <div className='h-[54vh] py-4 px-2  bg-[#333] shadow-md rounded-xl border border-black/5 dark:bg-[#333] dark:border-white/5 flex justify-between mt-2'>
-                        <p className='font-nunito text-white'>Graph</p>
-                    </div>
+            {/* Recent Sales Table */}
+            <div className="mb-5 grid grid-cols-3 gap-10">
+                <div className="col-span-2 px-2  shadow-md rounded-xl border border-black/5 dark:bg-[#333] dark:border-white/5 mt-6">
+                    <CustomTable
+                        columns={SalesColumns}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleRowsPerPageChange}
+                    >
+                        {sales.map((sale: SalesInterface, index: number) => (
+                            <TableRow key={index}>
+                                <TableCell>{sale._id}</TableCell>
+                                <TableCell>
+                                    {sale?.attendant?.firstName} {sale?.attendant?.middleName}
+                                </TableCell>
+                                <TableCell>GHC {sale?.totalAmount}</TableCell>
+                                <TableCell>GHC {sale?.amountPaid}</TableCell>
+                                <TableCell>GHC {sale?.balance}</TableCell>
+                                <TableCell className="relative flex items-center gap-4">
+                                    <Button
+                                        size="sm"
+                                        color="success"
+                                        variant="flat"
+                                        onClick={() => {
+                                            // Refund logic
+                                        }}
+                                    >
+                                        Refund
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </CustomTable>
                 </div>
-
-                <div className='flex flex-col gap-2'>
-                    <div className='lg:grid lg:grid-cols-2 gap-6'>
-                        {/* Calender */}
-                        <div>
-                            <div className='h-[25vh] py-4 px-10  bg-[#333] shadow-md rounded-xl border border-white/5  dark:bg-[#333] dark:border-white/5 flex justify-between mt-2'>
-
-                            </div>
-                        </div>
-                        <div>
-                            <div className='h-[25vh] py-4 px-10 bg-[#333] shadow-md rounded-xl border border-white/5  dark:bg-[#333] dark:border-white/5 flex justify-between mt-2'>
-
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <div className='h-[26vh] py-2 px-4  bg-[#333] shadow-md rounded-xl border border-white/5  dark:bg-[#333] dark:border-white/5 mt-2'>
-                            <p className='font-nunito text-white'>Recent Sales</p>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className='mb-5'>
-                <div className='h-[54vh] py-4 px-2  bg-[#333] shadow-md rounded-xl border border-black/5 dark:bg-[#333] dark:border-white/5  mt-6 '>
-                    <p className='font-nunito text-white'>Table</p>
+                <div className="border h-[50vh] border-black/5 dark:bg-[#333] dark:border-white/5 mt-6">
+                    <Calendar
+                        aria-label="Date (Min Date Value)"
+                        defaultValue={today(getLocalTimeZone())}
+                        minValue={today(getLocalTimeZone())}
+                    />
                 </div>
             </div>
         </Attendant>
@@ -102,18 +106,18 @@ export default Admin;
 
 export const loader: LoaderFunction = async ({ request }) => {
     const url = new URL(request.url);
-    const page = parseInt(url.searchParams.get("page") as string) || 1;
-    const search_term = url.searchParams.get("search_term") as string
-
+    const page = parseInt(url.searchParams.get("page") || "1", 10);
     const { user } = await productsController.FetchProducts({
         request,
         page,
-        search_term
     });
 
-    return { user }
 
-}
+    const { sales, counts } = await attendanceDashboardController.getSales({
+        request,
+        page,
+        limit: 10, // Fetch 10 sales per page
+    });
 
-
-
+    return { sales, counts, user };
+};
