@@ -1,5 +1,5 @@
 import { Button, Input } from "@nextui-org/react";
-import { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
 import { Form, useActionData, useLoaderData, useNavigate, useSubmit } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
@@ -17,6 +17,8 @@ import salesController from "~/controllers/sales";
 import { CartInterface, ProductInterface, RegistrationInterface } from "~/interfaces/interface";
 import AttendantLayout from "~/layout/attendantLayout";
 import emptyCart from "~/components/illustration/Empty-pana.png";
+import usersController from "~/controllers/Users";
+import { getSession } from "~/session";
 
 const Sales = () => {
     const { products, user, carts, totalQuantity, totalPrice } = useLoaderData<{
@@ -419,8 +421,6 @@ export const action: ActionFunction = async ({ request }) => {
     const totalAmount = formData.get("totalAmount") as string;
 
     switch (intent) {
-
-
         case "addCartToSales":
             const addSales = await salesController.AddCartToSales({
                 intent,
@@ -446,6 +446,9 @@ export const action: ActionFunction = async ({ request }) => {
                 price,
             });
             return cart;
+        case "logout":
+            const logout = await usersController.logout(intent)
+            return logout
 
         case "delete":
             const deleteItem = await cartController.DeleteItem({ id, intent, product, quantity });
@@ -459,6 +462,12 @@ export const loader: LoaderFunction = async ({ request }) => {
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get("page") as string) || 1;
     const search_term = url.searchParams.get("search_term") as string
+
+    const session = await getSession(request.headers.get("Cookie"));
+    const token = session.get("email");
+    if (!token) {
+        return redirect("/")
+    }
 
     const { products, user } = await productsController.FetchProducts({
         request,

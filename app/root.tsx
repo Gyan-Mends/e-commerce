@@ -10,6 +10,7 @@ import {
 } from "@remix-run/react";
 import { NextUIProvider } from "@nextui-org/react";
 import { ThemeProvider } from "next-themes";
+
 import styles from "~/style.css";
 
 
@@ -33,7 +34,7 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <ThemeProvider defaultTheme="dark" attribute="class">
+        <ThemeProvider defaultTheme="light" attribute="class">
           <NextUIProvider>
             <Outlet />
           </NextUIProvider>

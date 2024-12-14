@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import AdminLayout from "~/layout/adminLayout";
-import { json, LoaderFunction, redirect } from '@remix-run/node';
+import { ActionFunction, json, LoaderFunction, redirect } from '@remix-run/node';
 import { getSession } from '~/session';
 import ProductIcon from '~/components/icons/ProductsIcon';
 import CustomedCard from '~/components/ui/CustomedCard';
@@ -13,6 +13,10 @@ import CustomTable from '~/components/table/table';
 import { SalesColumns } from '~/components/table/columns';
 import { Button, TableCell, TableRow } from '@nextui-org/react';
 import productsController from '~/controllers/productsController';
+import SupplierIcon from '~/components/icons/SupplierIcon';
+import CategoryIcon from '~/components/icons/CatIcon';
+import SaleIcon from '~/components/icons/Sales';
+import SalesIcon from '~/components/icons/SalesIcon';
 
 
 
@@ -33,6 +37,7 @@ const Admin = () => {
         monthlyTotal,
         yearlyTotal,
         olderTotal,
+        total, totalAfterSales, totalProfitAfterSales
     } = useLoaderData<{
         user: RegistrationInterface[];
         productCount: number;
@@ -45,6 +50,7 @@ const Admin = () => {
         monthlyTotal: number;
         yearlyTotal: number;
         olderTotal: number;
+        total: number, totalAfterSales: number, totalProfitAfterSales: number
     }>(); const handleRowsPerPageChange = (newRowsPerPage: number) => {
         setRowsPerPage(newRowsPerPage)
     }
@@ -93,7 +99,7 @@ const Admin = () => {
                         title='Total Suppliers'
                         total={suppliersCount}
                     icon={
-                        <ProductIcon className="h-[20px] w-[20px] text-success" />
+                        <SupplierIcon className="h-[20px] w-[20px] text-success" />
                     }
                 />
                 </Link>
@@ -102,7 +108,7 @@ const Admin = () => {
                         title=' Categories'
                         total={categoryCount}
                     icon={
-                        <ProductIcon className="h-[20px] w-[20px] text-success" />
+                        <CategoryIcon className="h-[20px] w-[20px] text-success" />
                     }
                 />
                 </Link>
@@ -136,9 +142,24 @@ const Admin = () => {
                 </div>
 
                 <div className='flex flex-col gap-2 '>
-                    <div>
-                        <div className='h-[26vh] py-2 px-4  bg-[#333] shadow-md rounded-xl border border-white/5  dark:bg-[#333] dark:border-white/5 mt-2'>
-                            <p className='font-nunito text-white'>Recent Sales</p>
+                    <div className='grid grid-cols-3 gap-4'>
+                        <div className='h-[26vh] py-2 px-4 flex flex-col gap-4  bg-[#333] shadow-md rounded-xl border border-white/5  dark:bg-[#333] dark:border-white/5 mt-2'>
+                            <p className='font-nunito text-white'>Total Amount </p>
+                            <SaleIcon className="h-[20px] w-[20px] text-success" />
+                            <p className='font-nunito text-white'>GHC {total}</p>
+
+                        </div>
+                        <div className='h-[26vh] py-2 px-4 flex flex-col gap-4 bg-[#333] shadow-md rounded-xl border border-white/5  dark:bg-[#333] dark:border-white/5 mt-2'>
+                            <p className='font-nunito text-white'>Amount After Sales</p>
+                            <SaleIcon className="h-[20px] w-[20px] text-success" />
+                            <p className='font-nunito text-white'>GHC {totalAfterSales}</p>
+
+                        </div>
+                        <div className='h-[26vh] py-2 px-4 flex flex-col gap-4 bg-[#333] shadow-md rounded-xl border border-white/5  dark:bg-[#333] dark:border-white/5 mt-2'>
+                            <p className='font-nunito text-white'>Profit After Sales</p>
+                            <SaleIcon className="h-[20px] w-[20px] text-success" />
+                            <p className='font-nunito text-white'>GHC {totalProfitAfterSales}</p>
+
 
                         </div>
                     </div>
@@ -149,7 +170,7 @@ const Admin = () => {
                                     title='Daily Sales'
                                     total={"GHC " + dailyTotal}
                                     icon={
-                                        <ProductIcon className="h-[20px] w-[20px] text-success" />
+                                        <SaleIcon className="h-[20px] w-[20px] text-success" />
                                     }
                                 />
                             </Link>
@@ -158,7 +179,7 @@ const Admin = () => {
                                     title='Weekly Sales'
                                     total={"GHC " + weeklyTotal}
                                     icon={
-                                        <UserIcon className="h-[20px] w-[20px] text-success" />
+                                        <SalesIcon className="h-[20px] w-[20px] text-success" />
                                     }
                                 />
                             </Link>
@@ -169,7 +190,7 @@ const Admin = () => {
                                     title='Monthly Sales'
                                     total={"GHC " + monthlyTotal}
                                     icon={
-                                        <ProductIcon className="h-[20px] w-[20px] text-success" />
+                                        <SalesIcon className="h-[20px] w-[20px] text-success" />
                                     }
                                 />
                             </Link>
@@ -178,7 +199,7 @@ const Admin = () => {
                                     title='Yearly Sales'
                                     total={"GHC " + yearlyTotal}
                                     icon={
-                                        <UserIcon className="h-[20px] w-[20px] text-success" />
+                                        <SalesIcon className="h-[20px] w-[20px] text-success" />
                                     }
                                 />
                             </Link>
@@ -231,6 +252,12 @@ export const loader: LoaderFunction = async ({ request }) => {
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get("page") || "1", 10);
 
+    const session = await getSession(request.headers.get("Cookie"));
+    const token = session.get("email");
+    if (!token) {
+        return redirect("/")
+    }
+
     // Fetch the sales data and totals
     const {
         productCount,
@@ -239,10 +266,10 @@ export const loader: LoaderFunction = async ({ request }) => {
         categoryCount,
         sales,
         dailyTotal,
-        weeklyTotal,  // Add the weeklyTotal
-        monthlyTotal, // Add the monthlyTotal
-        yearlyTotal,  // Add the yearlyTotal
-        olderTotal    // Add the olderTotal
+        weeklyTotal,
+        monthlyTotal,
+        yearlyTotal,
+        olderTotal, total, totalAfterSales, totalProfitAfterSales   
     } = await adminDashboardController.getSales({
         request,
         page,
@@ -267,9 +294,29 @@ export const loader: LoaderFunction = async ({ request }) => {
         weeklyTotal,  // Return the weeklyTotal
         monthlyTotal, // Return the monthlyTotal
         yearlyTotal,  // Return the yearlyTotal
-        olderTotal    // Return the olderTotal
+        olderTotal,    // Return the olderTotal
+        total, totalAfterSales, totalProfitAfterSales
     });
 };
+
+
+export const action: ActionFunction = async ({ request }) => {
+    const formData = await request.formData();
+    const intent = formData.get("intent") as string;
+
+    switch (intent) {
+        case "logout":
+            const logout = await adminDashboardController.logout(intent)
+            return logout
+
+        default:
+            return json({
+                message: "Bad request",
+                success: false,
+                status: 500
+            })
+    }
+}
 
 
 

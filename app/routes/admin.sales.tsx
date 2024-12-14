@@ -167,21 +167,7 @@ const Sales = () => {
                             >
                                 Refund
                             </Button>
-                            {/* <Button
-                                size="sm"
-                                color="success"
-                                variant="flat"
-                                onClick={() => {
-                                    const receipt  = generateReceipt()
-                                    const printWindow = window.open('','_blank','width=800,height=600');
-                                    printWindow?.document.write(receipt);
-                                    printWindow?.document.close();
-                                    printWindow?.print()
-                                    setDataValue(sale)
-                                }}
-                            >
-                                Print
-                            </Button> */}
+
                         </TableCell>
                     </TableRow>
                 ))}
@@ -209,7 +195,7 @@ const Sales = () => {
                                 <p className="font-nunito font-semibold">Products</p>
                                 {dataValue.products.map((productDetail: SalesInterface, idx: number) => (
                                     <div key={idx}>
-                                        <p>{productDetail?.product?.name}</p>
+                                        <p>{productDetail.product.name}</p>
                                     </div>
                                 ))}
                             </div>

@@ -41,6 +41,9 @@ export interface ProductInterface {
     low_stock: string,
     description: string
     seller: string
+    totalProductAmount: number,
+    totalProductAmountAfterSales: number,
+    profitAfterSales: number,
 }
 export interface RestockInterface {
     _id: string,

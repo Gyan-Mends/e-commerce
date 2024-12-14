@@ -18,7 +18,10 @@ class ProductsController {
         description: string,
         seller: string,
         costPrice: string,
-        intent: string
+        intent: string,
+        totalProductAmount: number,
+        totalProductAmountAfterSales: number,
+        profitAfterSales: number,
     ) {
         try {
             if (intent === "create") {
@@ -38,7 +41,10 @@ class ProductsController {
                     low_stock,
                     description,
                     seller,
-                    costPrice
+                    costPrice,
+                    totalProductAmount,
+                    totalProductAmountAfterSales,
+                    profitAfterSales
                 })
 
                 if (Number(low_stock) >= Number(quantity)) {
@@ -224,9 +230,39 @@ class ProductsController {
                 .skip(skipCount)
                 .limit(limit)
                 .exec();
+
+            const result = await Product.aggregate([
+                {
+                    $group: {
+                        _id: null, // No grouping key; aggregates all documents
+                        totalProductAmount: { $sum: "$totalProductAmount" } // Sum the totalAmount field
+                    }
+                }
+            ]);
+            const result1 = await Product.aggregate([
+                {
+                    $group: {
+                        _id: null, // No grouping key; aggregates all documents
+                        totalProductAmountAfterSales: { $sum: "$totalProductAmountAfterSales" } // Sum the totalAmount field
+                    }
+                }
+            ]);
+            const result2 = await Product.aggregate([
+                {
+                    $group: {
+                        _id: null, // No grouping key; aggregates all documents
+                        profitAfterSales: { $sum: "$profitAfterSales" } // Sum the totalAmount field
+                    }
+                }
+            ]);
+
+            // Access the totalAmount value
+            const total = result.length > 0 ? result[0].totalProductAmount : 0;
+            const totalAfterSales = result1.length > 0 ? result1[0].totalProductAmountAfterSales : 0;
+            const totalProfitAfterSales = result2.length > 0 ? result2[0].profitAfterSales : 0;
+
     
-    
-            return { user, products, totalPages };
+            return { user, products, totalPages, total, totalAfterSales, totalProfitAfterSales };
         } catch (error: any) {
             return {
                 message: error.message,

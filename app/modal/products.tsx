@@ -19,6 +19,18 @@ const ProductSchema = new mongoose.Schema({
         type: Number,
         require: true,
     },
+    totalProductAmount: {
+        type: Number,
+        require: true,
+    },
+    totalProductAmountAfterSales: {
+        type: Number,
+        require: true,
+    },
+    profitAfterSales: {
+        type: Number,
+        require: true,
+    },
     category: {
         ref:"category",
         type: Schema.Types.ObjectId,

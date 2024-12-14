@@ -1,4 +1,5 @@
 import { redirect } from "@remix-run/node";
+import moment from "moment";
 import { RegistrationInterface, SalesInterface } from "~/interfaces/interface";
 import Registration from "~/modal/registration";
 import Sales from "~/modal/sales";
@@ -25,10 +26,56 @@ class AttendanceDashboardController {
 
             // Fetch recent sales
             const sales = await Sales.find({ attendant: user._id })
+                .populate("attendant")
                 .sort({ createdAt: -1 })
                 .skip((page - 1) * limit)
                 .limit(limit)
                 .exec();
+
+
+
+            // Define date ranges
+            const today = moment().startOf("day").toDate();
+            const thisWeek = moment().startOf("week").toDate();
+            const thisMonth = moment().startOf("month").toDate();
+            const thisYear = moment().startOf("year").toDate();
+            const oneYearAgo = moment().subtract(1, "year").startOf("day").toDate();
+
+            // Aggregations for date ranges
+            const dailySales = await Sales.aggregate([
+                { $match: { createdAt: { $gte: today } } },
+                { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } },
+            ]);
+
+            const weeklySales = await Sales.aggregate([
+                { $match: { createdAt: { $gte: thisWeek } } },
+                { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } },
+            ]);
+
+            const monthlySales = await Sales.aggregate([
+                { $match: { createdAt: { $gte: thisMonth } } },
+                { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } },
+            ]);
+
+            const yearlySales = await Sales.aggregate([
+                { $match: { createdAt: { $gte: thisYear } } },
+                { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } },
+            ]);
+
+
+            // Extract totals
+            const dailyTotal = dailySales[0]?.total || 0;
+            const weeklyTotal = weeklySales[0]?.total || 0;
+            const monthlyTotal = monthlySales[0]?.total || 0;
+            const yearlyTotal = yearlySales[0]?.total || 0;
+
+            // Overall total
+            const totalSalesAmount = await Sales.aggregate([
+                { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } },
+            ]);
+            const totalAmount = totalSalesAmount[0]?.total || 0;
+
+
 
             // Calculate sales counts
             const now = new Date();
@@ -60,6 +107,10 @@ class AttendanceDashboardController {
 
             return {
                 sales,
+                dailyTotal,
+                weeklyTotal,
+                monthlyTotal,
+                yearlyTotal,
                 counts: {
                     daily: dailyCount,
                     weekly: weeklyCount,

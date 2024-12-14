@@ -28,6 +28,7 @@ class AdminDashboardController {
 
             // Get paginated sales
             const sales = await Sales.find()
+                .
                 .populate("attendant")
                 .sort({ createdAt: -1 })
                 .skip((page - 1) * limit)
@@ -67,6 +68,36 @@ class AdminDashboardController {
                 { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } },
             ]);
 
+            const result = await Product.aggregate([
+                {
+                    $group: {
+                        _id: null, // No grouping key; aggregates all documents
+                        totalProductAmount: { $sum: "$totalProductAmount" } // Sum the totalAmount field
+                    }
+                }
+            ]);
+            const result1 = await Product.aggregate([
+                {
+                    $group: {
+                        _id: null, // No grouping key; aggregates all documents
+                        totalProductAmountAfterSales: { $sum: "$totalProductAmountAfterSales" } // Sum the totalAmount field
+                    }
+                }
+            ]);
+            const result2 = await Product.aggregate([
+                {
+                    $group: {
+                        _id: null, // No grouping key; aggregates all documents
+                        profitAfterSales: { $sum: "$profitAfterSales" } // Sum the totalAmount field
+                    }
+                }
+            ]);
+
+            // Access the totalAmount value
+            const total = result.length > 0 ? result[0].totalProductAmount : 0;
+            const totalAfterSales = result1.length > 0 ? result1[0].totalProductAmountAfterSales : 0;
+            const totalProfitAfterSales = result2.length > 0 ? result2[0].profitAfterSales : 0;
+
             // Extract totals
             const dailyTotal = dailySales[0]?.total || 0;
             const weeklyTotal = weeklySales[0]?.total || 0;
@@ -93,6 +124,9 @@ class AdminDashboardController {
                 monthlyTotal,
                 yearlyTotal,
                 olderTotal,
+                total,
+                totalAfterSales,
+                totalProfitAfterSales
             };
         } catch (error: any) {
             throw new Error(error.message);

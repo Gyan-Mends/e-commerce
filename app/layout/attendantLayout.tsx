@@ -8,6 +8,7 @@ import DashboardIcon from "~/components/icons/DashboardIcon";
 import LogoutIcon from "~/components/icons/LogoutIcon";
 import MoonIcon from "~/components/icons/MoonIcon";
 import NavTogglerIcon from "~/components/icons/NavTogglerIcon";
+import SaleIcon from "~/components/icons/Sales";
 import SunIcon from "~/components/icons/SunIcon";
 import logo from "~/components/illustration/logo.png"
 import ConfirmModal from "~/components/modal/confirmModal";
@@ -44,7 +45,7 @@ const AttendantLayout = ({ children, pageName }: UserLayoutProps) => {
     };
 
     return (
-        <div className={`!bg-[100vh]  transition duration-500 ${theme === "light" ? " " : "dark:bg-[#191919]"}`}>
+        <div className={`!h-full  transition duration-500 ${theme === "light" ? "bg-white " : "dark:bg-[#191919]"}`}>
             {/* Desktop Side Navigation Bar */}
             <div className={`h-full hidden lg:block md:block w-64 dark:bg-[#333] text-white fixed transition-transform duration-500 p-6 ${desktopNav ? "transform-none" : "-translate-x-full"}`}>
                 {/* logo */}
@@ -68,13 +69,13 @@ const AttendantLayout = ({ children, pageName }: UserLayoutProps) => {
                 <ul className="mt-10">
                     <Link className="" to="/attendant">
                         <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-success font-nunito text-md p-2 rounded-lg flex items-center gap-2">
-                            <DashboardIcon className="text-md" />
+                            <DashboardIcon className="text-success h-5 w-5 hover:text-white" />
                             Dashboard
                         </li>
                     </Link>
                     <Link className="" to="/attendant/sales">
                         <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-success font-nunito text-md p-2 rounded-lg flex items-center gap-2">
-                            <DashboardIcon className="text-md" />
+                            <SaleIcon className="text-success h-5 w-5 hover:text-white" />
                             Sales Point
                         </li>
                     </Link> 
@@ -226,7 +227,6 @@ export const action: ActionFunction = async ({ request }) => {
         case "logout":
             const logout = await attendanceDashboardController.logout(intent)
             return logout
-
         default:
             return json({
                 message: "Bad request",

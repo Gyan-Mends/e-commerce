@@ -138,6 +138,9 @@ const Products = () => {
                         <TableCell>{products.costPrice}</TableCell>
                         <TableCell>{products.price}</TableCell>
                         <TableCell>{products.quantity}</TableCell>
+                        <TableCell>{products.totalProductAmount}</TableCell>
+                        <TableCell>{products.totalProductAmountAfterSales}</TableCell>
+                        <TableCell>{products.profitAfterSales}</TableCell>
                         <TableCell>{products.low_stock}</TableCell>
                         <TableCell className="relative flex items-center gap-4">
 
@@ -294,6 +297,7 @@ const Products = () => {
                             }}
                         />
                         <input name="intent" value="create" type="hidden" />
+                        <input hidden name="userid" value={user._id} />
                         <input hidden name="userid" value={user._id} />
                         <input hidden name="base64Image" value={base64Image} />
 
@@ -523,10 +527,15 @@ export const action: ActionFunction = async ({ request }) => {
     const seller = formData.get("userid") as string;
     const id = formData.get("id") as string;
     const intent = formData.get("intent")
+    const totalProductAmount = Number(costPrice) * Number(quantity);
+    const totalProductAmountAfterSales = Number(price) * Number(quantity)
+    const profitAfterSales = Number(totalProductAmountAfterSales) - Number(totalProductAmount)
+
+
 
     switch (intent) {
         case "create":
-            const products = await productsController.ProductAdd(request, name, price, quantity, category, base64Image, low_stock, description, seller, costPrice, intent);
+            const products = await productsController.ProductAdd(request, name, price, quantity, category, base64Image, low_stock, description, seller, costPrice, intent, totalProductAmount, totalProductAmountAfterSales, profitAfterSales);
             return products
         case "updateProduct":
             const upadate = await productsController.UpdateProduct({
@@ -570,12 +579,18 @@ export const loader: LoaderFunction = async ({ request }) => {
         return redirect("/")
     };
 
-    const { user, products, totalPages } = await productsController.FetchProducts({ request, page, search_term });
+    const { user, products, totalPages, total, totalAfterSales, totalProfitAfterSales } = await productsController.FetchProducts({ request, page, search_term });
     const {categories} = await category.getCategories({
         page,
         request,
         search_term
     })
+
+    console.log(total);
+
+    console.log(totalAfterSales);
+    console.log(totalProfitAfterSales);
+
 
 
     return json({ user, products, totalPages, categories })

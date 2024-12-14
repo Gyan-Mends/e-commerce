@@ -326,6 +326,9 @@ import restocking from "~/controllers/restocking";
 import { RegistrationInterface } from "~/interfaces/interface";
 import { getSession } from "~/session";
 import CatIcon from "~/components/icons/CatIcon";
+import CategoryIcon from "~/components/icons/CatIcon";
+import RestockIcon from "~/components/icons/restock";
+import SaleIcon from "~/components/icons/Sales";
 
 interface UserLayoutProps {
     children?: ReactNode;
@@ -410,7 +413,7 @@ const AdminLayout = ({ children, pageName }: UserLayoutProps) => {
                     <ul className=" pl-2 flex flex-col gap-2">
                         <Link className="" to="/admin/category">
                             <li className="text-md hover:bg-success  hover:border-r-4 hover:border-r-white hover:bg-opacity-50 hover:text-white font-nunito p-1 rounded-lg hover:rounded-r-lg flex items-center gap-2 transition-all duration-300 ease-in-out text-gray-200">
-                                <CatIcon className="text-green-600 h-5 w-5 hover:text-white" />
+                                <CategoryIcon className="text-green-600 h-5 w-5 hover:text-white" />
                                 Category
                             </li>
                         </Link>
@@ -426,7 +429,7 @@ const AdminLayout = ({ children, pageName }: UserLayoutProps) => {
                     <ul className=" pl-2 flex flex-col gap-2">
                         <Link className="" to="/admin/restocking">
                             <li className="text-md hover:bg-success  hover:border-r-4 hover:border-r-white hover:bg-opacity-50 hover:text-white font-nunito p-1 rounded-lg hover:rounded-r-lg flex items-center gap-2 transition-all duration-300 ease-in-out text-gray-200">
-                                <ProductIcon className="text-success h-5 w-5 hover:text-white" />
+                                <RestockIcon className="text-success h-5 w-5 hover:text-white" />
                                 Restocking
                             </li>
                         </Link>
@@ -434,7 +437,7 @@ const AdminLayout = ({ children, pageName }: UserLayoutProps) => {
                     <ul className=" pl-2 flex flex-col gap-2">
                         <Link className="" to="/admin/sales">
                             <li className="text-md hover:bg-success  hover:border-r-4 hover:border-r-white hover:bg-opacity-50 hover:text-white font-nunito p-1 rounded-lg hover:rounded-r-lg flex items-center gap-2 transition-all duration-300 ease-in-out text-gray-200">
-                                <ProductIcon className="text-success h-5 w-5 hover:text-white" />
+                                <SaleIcon className="text-success h-5 w-5 hover:text-white" />
                                 Sales
                             </li>
                         </Link>

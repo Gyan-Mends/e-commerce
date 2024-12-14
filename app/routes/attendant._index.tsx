@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import AdminLayout from "~/layout/adminLayout";
-import { json, LoaderFunction } from "@remix-run/node";
+import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { Button, Calendar, TableCell, TableRow } from "@nextui-org/react";
 import Attendant from "~/layout/attendantLayout";
@@ -12,11 +12,19 @@ import { SalesColumns } from "~/components/table/columns";
 import { SalesInterface } from "~/interfaces/interface";
 import { today, getLocalTimeZone } from "@internationalized/date";
 import productsController from "~/controllers/productsController";
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import SaleIcon from "~/components/icons/Sales";
+import adminDashboardController from "~/controllers/AdminDashBoardController";
+import { getSession } from "~/session";
 
 
 const Admin = () => {
-    const { sales, counts } = useLoaderData<{
+    const { sales, counts, dailyTotal, weeklyTotal, monthlyTotal, yearlyTotal } = useLoaderData<{
         sales: SalesInterface[];
+        dailyTotal: number,
+        weeklyTotal: number,
+        monthlyTotal: number,
+        yearlyTotal: number,
         counts: { daily: number; weekly: number; monthly: number; yearly: number };
     }>();
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -31,6 +39,13 @@ const Admin = () => {
         return () => clearTimeout(timer);
     }, []);
 
+    const graphData = [
+        { name: "Daily", total: dailyTotal },
+        { name: "Weekly", total: weeklyTotal },
+        { name: "Monthly", total: monthlyTotal },
+        { name: "Yearly", total: yearlyTotal },
+    ];
+
     return (
         <Attendant pageName="Dashboard">
             {/* Statistics Cards */}
@@ -38,28 +53,78 @@ const Admin = () => {
                 <CustomedCard
                     title="Daily Sales"
                     total={counts.daily}
-                    icon={<ProductIcon className="h-[20px] w-[20px] text-success" />}
+                    icon={<SaleIcon className="h-[20px] w-[20px] text-success" />}
                 />
                 <CustomedCard
                     title="Weekly Sales"
                     total={counts.weekly}
-                    icon={<ProductIcon className="h-[20px] w-[20px] text-success" />}
+                    icon={<SaleIcon className="h-[20px] w-[20px] text-success" />}
                 />
                 <CustomedCard
                     title="Monthly Sales"
                     total={counts.monthly}
-                    icon={<ProductIcon className="h-[20px] w-[20px] text-success" />}
+                    icon={<SaleIcon className="h-[20px] w-[20px] text-success" />}
                 />
                 <CustomedCard
                     title="Yearly Sales"
                     total={counts.yearly}
-                    icon={<ProductIcon className="h-[20px] w-[20px] text-success" />}
+                    icon={<SaleIcon className="h-[20px] w-[20px] text-success" />}
                 />
             </div>
 
+            <div className="grid grid-cols-2 mt-6 gap-10">
+                <div className="">
+                    <ResponsiveContainer width="100%" height={400}>
+                        <LineChart data={graphData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" stroke="#ffffff" />
+                            <YAxis stroke="#ffffff" />
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: "#333",
+                                    border: "1px solid #555",
+                                }}
+                                labelStyle={{ color: "#ffffff" }}
+                                itemStyle={{ color: "#ffffff" }}
+                            />
+                            <Legend />
+                            <Line type="monotone" dataKey="total" stroke="#4caf50" />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
+                <div className="grid grid-cols-2 gap-4 mt-auto mb-auto">
+                    <div className="flex flex-col gap-4">
+                        <CustomedCard
+                            title="Daily Sales Amount "
+                            total={"GHC " + dailyTotal}
+                            icon={<SaleIcon className="h-[20px] w-[20px] text-success" />}
+                        />
+                        <CustomedCard
+                            title="Weekly Sales Amount "
+                            total={"GHC " + weeklyTotal}
+                            icon={<ProductIcon className="h-[20px] w-[20px] text-success" />}
+                        />
+                    </div>
+
+                    <div className="flex flex-col gap-4">
+                        <CustomedCard
+                            title="Monthly Sales Amount"
+                            total={"GHC " + monthlyTotal}
+                            icon={<ProductIcon className="h-[20px] w-[20px] text-success" />}
+                        />
+                        <CustomedCard
+                            title="Yearly Sales Amount"
+                            total={"GHC " + yearlyTotal}
+                            icon={<SaleIcon className="h-[20px] w-[20px] text-success" />}
+                        />
+
+                    </div>
+                </div>
+            </div>
+
             {/* Recent Sales Table */}
-            <div className="mb-5 grid grid-cols-3 gap-10">
-                <div className="col-span-2 px-2  shadow-md rounded-xl border border-black/5 dark:bg-[#333] dark:border-white/5 mt-6">
+            <div className="mb-5 grid grid-cols-1 gap-10">
+                <div className="px-2  shadow-md rounded-xl border border-black/5 dark:bg-[#333] dark:border-white/5 mt-6">
                     <CustomTable
                         columns={SalesColumns}
                         rowsPerPage={rowsPerPage}
@@ -90,19 +155,30 @@ const Admin = () => {
                         ))}
                     </CustomTable>
                 </div>
-                <div className="border h-[50vh] border-black/5 dark:bg-[#333] dark:border-white/5 mt-6">
-                    <Calendar
-                        aria-label="Date (Min Date Value)"
-                        defaultValue={today(getLocalTimeZone())}
-                        minValue={today(getLocalTimeZone())}
-                    />
-                </div>
             </div>
         </Attendant>
     );
 };
 
 export default Admin;
+
+export const action: ActionFunction = async ({ request }) => {
+    const formData = await request.formData();
+    const intent = formData.get("intent") as string;
+
+    switch (intent) {
+        case "logout":
+            const logout = await adminDashboardController.logout(intent)
+            return logout
+
+        default:
+            return json({
+                message: "Bad request",
+                success: false,
+                status: 500
+            })
+    }
+}
 
 export const loader: LoaderFunction = async ({ request }) => {
     const url = new URL(request.url);
@@ -112,12 +188,18 @@ export const loader: LoaderFunction = async ({ request }) => {
         page,
     });
 
+    const session = await getSession(request.headers.get("Cookie"));
+    const token = session.get("email");
+    if (!token) {
+        return redirect("/")
+    }
 
-    const { sales, counts } = await attendanceDashboardController.getSales({
+
+    const { sales, counts, dailyTotal, weeklyTotal, monthlyTotal, yearlyTotal } = await attendanceDashboardController.getSales({
         request,
         page,
         limit: 10, // Fetch 10 sales per page
     });
 
-    return { sales, counts, user };
+    return { sales, counts, user, dailyTotal, weeklyTotal, monthlyTotal, yearlyTotal };
 };

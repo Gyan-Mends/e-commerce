@@ -173,6 +173,7 @@ class SalesController {
 
         // Find users with pagination and search filter
         const sales = await Sales.find(searchFilter)
+          .populate("products")
             .populate("category")
             .skip(skipCount)
             .limit(limit)

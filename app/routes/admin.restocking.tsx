@@ -21,6 +21,7 @@ import { getSession } from "~/session";
 import EditModal from "~/components/modal/EditModal";
 import { useEffect, useState } from "react";
 import { errorToast, successToast } from "~/components/toast";
+import usersController from "~/controllers/Users";
 
 const Products = () => {
     const [isEditModalOpened, setIseDitModalOpened] = useState(false)
@@ -217,6 +218,10 @@ export const action: ActionFunction = async ({ request }) => {
         case "create":
             const restock = await restocking.Restock(name, newQuantity, userid, product);
             return restock
+
+        case "logout":
+            const logout = await usersController.logout(intent)
+            return logout
         default:
             return json({
                 message: "Bad request",

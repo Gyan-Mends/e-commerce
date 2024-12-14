@@ -10,6 +10,9 @@ export const ProductColumns = [
     { title: "Cost Price", allowSort: true },
     { title: "Selling Price", allowSort: true },
     { title: "Quantity", allowSort: true },
+    { title: "Total Amount", allowSort: true },
+    { title: "Total After Sales", allowSort: true },
+    { title: "Profit", allowSort: true },
     { title: "Low Stock", allowSort: true },
     { title: "Action", allowSort: true }
 ]
