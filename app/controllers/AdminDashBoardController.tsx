@@ -28,7 +28,6 @@ class AdminDashboardController {
 
             // Get paginated sales
             const sales = await Sales.find()
-                .
                 .populate("attendant")
                 .sort({ createdAt: -1 })
                 .skip((page - 1) * limit)
@@ -92,6 +91,8 @@ class AdminDashboardController {
                     }
                 }
             ]);
+
+
 
             // Access the totalAmount value
             const total = result.length > 0 ? result[0].totalProductAmount : 0;

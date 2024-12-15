@@ -106,6 +106,9 @@ const Products = () => {
                         <TableCell>{product.costPrice}</TableCell>
                         <TableCell>{product.price}</TableCell>
                         <TableCell>{product.quantity}</TableCell>
+                        <TableCell>{product.totalProductAmount}</TableCell>
+                        <TableCell>{product.totalProductAmountAfterSales}</TableCell>
+                        <TableCell>{product.profitAfterSales}</TableCell>
                         <TableCell>
                             {product.quantity < 5 ? (
                                 <>
@@ -184,6 +187,9 @@ const Products = () => {
 
 
                         <input name="intent" value="create" type="hidden" />
+                        <input name="costPrice" value={selectedValue?.costPrice} type="" />
+                        <input name="price" value={selectedValue?.price} type="" />
+                        <input name="intent" value={selectedValue?.profitAfterSales} type="" />
                         <input hidden name="userid" value={user._id} type="text" />
                         <input name="id" value={selectedValue?._id} type="hidden" />
 
@@ -212,11 +218,13 @@ export const action: ActionFunction = async ({ request }) => {
     const newQuantity = formData.get("newQuantity") as string;
     const userid = formData.get("userid") as string;
     const product = formData.get("id") as string;
+    const costPrice = formData.get("costPrice") as string;
+    const price = formData.get("price") as string;
     const intent = formData.get("intent")
 
     switch (intent) {
         case "create":
-            const restock = await restocking.Restock(name, newQuantity, userid, product);
+            const restock = await restocking.Restock(name, newQuantity, userid, product, costPrice, price);
             return restock
 
         case "logout":

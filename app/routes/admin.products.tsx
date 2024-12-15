@@ -527,15 +527,13 @@ export const action: ActionFunction = async ({ request }) => {
     const seller = formData.get("userid") as string;
     const id = formData.get("id") as string;
     const intent = formData.get("intent")
-    const totalProductAmount = Number(costPrice) * Number(quantity);
-    const totalProductAmountAfterSales = Number(price) * Number(quantity)
-    const profitAfterSales = Number(totalProductAmountAfterSales) - Number(totalProductAmount)
+
 
 
 
     switch (intent) {
         case "create":
-            const products = await productsController.ProductAdd(request, name, price, quantity, category, base64Image, low_stock, description, seller, costPrice, intent, totalProductAmount, totalProductAmountAfterSales, profitAfterSales);
+            const products = await productsController.ProductAdd(request, name, price, quantity, category, base64Image, low_stock, description, seller, costPrice, intent);
             return products
         case "updateProduct":
             const upadate = await productsController.UpdateProduct({

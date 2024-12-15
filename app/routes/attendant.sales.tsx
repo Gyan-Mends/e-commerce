@@ -39,9 +39,10 @@ const Sales = () => {
     const [CartItemNewPrice, setCartItemNewPrice] = useState(0);
     const actionData = useActionData<any>();
     const submit = useSubmit();
-    const [totalCost] = useState(totalPrice); // Fixed total cost
-    const [amountPaid, setAmountPaid] = useState('');
-    const [balance, setBalance] = useState(0);
+    const [totalCost] = useState(totalPrice); // Total cost of cart items
+    const [amountPaid, setAmountPaid] = useState(''); // Amount paid by the customer
+    const [balance, setBalance] = useState(0); // Remaining balance
+    const [isPartialPayment, setIsPartialPayment] = useState(false);
     const navigate = useNavigate()
 
     const mm = carts.reduce((acc, cart) => {
@@ -50,7 +51,7 @@ const Sales = () => {
     const handleAmountPaidChange = (event: any) => {
         const paid = parseFloat(event.target.value) || 0;
         setAmountPaid(event.target.value);
-        setBalance(totalCost - paid);
+        setBalance(paid - totalCost);
     };
 
     const handleEditModalClose = () => {
@@ -200,48 +201,48 @@ const Sales = () => {
                 </div>
                 {/* Items added to cart */}
                 <Form method="post">
-                    <div className="h-[85vh] border border-white/5   rounded-xl  dark:bg-[#333] flex flex-col justify-between">
+                    <div className="h-[85vh] border border-white/5 rounded-xl dark:bg-[#333] flex flex-col justify-between">
                         <div className="h-[53vh] overflow-y-scroll px-2 scrollbar-thin dark:darkscrollbar-thin">
-                            {/* added items come here */}
+                            {/* Render Cart Items */}
                             {carts.length === 0 ? (
-                                <>
-                                    <div className="w-full h-full flex justify-center items-center ">
-                                        <div>
-                                            <img src={emptyCart} className="h-60 w-60" alt="" />
-                                            <p className="font-nunito text-2xl">No Cart Item Found</p>
-                                        </div>
+                                <div className="w-full h-full flex justify-center items-center">
+                                    <div>
+                                        <img src={emptyCart} className="h-60 w-60" alt="No Cart Item" />
+                                        <p className="font-nunito text-2xl">No Cart Item Found</p>
                                     </div>
-
-                                </>
-                            ) : (
-                                <>
-                                        {carts.map((cart: CartInterface, index: number) => (
-                                            <div key={index} className=" px-4 h-20 w-full bg-white dark:bg-[#191919] border border-white/5 mt-4 rounded-lg p-2 flex gap-10">
-                                    <div className="h-16 w-20">
-                                        <img className="h-16 w-20 rounded-lg" src={cart?.product?.image} alt="" />
-                                    </div>
-                                    <div className="flex flex-col justify-between w-full">
-                                        <div>
-                                            <div className="flex justify-between">
-                                                <p className="font-nunito text-lg">{cart?.product?.name}</p>
-                                                <button className="text-danger" type="button" onClick={() => {
-                                                    setIsConfirmModalOpened(true);
-                                                    setCartDataValue(cart);
-                                                }}><DeleteIcon /></button>
-                                            </div>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <p className="font-nunito text-sm">
-                                                {cart?.quantity === 1 ? `${cart.quantity} item` : `${cart.quantity} items`}
-                                            </p>
-                                            <p className="font-nunito text-md">Ghc {cart?.price}</p>
-                                        </div>
-                                    </div>
-                                    <input name="quantity" type="hidden" value={cart.quantity} />
-                                    <input name="product" type="hidden" value={cart.product._id} />
                                 </div>
-                            ))}
-                                </>
+                            ) : (
+                                    carts.map((cart: CartInterface, index: number) => (
+                                        <div key={index} className="px-4 h-20 w-full bg-white dark:bg-[#191919] border border-white/5 mt-4 rounded-lg p-2 flex gap-10">
+                                            <div className="h-16 w-20">
+                                                <img className="h-16 w-20 rounded-lg" src={cart?.product?.image} alt={cart.product.name} />
+                                            </div>
+                                            <div className="flex flex-col justify-between w-full">
+                                                <div className="flex justify-between">
+                                                    <p className="font-nunito text-lg">{cart?.product?.name}</p>
+                                                    <button
+                                                        className="text-danger"
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setIsConfirmModalOpened(true);
+                                                            setCartDataValue(cart);
+                                                        }}
+                                                    >
+                                                        <DeleteIcon />
+                                                    </button>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <p className="font-nunito text-sm">
+                                                        {cart?.quantity === 1 ? `${cart.quantity} item` : `${cart.quantity} items`}
+                                                    </p>
+                                                    <p className="font-nunito text-md">Ghc {cart?.price}</p>
+                                                </div>
+                                            </div>
+                                            {/* Hidden Inputs for Form */}
+                                            <input name="quantity" type="hidden" value={cart.quantity} />
+                                            <input name="product" type="hidden" value={cart.product._id} />
+                                        </div>
+                                    ))
                             )}
                         </div>
                         <div className="dark:bg-[#191919] bg-white border border-white/5 h-60 flex flex-col justify-between rounded-bl-xl rounded-br-xl px-10 py-4 dark:text-white">
@@ -256,6 +257,7 @@ const Sales = () => {
                                 </div>
                             </div>
                             <div className="flex gap-4">
+                                {/* Amount Paid Input */}
                                 <Input
                                     type="number"
                                     id="amountPaid"
@@ -263,6 +265,7 @@ const Sales = () => {
                                     onChange={handleAmountPaidChange}
                                     name="amountPaid"
                                 />
+                                {/* Balance Display */}
                                 <Input
                                     id="balance"
                                     value={balance}
@@ -270,11 +273,32 @@ const Sales = () => {
                                     name="balance"
                                 />
                             </div>
-                            <div className="flex items-center justify-center gap-4">
 
+                            <div className="grid grid-cols-3 gap-2">
+                                <div className="col-span-2">
+                                    <Input
+                                        type="text"
+                                        id="customerName"
+                                        placeholder="Enter customer name"
+                                        name="customerName"
+                                        className="mt-4"
+                                    />
+                                </div>
+                                <div>
+                                    <Input
+                                        type="text"
+                                        id="customerNumber"
+                                        placeholder="Number"
+                                        name="customerNumber"
+                                        className="mt-4"
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex mt-4 items-center justify-center gap-4">
+                                {/* Checkout Button */}
                                 {carts.length === 0 ? (
                                     <button
-                                        className="w-80 h-14 bg-danger rounded-xl flex items-center justify-center gap-2 bg-opacity-20 text-danger font-nunito text-xl"
+                                        className="w-80 h-10 bg-danger rounded-xl flex items-center justify-center gap-2 bg-opacity-20 text-danger font-nunito text-xl"
                                         color="primary"
                                         onClick={(e: any) => {
                                             e.preventDefault();
@@ -285,12 +309,12 @@ const Sales = () => {
                                 ) : (
                                     <>
                                             <button
-                                                className="w-80 h-14 bg-primary rounded-xl flex items-center justify-center gap-2 bg-opacity-20 text-primary font-nunito text-xl"
+                                                className="w-80 h-10 bg-primary rounded-xl flex items-center justify-center gap-2 bg-opacity-20 text-primary font-nunito text-xl"
                                                 color="primary"
                                                 type="button"
                                                 onClick={() => setIsCheckOutModalOpened(true)}
                                             >
-                                                Checkout
+                                                {isPartialPayment ? 'Proceed with Part Payment' : 'Checkout'}
                                             </button>
 
                                             {/* Confirm Checkout Modal */}
@@ -316,16 +340,7 @@ const Sales = () => {
                                                         className="font-nunito text-md"
                                                         onPress={() => {
                                                             handleConfirmModalClosed();
-                                                            document.querySelector("form")?.submit(); // Submit the form
-
-                                                            const receiptContent = generateReceiptContent();
-                                                            // Open a new window for the receipt
-                                                            const printWindow = window.open('', '_blank', 'width=800,height=600');
-                                                            printWindow?.document.write(receiptContent);
-                                                            printWindow?.document.close();
-                                                            printWindow?.print();
-
-
+                                                            document.querySelector("form")?.submit();
                                                         }}
                                                     >
                                                         Confirm
@@ -334,14 +349,15 @@ const Sales = () => {
                                             </ConfirmModal>
                                     </>
                                 )}
-
                             </div>
                         </div>
+                        {/* Hidden Fields */}
                         <input type="hidden" name="attendant" value={user._id} />
                         <input type="hidden" name="intent" value="addCartToSales" />
                         <input type="hidden" name="totalAmount" value={totalPrice} />
                     </div>
                 </Form>
+
             </div>
             <ConfirmModal className="" header="Confirm Remove" content="Are you sure to remove item from cart? " isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
                 <div className="flex gap-4">
@@ -372,7 +388,7 @@ const Sales = () => {
                             <input type="hidden" name="attendant" value={user?._id} />
                             <input type="hidden" name="product" value={dataValue?._id} />
                             <input type="" name="costprice" value={dataValue?.costPrice} />
-                            <input type="hidden" name="price" value={dataValue?.price * quantity} />
+                            <input type="hidden" name="price" value={dataValue?.price} />
                             <input type="hidden" name="intent" value="addToCart" />
                             <p className="text-2xl font-nunito">{dataValue?.name}</p>
                             <p className="text-xl font-nunito mt-4">GHC {dataValue?.price}</p>
@@ -418,6 +434,8 @@ export const action: ActionFunction = async ({ request }) => {
     const id = formData.get("id") as string;
     const balance = formData.get("balance") as string;
     const amountPaid = formData.get("amountPaid") as string;
+    const customerName = formData.get("customerName") as string;
+    const customerNumber = formData.get("customerNumber") as string;
     const totalAmount = formData.get("totalAmount") as string;
 
     switch (intent) {
@@ -432,7 +450,9 @@ export const action: ActionFunction = async ({ request }) => {
                 amountPaid,
                 balance,
                 costprice,
-                price
+                price,
+                customerName,
+                customerNumber
             });
             return addSales;
 

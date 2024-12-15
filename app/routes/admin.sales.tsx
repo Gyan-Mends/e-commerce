@@ -152,6 +152,9 @@ const Sales = () => {
                             GHC {sale.amountPaid}
                         </TableCell>
                         <TableCell className="">
+                            GHC {sale.amountLeft}
+                        </TableCell>
+                        <TableCell className="">
                             GHC {sale.balance}
                         </TableCell>
 
@@ -225,66 +228,7 @@ const Sales = () => {
                             </div>
                         </div>
 
-                        <div className="mt-10">
-                            <p className="font-nunito text-lg text-primary">Why Refund</p>
-                            <Textarea
-                                className="mt-2 font-nunito"
-                                label="Reason"
-                                labelPlacement="outside"
-                                placeholder=" "
-                                isRequired
-                                name="reason"
-                            />
-                            <div className="pt-4">
-                                <Select
-                                    label="Products"
-                                    labelPlacement="outside"
-                                    placeholder=" "
-                                    isRequired
-                                    selectionMode="multiple"
-                                    className="mt-4 font-nunito"
-                                    name="product"
-                                >
-                                    {dataValue.products.map((productDetail: SalesInterface) => (
-                                        <SelectItem textValue={productDetail?.product?.name} className="mt-4" key={productDetail.product?._id}>
-                                            {productDetail?.product?.name}
-                                        </SelectItem>
-                                    ))}
-                                </Select>
-                                <input name="intent" value="refund" type="hidden" />
-                                <input name="attendant" value={dataValue?.attendant?._id} type="hidden" />
-                                <input name="totalAmount" value={dataValue?.totalAmount} type="hidden" />
-                                <input name="amountPaid" value={dataValue?.amountPaid} type="hidden" />
-                                <input name="balance" value={dataValue?.balance} type="hidden" />
-                                <input className="text-black" name="totalQuantity" value={dataValue?.quantity} type="hidden" />
-                            </div>
-                            <div className="pt-4">
-                                <Select
-                                    label="Quantity"
-                                    labelPlacement="outside"
-                                    placeholder=" "
-                                    isRequired
-                                    selectionMode="multiple"
-                                    className="mt-4 font-nunito"
-                                    name="quantity"
-                                >
-                                    {dataValue.products.map((productDetail: SalesInterface) => (
-                                        <SelectItem textValue={productDetail.quantity} className="mt-4" key={productDetail.quantity}>
-                                            {productDetail.quantity}
-                                        </SelectItem>
-                                    ))}
-                                </Select>
-                            </div>
-                            <div className="flex gap-4 justify-end mt-6">
-                                <Button color="primary" variant="flat" onClick={handleEditModalClosed}>Close</Button>
-                                <button
-                                    className="bg-danger rounded-xl flex items-center justify-center gap-2 bg-opacity-20 text-danger h-10 font-nunito text-sm px-2"
-                                    type="submit"
-                                >
-                                    Proceed to Refund
-                                </button>
-                            </div>
-                        </div>
+
                     </Form>
                 )}
             </EditModal>

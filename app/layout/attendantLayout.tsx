@@ -79,6 +79,12 @@ const AttendantLayout = ({ children, pageName }: UserLayoutProps) => {
                             Sales Point
                         </li>
                     </Link> 
+                    <Link className="" to="/attendant/debt">
+                        <li className="hover:bg-primary-400 text-md hover:bg-white hover:text-success font-nunito text-md p-2 rounded-lg flex items-center gap-2">
+                            <SaleIcon className="text-success h-5 w-5 hover:text-white" />
+                            Debt
+                        </li>
+                    </Link> 
                 </ul>
             </div>
 

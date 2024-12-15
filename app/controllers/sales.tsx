@@ -18,6 +18,8 @@ class SalesController {
     costprice,
     price,
     product,
+    customerName,
+    customerNumber
   }: {
     intent: string;
     request: Request;
@@ -29,6 +31,8 @@ class SalesController {
     balance: string;
     quantity: string;
       price: string;
+      customerName: string;
+      customerNumber: string
   }) {
     if (intent === "addCartToSales") {
       try {
@@ -44,65 +48,70 @@ class SalesController {
             status: 400,
           });
         } else {
-          if (Number(balance) <= 0) {
-            const productsArray = [];
+          // Allow partial payments
+          const totalPaid = Number(amountPaid); // Initialize with the received part payment
+          let remainingBalance = Number(totalAmount) - totalPaid; // Calculate balance
 
-            // Fetch the cart items for the specific user
-            const cartItems = await Cart.find({ attendant: user?._id }).populate("product");
+          // If amountPaid is less than totalAmount, set balance to 0
+          if (totalPaid < Number(totalAmount)) {
+            remainingBalance = 0; // Balance should remain zero when amountPaid < totalAmount
+          }
 
-            for (const item of cartItems) {
-              const { product: prod, quantity } = item;
-
-              if (prod) {
-                const { price, costprice } = prod;
-                productsArray.push({
-                  product: prod,
-                  quantity,
-                  price,
-                  costprice,
-                });
-              }
-            }
-
-
-
-            const sales = new Sales({
-              products: productsArray,
-              attendant,
-              totalAmount,
-              amountPaid,
-              balance,
-
-            });
-
-            const addSales = await sales.save();
-            if (addSales) {
-              const emptyCart = await Cart.deleteMany({ attendant: user });
-
-              // Update the product quantity in the inventory
-              const productInInventory = await Product.findById(product);
-              if (productInInventory) {
-                const newQuantity = productInInventory.quantity - Number(quantity);
-                await Product.findByIdAndUpdate(product, { quantity: newQuantity });
-              }
-
-              if (emptyCart) {
-                return json({
-                  message: "Sales made successfully",
-                  success: true,
-                  status: 200, // Changed status to 200 for success
-                });
-              }
-            } else {
-              return json({
-                message: "Unable to make sales",
-                success: false,
-                status: 400,
+          // Create an array of products in the cart
+          const productsArray = [];
+          for (const item of carts) {
+            const { product: prod, quantity } = item;
+            if (prod) {
+              const { price, costprice } = prod;
+              productsArray.push({
+                product: prod,
+                quantity,
+                price,
+                costprice,
               });
             }
+          }
+
+          // Create the sale record
+          const sale = new Sales({
+            products: productsArray,
+            attendant,
+            totalAmount,
+            amountPaid: totalPaid.toString(),
+            balance: remainingBalance.toString(),
+            payments: [{
+              customerNumber: customerNumber || "Unkown",
+              customerName: customerName || "Unknown",
+              amount: totalPaid,
+              paymentDate: new Date(),
+              method: "cash", // Modify this based on your payment method
+            }],
+          });
+
+          // Save the sale record
+          const addSales = await sale.save();
+          if (addSales) {
+            // Empty the cart after the sale is successful
+            const emptyCart = await Cart.deleteMany({ attendant: user });
+
+            // Update the inventory based on the cart items
+            for (const item of carts) {
+              const { product: prod, quantity } = item;
+              const productInInventory = await Product.findById(prod);
+              if (productInInventory) {
+                const newQuantity = productInInventory.quantity - Number(quantity);
+                await Product.findByIdAndUpdate(prod, { quantity: newQuantity });
+              }
+            }
+
+            return json({
+              message: "Sales made successfully",
+              success: true,
+              status: 200,
+            });
           } else {
             return json({
-              message: "Full payment must be made",
+              message: "Unable to make sales",
               success: false,
               status: 400,
             });
@@ -123,6 +132,9 @@ class SalesController {
       });
     }
   }
+
+
+
 
   async  getSales({
     request,
@@ -172,15 +184,23 @@ class SalesController {
         const totalPages = Math.ceil(totalProductsCount / limit);
 
         // Find users with pagination and search filter
-        const sales = await Sales.find(searchFilter)
-          .populate("products")
+      const sales = await Sales.find(searchFilter)
             .populate("category")
             .skip(skipCount)
             .limit(limit)
             .exec();
+      const debtors = await Sales.find({
+        attendant: user?._id,
+        amountLeft: { $gt: 0 }
+      })
+        .populate("attendant")
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec();
 
 
-        return { user, sales, totalPages };
+      return { user, sales, totalPages, debtors };
     } catch (error: any) {
         return {
             message: error.message,

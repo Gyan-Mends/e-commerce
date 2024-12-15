@@ -66,6 +66,8 @@ export interface SalesInterface {
     attendant: RegistrationInterface;
     totalAmount: string;
     amountPaid: string;
+    amountLeft: string;
+    payments: string;
     balance: string;
     createdAt?: string | Date;
     updatedAt?: string | Date;

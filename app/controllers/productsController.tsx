@@ -19,9 +19,7 @@ class ProductsController {
         seller: string,
         costPrice: string,
         intent: string,
-        totalProductAmount: number,
-        totalProductAmountAfterSales: number,
-        profitAfterSales: number,
+
     ) {
         try {
             if (intent === "create") {
@@ -30,6 +28,10 @@ class ProductsController {
                 if (ProductCheck) {
                     return json({ message: "Product already exist. Just update it quantity", success: false }, { status: 400 })
                 }
+
+                const totalProductAmount = Number(costPrice) * Number(quantity);
+                const totalProductAmountAfterSales = Number(price) * Number(quantity)
+                const profitAfterSales = Number(totalProductAmountAfterSales) - Number(totalProductAmount)
 
                 //saving the data
                 const products = new Product({
@@ -177,49 +179,52 @@ class ProductsController {
         }
     }
 
-    async  FetchProducts({
+    async FetchProducts({
         request,
         page,
         search_term,
-        limit = 9
+        limit = 9,
     }: {
-        request: Request,
+            request: Request;
         page: number;
         search_term: string;
         limit?: number;
-    }):Promise<{
-        user: RegistrationInterface[],
-        products:ProductInterface[],
-        totalPages: number
+        }): Promise<{
+            user: RegistrationInterface[];
+            products: ProductInterface[];
+            totalPages: number;
     } | any> {
         const skipCount = (page - 1) * limit; // Calculate the number of documents to skip
     
         // Define the search filter only once
-        const searchFilter = search_term
-            ? {
-                $or: [
-                    {
-                        name: {
-                            $regex: new RegExp(
-                                search_term
-                                    .split(" ")
-                                    .map((term) => `(?=.*${term})`)
-                                    .join(""),
-                                "i"
-                            ),
-                        },
-                    },
-                   
-                ],
-            }
-            : {};
+        const searchFilter = {
+            ...(
+                search_term
+                    ? {
+                        $or: [
+                            {
+                                name: {
+                                    $regex: new RegExp(
+                                        search_term
+                                            .split(" ")
+                                            .map((term) => `(?=.*${term})`)
+                                            .join(""),
+                                        "i"
+                                    ),
+                                },
+                            },
+                        ],
+                    }
+                    : {}
+            ),
+            quantity: { $gt: 0 }, // Ensure only products with quantity > 0 are fetched
+        };
     
         try {
             // Get session and user information
             const session = await getSession(request.headers.get("Cookie"));
             const token = session.get("email");
             const user = await Registration.findOne({ email: token });
-    
 
             const totalProductsCount = await Product.countDocuments(searchFilter).exec();
             const totalPages = Math.ceil(totalProductsCount / limit);
@@ -235,42 +240,42 @@ class ProductsController {
                 {
                     $group: {
                         _id: null, // No grouping key; aggregates all documents
-                        totalProductAmount: { $sum: "$totalProductAmount" } // Sum the totalAmount field
-                    }
-                }
+                        totalProductAmount: { $sum: "$totalProductAmount" }, // Sum the totalAmount field
+                    },
+                },
             ]);
             const result1 = await Product.aggregate([
                 {
                     $group: {
                         _id: null, // No grouping key; aggregates all documents
-                        totalProductAmountAfterSales: { $sum: "$totalProductAmountAfterSales" } // Sum the totalAmount field
-                    }
-                }
+                        totalProductAmountAfterSales: { $sum: "$totalProductAmountAfterSales" }, // Sum the totalAmount field
+                    },
+                },
             ]);
             const result2 = await Product.aggregate([
                 {
                     $group: {
                         _id: null, // No grouping key; aggregates all documents
-                        profitAfterSales: { $sum: "$profitAfterSales" } // Sum the totalAmount field
-                    }
-                }
+                        profitAfterSales: { $sum: "$profitAfterSales" }, // Sum the totalAmount field
+                    },
+                },
             ]);
 
             // Access the totalAmount value
             const total = result.length > 0 ? result[0].totalProductAmount : 0;
             const totalAfterSales = result1.length > 0 ? result1[0].totalProductAmountAfterSales : 0;
             const totalProfitAfterSales = result2.length > 0 ? result2[0].profitAfterSales : 0;
-
     
             return { user, products, totalPages, total, totalAfterSales, totalProfitAfterSales };
         } catch (error: any) {
             return {
                 message: error.message,
                 success: false,
-                status: 500
+                status: 500,
             };
         }
     }
+
 }
 
 const productsController = new ProductsController

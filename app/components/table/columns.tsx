@@ -34,6 +34,7 @@ export const SalesColumns = [
     { key: "attendant", label: "Attendant" },
     { key: "totalAmount", label: "Total Amount" },
     { key: "amountPaid", label: "Amount Paid" },
+    { key: "amountLeft", label: "Amount Left" },
     { key: "balance", label: "Balance" },
     { key: "action", label: "Action" }
 ]

@@ -10,7 +10,9 @@ class Restocking {
         name: string,
         newQuantity: string,
         user: string,
-        product: string
+        product: string,
+        costPrice: string,
+        price: string
     ) {
         try {
             // Save the restock record
@@ -41,11 +43,16 @@ class Restocking {
             }
 
             // Update the product quantity
-            const updatedQuantity =
-                Number(productData.quantity || 0) + Number(newQuantity);
+            const updatedQuantity = Number(productData.quantity || 0) + Number(newQuantity);
+            const newtotalProductAmount = Number(costPrice) * updatedQuantity
+            const newtotalProductAmountAfterSales = Number(price) * updatedQuantity
+            const newprofitAfterSales = Number(newtotalProductAmountAfterSales) - Number(newtotalProductAmount)
 
             const success = await Product.findByIdAndUpdate(product, {
                 quantity: updatedQuantity,
+                totalProductAmount: newtotalProductAmount,
+                totalProductAmountAfterSales: newtotalProductAmountAfterSales,
+                profitAfterSales: newprofitAfterSales
             });
 
             if (success) {

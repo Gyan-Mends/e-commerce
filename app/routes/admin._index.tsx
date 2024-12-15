@@ -5,7 +5,7 @@ import { getSession } from '~/session';
 import ProductIcon from '~/components/icons/ProductsIcon';
 import CustomedCard from '~/components/ui/CustomedCard';
 import adminDashboardController from '~/controllers/AdminDashBoardController';
-import { Link, useLoaderData } from '@remix-run/react';
+import { Form, Link, useLoaderData } from '@remix-run/react';
 import UserIcon from '~/components/icons/UserIcon';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { RegistrationInterface, SalesInterface } from '~/interfaces/interface';
@@ -17,12 +17,14 @@ import SupplierIcon from '~/components/icons/SupplierIcon';
 import CategoryIcon from '~/components/icons/CatIcon';
 import SaleIcon from '~/components/icons/Sales';
 import SalesIcon from '~/components/icons/SalesIcon';
+import EditModal from '~/components/modal/EditModal';
 
 
 
 
 const Admin = () => {
-    const [loading, setLoading] = useState(true);
+    const [dataValue, setDataValue] = useState<SalesInterface>();
+    const [isEditModalOpened, setIsEditModalOpened] = useState(false)
     const [rowsPerPage, setRowsPerPage] = useState(8)
     const [isLoading, setIsLoading] = useState(false)
     const {
@@ -60,6 +62,10 @@ const Admin = () => {
         }, 1000);
         return () => clearTimeout(timer); 
     }, []);
+
+    const handleEditModalClosed = () => {
+        setIsEditModalOpened(false)
+    }
 
     // Graph data
     const graphData = [
@@ -224,6 +230,7 @@ const Admin = () => {
                                 </TableCell>
                                 <TableCell>GHC {sale?.totalAmount}</TableCell>
                                 <TableCell>GHC {sale?.amountPaid}</TableCell>
+                                <TableCell>GHC {sale?.amountLeft}</TableCell>
                                 <TableCell>GHC {sale?.balance}</TableCell>
                                 <TableCell className="relative flex items-center gap-4">
                                     <Button
@@ -231,10 +238,11 @@ const Admin = () => {
                                         color="success"
                                         variant="flat"
                                         onClick={() => {
-                                            // Refund logic
+                                            setIsEditModalOpened(true)
+                                            setDataValue(sale)
                                         }}
                                     >
-                                        Refund
+                                        View Customer Details
                                     </Button>
                                 </TableCell>
                             </TableRow>
@@ -242,6 +250,19 @@ const Admin = () => {
                     </CustomTable>
                 </div>
             </div>
+
+            <EditModal modalTitle="Sale Payment" className="" onOpenChange={handleEditModalClosed} isOpen={isEditModalOpened}>
+                {(onClose) => (
+                    <Form method="post" action="">
+                        <p> {dataValue?.payments.map((payment: SalesInterface, i: number) => (
+                            <div className='flex flex-col gap-4' key={i}>
+                                <p className='font-nunito'>Customer Name: {payment.customerName}</p>
+                                <p className='font-nunito'>Customer Phone: {payment.customerNumber}</p>
+                            </div>
+                        ))}</p>
+                    </Form>
+                )}
+            </EditModal>
         </AdminLayout>
     );
 };

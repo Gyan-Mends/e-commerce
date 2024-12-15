@@ -138,6 +138,7 @@ const Admin = () => {
                                 </TableCell>
                                 <TableCell>GHC {sale?.totalAmount}</TableCell>
                                 <TableCell>GHC {sale?.amountPaid}</TableCell>
+                                <TableCell>GHC {sale?.amountLeft}</TableCell>
                                 <TableCell>GHC {sale?.balance}</TableCell>
                                 <TableCell className="relative flex items-center gap-4">
                                     <Button

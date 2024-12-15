@@ -23,6 +23,8 @@ const RestockSchema = new mongoose.Schema({
         type: String,
         require: true,
     },
+    paymentStatus: { type: String, enum: ["Partial", "Paid"], default: "Paid" }, 
+
 
 }, {
     timestamps: true
