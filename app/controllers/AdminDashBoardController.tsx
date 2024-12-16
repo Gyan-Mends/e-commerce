@@ -11,12 +11,46 @@ class AdminDashboardController {
     async getSales({
         request,
         page = 1,
+        search_term,
         limit = 8,
     }: {
         request?: Request;
         page?: number;
+            search_term: string,
         limit?: number;
     }) {
+        const skipCount = (page - 1) * limit; // Calculate the number of documents to skip
+
+        // Define the search filter only once
+        const searchFilter = search_term
+            ? {
+                $or: [
+                    {
+                        "payments.customerName": { // Corrected field name and syntax
+                            $regex: new RegExp(
+                                search_term
+                                    .split(" ")
+                                    .map((term) => `(?=.*${term})`)
+                                    .join(""),
+                                "i"
+                            ),
+                        },
+                    },
+                    {
+                        "payments.customerNumber": { // Corrected field name and syntax
+                            $regex: new RegExp(
+                                search_term
+                                    .split(" ")
+                                    .map((term) => `(?=.*${term})`)
+                                    .join(""),
+                                "i"
+                            ),
+                        },
+                    },
+                ],
+            }
+            : {};
+
         try {
             const session = await getSession(request.headers.get("Cookie"));
             const token = session.get("email");
@@ -27,12 +61,26 @@ class AdminDashboardController {
             const categoryCount = await Category.countDocuments();
 
             // Get paginated sales
-            const sales = await Sales.find()
+            const sales = await Sales.find(searchFilter)
                 .populate("attendant")
                 .sort({ createdAt: -1 })
-                .skip((page - 1) * limit)
+                .skip(skipCount)
                 .limit(limit)
                 .exec();
+
+            const debtors = await Sales.find(
+                {
+                    ...searchFilter,
+                    attendant: user?._id,
+                    amountLeft: { $gt: 0 }
+                }
+            )
+                .populate("attendant")
+                .sort({ createdAt: -1 })
+                .skip(skipCount)
+                .limit(limit)
+                .exec();
+
 
             // Define date ranges
             const today = moment().startOf("day").toDate();
@@ -118,6 +166,7 @@ class AdminDashboardController {
                 suppliersCount,
                 categoryCount,
                 sales,
+                debtors,
                 user,
                 totalAmount,
                 dailyTotal,

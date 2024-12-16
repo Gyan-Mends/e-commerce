@@ -189,13 +189,13 @@ class SalesController {
             .skip(skipCount)
             .limit(limit)
             .exec();
-      const debtors = await Sales.find({
+
+      const debtors = await Sales.find(searchFilter, {
         attendant: user?._id,
         amountLeft: { $gt: 0 }
       })
-        .populate("attendant")
-        .sort({ createdAt: -1 })
-        .skip((page - 1) * limit)
+        .populate("category")
+        .skip(skipCount)
         .limit(limit)
         .exec();
 

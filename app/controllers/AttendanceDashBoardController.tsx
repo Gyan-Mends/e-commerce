@@ -46,21 +46,38 @@ class AttendanceDashboardController {
                 { $match: { createdAt: { $gte: today } } },
                 { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } },
             ]);
+            const dailyAmountPaid = await Sales.aggregate([
+                { $match: { createdAt: { $gte: today } } },
+                { $group: { _id: null, total: { $sum: { $toDouble: "$amountPaid" } } } },
+            ]);
 
             const weeklySales = await Sales.aggregate([
                 { $match: { createdAt: { $gte: thisWeek } } },
                 { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } },
+            ]);
+            const weeklyAmountPaid = await Sales.aggregate([
+                { $match: { createdAt: { $gte: thisWeek } } },
+                { $group: { _id: null, total: { $sum: { $toDouble: "$amountPaid" } } } },
             ]);
 
             const monthlySales = await Sales.aggregate([
                 { $match: { createdAt: { $gte: thisMonth } } },
                 { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } },
             ]);
+            const monthlyAmountPaid = await Sales.aggregate([
+                { $match: { createdAt: { $gte: thisMonth } } },
+                { $group: { _id: null, total: { $sum: { $toDouble: "$amountPaid" } } } },
+            ]);
 
             const yearlySales = await Sales.aggregate([
                 { $match: { createdAt: { $gte: thisYear } } },
                 { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } },
             ]);
+            const yearlyAmountPaid = await Sales.aggregate([
+                { $match: { createdAt: { $gte: thisYear } } },
+                { $group: { _id: null, total: { $sum: { $toDouble: "$amountPaid" } } } },
+            ]);
+
 
 
             // Extract totals
@@ -68,6 +85,15 @@ class AttendanceDashboardController {
             const weeklyTotal = weeklySales[0]?.total || 0;
             const monthlyTotal = monthlySales[0]?.total || 0;
             const yearlyTotal = yearlySales[0]?.total || 0;
+            const totalAmountPaid = dailyAmountPaid[0]?.total || 0;
+            const weeklyPaidAmout = dailyAmountPaid[0]?.total || 0;
+            const weeklytotalAmountPaid = weeklyAmountPaid[0]?.total || 0;
+            const monthlytotalAmountPaid = monthlyAmountPaid[0]?.total || 0;
+            const yearlytotalAmountPaid = yearlyAmountPaid[0]?.total || 0;
+            const dailyAmountToBePaid = dailyTotal - totalAmountPaid
+            const weeklyAmountToBePaid = weeklyTotal - weeklytotalAmountPaid
+            const monthlyAmountToBePaid = monthlyTotal - monthlytotalAmountPaid
+            const yearlyAmountToBePaid = yearlyTotal - yearlytotalAmountPaid
 
             // Overall total
             const totalSalesAmount = await Sales.aggregate([
@@ -106,6 +132,8 @@ class AttendanceDashboardController {
             });
 
             return {
+                totalAmountPaid,
+                dailyAmountToBePaid,
                 sales,
                 dailyTotal,
                 weeklyTotal,

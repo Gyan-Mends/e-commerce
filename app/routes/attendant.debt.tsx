@@ -6,11 +6,13 @@ import { Toaster } from "react-hot-toast"
 import BackIcon from "~/components/icons/BackIcon"
 import PlusIcon from "~/components/icons/PlusIcon"
 import { SearchIcon } from "~/components/icons/SearchIcon"
+import ConfirmModal from "~/components/modal/confirmModal"
 import EditModal from "~/components/modal/EditModal"
 import { SalesColumns } from "~/components/table/columns"
 import CustomTable from "~/components/table/table"
 import { errorToast, successToast } from "~/components/toast"
 import adminDashboardController from "~/controllers/AdminDashBoardController"
+import debtPayment from "~/controllers/DebtPayment"
 import productsController from "~/controllers/productsController"
 import refundController from "~/controllers/refund"
 import salesController from "~/controllers/sales"
@@ -24,6 +26,8 @@ const Sales = () => {
     const { debtors, user } = useLoaderData<{ debtors: SalesInterface[], user: RegistrationInterface[] }>()
     const [searchQuery, setSearchQuery] = useState('');
     const [isEditModalOpened, setIsEditModalOpened] = useState(false)
+    const [isPaymentModalOpened, setIsPaymentModalOpened] = useState(false)
+    const [isConfirmedModalOpened, setIsConfirmedModalOPened] = useState()
     const [dataValue, setDataValue] = useState<SalesInterface>()
     const actionData = useActionData<any>()
     const navigate = useNavigate()
@@ -37,6 +41,10 @@ const Sales = () => {
     };
     const handleEditModalClosed = () => {
         setIsEditModalOpened(false)
+    }
+
+    const handlePaymentModalClose = () => {
+        setIsPaymentModalOpened(false)
     }
     //    const generateReceipt = () => {
     //    let receipt = `
@@ -170,11 +178,64 @@ const Sales = () => {
                             >
                                 Refund
                             </Button>
+                            <Button
+                                size="sm"
+                                color="success"
+                                variant="flat"
+                                onClick={() => {
+                                    setIsPaymentModalOpened(true);
+                                    setDataValue(sale);
+                                }}
+                            >
+                                Make Payment
+                            </Button>
 
                         </TableCell>
                     </TableRow>
                 ))}
             </CustomTable>
+
+            <EditModal modalTitle="Make Payment" className="dark:bg-slate-950 bg-gray-200" onOpenChange={handlePaymentModalClose} isOpen={isPaymentModalOpened}>
+                {(onClose) => (
+                    <Form method="post">
+
+                        <div className="flex gap-10 mt-4">
+
+                            <Input
+                                label="Amount Left"
+                                name="amountLeftToBePaid"
+                                placeholder=" "
+                                isClearable
+                                isRequired
+                                className="mt-4"
+                                labelPlacement="outside"
+                                classNames={{
+                                    label: "font-nunito text-sm text-default-100",
+                                    inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-white/30 focus:bg-[#333] "
+                                }}
+                            />
+                        </div>
+
+                        <input name="intent" value="update" type="hidden" />
+                        <input name="amountPaid" value={dataValue?.amountPaid} type="" />
+                        <input name="amountLeft" value={dataValue?.amountLeft} type="" />
+                        <input name="totalAmount" value={dataValue?.totalAmount} type="" />
+                        <input hidden name="userid" value={user._id} type="text" />
+                        <input name="id" value={dataValue?._id} type="hidden" />
+
+
+                        <div className="flex justify-end gap-2 mt-10 font-nunito">
+                            <Button color="danger" onPress={onClose}>
+                                Close
+                            </Button>
+                            <button
+                                className="bg-primary-400 rounded-xl text-white font-nunito px-4" >
+                                Submit
+                            </button>
+                        </div>
+                    </Form>
+                )}
+            </EditModal>
 
 
 
@@ -212,21 +273,23 @@ const Sales = () => {
                             </div>
                         </div>
 
-                        <p className="mt-10 font-nunito text-md font-semibold">Payment Details</p>
-                        <div className="flex justify-between mt-2">
+                        <p className="mt-10 font-nunito text-md font-semibold">Customer Details</p>
+                        {dataValue?.payments.map((customer: SalesInterface, idx: number) => (
+                            <div key={idx}>
+                                <div className="flex justify-between mt-2">
                             <div className="text-default-500 text-md">
-                                <p className="font-nunito font-semibold">Total Amount</p>
-                                <p className="font-nunito text-sm">GHC {dataValue?.totalAmount}</p>
+                                        <p className="font-nunito font-semibold">Customer Name</p>
+                                        <p className="font-nunito text-sm"> {customer?.customerName}</p>
                             </div>
+
                             <div className="text-default-500 text-md">
-                                <p className="font-nunito font-semibold">Amount Paid</p>
-                                <p className="font-nunito text-sm">GHC {dataValue?.amountPaid}</p>
+                                        <p className="font-nunito font-semibold">Customer Phone</p>
+                                        <p className="font-nunito text-sm"> {customer?.customerNumber}</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="text-default-500 text-md">
-                                <p className="font-nunito font-semibold">Balance</p>
-                                <p className="font-nunito text-sm">GHC {dataValue?.balance}</p>
-                            </div>
-                        </div>
+                        ))}
+
 
 
                     </Form>
@@ -240,38 +303,31 @@ export default Sales
 
 export const action: ActionFunction = async ({ request }) => {
     const formData = await request.formData()
-    const balance = formData.get("balance") as string
     const amountPaid = formData.get("amountPaid") as string
+    const amountLeftToBePaid = formData.get("amountLeftToBePaid") as string
+    const amountLeft = formData.get("amountLeft") as string
     const totalAmount = formData.get("totalAmount") as string
-    const attendant = formData.get("attendant") as string
+    const id = formData.get("id") as string
     const intent = formData.get("intent") as string
-    const product = formData.get("product") as string
-    const quantity = formData.get("quantity") as string
-    const reason = formData.get("reason") as string
-    console.log(quantity);
 
 
-    // switch (intent) {
-    //     // case "refund":
-    //     //     const makeRefund = await refundController.ApplyRefund({
-    //     //         intent,
-    //     //         request,
-    //     //         attendant,
-    //     //         totalAmount,
-    //     //         amountPaid,
-    //     //         balance,
-    //     //         quantity,
-    //     //         product,
-    //     //     })
-    //         return makeRefund
+    switch (intent) {
+        case "update":
+            const makeRefund = await debtPayment.payDebt({
+                amountPaid,
+                amountLeftToBePaid,
+                id,
+                amountLeft, totalAmount
+            })
+            return makeRefund
 
-    //     default:
-    //         break;
-    // }
+        default:
+            break;
+    }
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
-    const url = new URL(request.url);
+    const url = new URL(request.url)
     const page = parseInt(url.searchParams.get("page") as string) || 1;
     const search_term = url.searchParams.get("search_term") as string
     const session = await getSession(request.headers.get("Cookie"));
@@ -283,12 +339,9 @@ export const loader: LoaderFunction = async ({ request }) => {
     const { user } = await productsController.FetchProducts({
         request,
         page,
+        search_term
     });
-    const {
-
-        debtors,
-        // Add the olderTotal
-    } = await salesController.getSales({
+    const { debtors } = await adminDashboardController.getSales({
         request,
         page,
         search_term,
