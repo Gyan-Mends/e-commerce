@@ -5,7 +5,7 @@ import Registration from "~/modal/registration";
 import Sales from "~/modal/sales";
 import { commitSession, getSession } from "~/session";
 
-class AttendanceDashboardController {
+class AdminReportController {
     async getSales({
         request,
         page = 1,
@@ -44,38 +44,38 @@ class AttendanceDashboardController {
 
             // Aggregations for date ranges
             const dailySales = await Sales.aggregate([
-                { $match: { createdAt: { $gte: today }, attendant: userId } },
+                { $match: { createdAt: { $gte: today } } },
                 { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } },
             ]);
             const dailyAmountPaid = await Sales.aggregate([
-                { $match: { createdAt: { $gte: today }, attendant: userId } },
+                { $match: { createdAt: { $gte: today } } },
                 { $group: { _id: null, total: { $sum: { $toDouble: "$amountPaid" } } } },
             ]);
 
             const weeklySales = await Sales.aggregate([
-                { $match: { createdAt: { $gte: thisWeek }, attendant: userId } },
+                { $match: { createdAt: { $gte: thisWeek } } },
                 { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } },
             ]);
             const weeklyAmountPaid = await Sales.aggregate([
-                { $match: { createdAt: { $gte: thisWeek }, attendant: userId } },
+                { $match: { createdAt: { $gte: thisWeek } } },
                 { $group: { _id: null, total: { $sum: { $toDouble: "$amountPaid" } } } },
             ]);
 
             const monthlySales = await Sales.aggregate([
-                { $match: { createdAt: { $gte: thisMonth }, attendant: userId } },
+                { $match: { createdAt: { $gte: thisMonth } } },
                 { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } },
             ]);
             const monthlyAmountPaid = await Sales.aggregate([
-                { $match: { createdAt: { $gte: thisMonth }, attendant: userId } },
+                { $match: { createdAt: { $gte: thisMonth } } },
                 { $group: { _id: null, total: { $sum: { $toDouble: "$amountPaid" } } } },
             ]);
 
             const yearlySales = await Sales.aggregate([
-                { $match: { createdAt: { $gte: thisYear }, attendant: userId } },
+                { $match: { createdAt: { $gte: thisYear } } },
                 { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } },
             ]);
             const yearlyAmountPaid = await Sales.aggregate([
-                { $match: { createdAt: { $gte: thisYear }, attendant: userId } },
+                { $match: { createdAt: { $gte: thisYear } } },
                 { $group: { _id: null, total: { $sum: { $toDouble: "$amountPaid" } } } },
             ]);
 
@@ -112,22 +112,18 @@ class AttendanceDashboardController {
             const startOfYear = new Date(now.getFullYear(), 0, 1);
 
             const dailyCount = await Sales.countDocuments({
-                attendant: user._id,
                 createdAt: { $gte: startOfDay },
             });
 
             const weeklyCount = await Sales.countDocuments({
-                attendant: user._id,
                 createdAt: { $gte: startOfWeek },
             });
 
             const monthlyCount = await Sales.countDocuments({
-                attendant: user._id,
                 createdAt: { $gte: startOfMonth },
             });
 
             const yearlyCount = await Sales.countDocuments({
-                attendant: user._id,
                 createdAt: { $gte: startOfYear },
             });
 
@@ -157,18 +153,8 @@ class AttendanceDashboardController {
         }
     }
 
-    async logout(intent: string) {
-        if (intent === "logout") {
-            const session = await getSession();
 
-            return redirect("/", {
-                headers: {
-                    "Set-Cookie": await commitSession(session),
-                },
-            });
-        }
-    }
 }
 
-const attendanceDashboardController = new AttendanceDashboardController();
-export default attendanceDashboardController;
+const adminReportController = new AdminReportController();
+export default adminReportController;

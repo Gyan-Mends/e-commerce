@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import AdminLayout from "~/layout/adminLayout";
 import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
-import { Button, Calendar, TableCell, TableRow } from "@nextui-org/react";
+import { Form, useLoaderData, useNavigate } from "@remix-run/react";
+import { Button, Calendar, Input, TableCell, TableRow } from "@nextui-org/react";
 import Attendant from "~/layout/attendantLayout";
 import attendanceDashboardController from "~/controllers/AttendanceDashBoardController";
 import CustomedCard from "~/components/ui/CustomedCard";
@@ -16,6 +16,9 @@ import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, X
 import SaleIcon from "~/components/icons/Sales";
 import adminDashboardController from "~/controllers/AdminDashBoardController";
 import { getSession } from "~/session";
+import adminReportController from "~/controllers/AdminReportControler";
+import EditModal from "~/components/modal/EditModal";
+import { SearchIcon } from "~/components/icons/SearchIcon";
 
 
 const Report = () => {
@@ -35,10 +38,10 @@ const Report = () => {
         monthlyAmountToBePaid,
         yearlyAmountToBePaid } = useLoaderData<{
             sales: SalesInterface[];
-        dailyTotal: number,
-        weeklyTotal: number,
-        monthlyTotal: number,
-        yearlyTotal: number,
+            dailyTotal: number,
+            weeklyTotal: number,
+            monthlyTotal: number,
+            yearlyTotal: number,
             totalAmountPaid: number
             weeklytotalAmountPaid: number
             monthlytotalAmountPaid: number
@@ -47,10 +50,17 @@ const Report = () => {
             weeklyAmountToBePaid: number
             monthlyAmountToBePaid: number
             yearlyAmountToBePaid: number
-        counts: { daily: number; weekly: number; monthly: number; yearly: number };
-    }>();
+            counts: { daily: number; weekly: number; monthly: number; yearly: number };
+        }>();
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [isLoading, setIsLoading] = useState(true);
+    const [isEditModalOpened, setIsEditModalOpened] = useState(false)
+    const [dataValue, setDataValue] = useState<SalesInterface>();
+    const navigate = useNavigate()
+
+    const handleEditModalClosed = () => {
+        setIsEditModalOpened(false)
+    }
 
     const handleRowsPerPageChange = (newRowsPerPage: number) => {
         setRowsPerPage(newRowsPerPage);
@@ -87,7 +97,7 @@ const Report = () => {
     ];
 
     return (
-        <Attendant pageName="Report">
+        <AdminLayout pageName="Report">
             <div>
                 <div>
                     <p className="font-nunito text-2xl">Daily Sales Report</p>
@@ -301,6 +311,19 @@ const Report = () => {
 
             {/* Recent Sales Table */}
             <div className="mb-5 grid grid-cols-1 gap-10">
+                <Input
+                    size="sm"
+                    placeholder="Search user..."
+                    startContent={<SearchIcon className="" />}
+                    onValueChange={(value) => {
+                        const timeoutId = setTimeout(() => {
+                            navigate(`?search_term=${value}`);
+                        }, 100);
+                        return () => clearTimeout(timeoutId);
+                    }} classNames={{
+                        inputWrapper: "bg-white shadow-sm text-sm font-nunito dark:bg-[#333] border border-white/5 ",
+                    }}
+                />
                 <div className="px-2  shadow-md rounded-xl border border-black/5 dark:bg-[#333] dark:border-white/5 mt-6">
                     <CustomTable
                         columns={SalesColumns}
@@ -323,18 +346,32 @@ const Report = () => {
                                         color="success"
                                         variant="flat"
                                         onClick={() => {
-                                            // Refund logic
+                                            setIsEditModalOpened(true)
+                                            setDataValue(sale)
                                         }}
                                     >
-                                        Refund
+                                        View Customer Details
                                     </Button>
                                 </TableCell>
                             </TableRow>
                         ))}
                     </CustomTable>
+
+                    <EditModal modalTitle="Sale Payment" className="" onOpenChange={handleEditModalClosed} isOpen={isEditModalOpened}>
+                        {(onClose) => (
+                            <Form method="post" action="">
+                                <p> {dataValue?.payments.map((payment: SalesInterface, i: number) => (
+                                    <div className='flex flex-col gap-4' key={i}>
+                                        <p className='font-nunito'>Customer Name: {payment.customerName}</p>
+                                        <p className='font-nunito'>Customer Phone: {payment.customerNumber}</p>
+                                    </div>
+                                ))}</p>
+                            </Form>
+                        )}
+                    </EditModal>
                 </div>
             </div>
-        </Attendant>
+        </AdminLayout>
     );
 };
 
@@ -360,7 +397,8 @@ export const action: ActionFunction = async ({ request }) => {
 
 export const loader: LoaderFunction = async ({ request }) => {
     const url = new URL(request.url);
-    const page = parseInt(url.searchParams.get("page") || "1", 10);
+    const page = parseInt(url.searchParams.get("page") as string) || 1;
+    const search_term = url.searchParams.get("search_term") as string
     const { user } = await productsController.FetchProducts({
         request,
         page,
@@ -371,10 +409,18 @@ export const loader: LoaderFunction = async ({ request }) => {
     if (!token) {
         return redirect("/")
     }
+    const {
+
+        sales
+    } = await adminDashboardController.getSales({
+        request,
+        page,
+        search_term
+    });
 
 
     const {
-        sales,
+
         counts,
         dailyTotal,
         weeklyTotal,
@@ -387,11 +433,11 @@ export const loader: LoaderFunction = async ({ request }) => {
         dailyAmountToBePaid,
         weeklyAmountToBePaid,
         monthlyAmountToBePaid,
-        yearlyAmountToBePaid } = await attendanceDashboardController.getSales({
-        request,
-        page,
-        limit: 10, // Fetch 10 sales per page
-    });
+        yearlyAmountToBePaid } = await adminReportController.getSales({
+            request,
+            page,
+            limit: 10,
+        });
 
     return {
         sales,
